@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" minWidth="878.9998779296875" prefHeight="618.9998779296875" prefWidth="911.9998779296875" snapToPixel="true" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="jobcenter.JobBoardController">
+  <children>
+    <TableView fx:id="JobBoard" depthTest="INHERIT" focusTraversable="false" prefHeight="618.9998779296875" prefWidth="911.9998779296875" tableMenuButtonVisible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <columns>
+        <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="150.0" resizable="false" sortable="false" text="Title" />
+        <TableColumn editable="false" prefWidth="150.0" resizable="false" sortable="false" text="Customer" />
+        <TableColumn editable="false" prefWidth="150.0" resizable="false" sortable="false" text="Job name" />
+        <TableColumn editable="false" prefWidth="150.0" resizable="false" sortable="false" text="Work date" />
+        <TableColumn editable="false" prefWidth="150.0" resizable="false" sortable="false" text="Employees" />
+        <TableColumn editable="false" prefWidth="150.0" resizable="false" sortable="false" text="Equipment" />
+      </columns>
+    </TableView>
+  </children>
+</AnchorPane>

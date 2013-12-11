@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.collections.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="662.0" prefWidth="1224.0" visible="true" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="jobcenter.JobCenterMainController">
+  <children>
+    <Pane id="" fx:id="CreateJobBox" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
+      <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" height="608.0" layoutX="0.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1161.0">
+          <fill>
+            <Color blue="0.875" green="0.875" red="0.875" fx:id="x5" />
+          </fill>
+        </Rectangle>
+        <ToolBar blendMode="DIFFERENCE" layoutX="0.0" layoutY="0.0" prefHeight="48.0" prefWidth="1276.0">
+          <items>
+            <Button blendMode="SRC_OVER" cache="true" cacheHint="QUALITY" cancelButton="false" defaultButton="true" mnemonicParsing="false" prefHeight="36.0" text="Create job" />
+          </items>
+        </ToolBar>
+        <TitledPane alignment="TOP_LEFT" animated="false" blendMode="DIFFERENCE" layoutX="10.0" layoutY="55.0" prefHeight="539.0" prefWidth="539.0" text="Create new job">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </TitledPane>
+        <TitledPane animated="false" blendMode="DIFFERENCE" layoutX="567.0" layoutY="55.0" prefHeight="184.0" prefWidth="436.0" text="Customer">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </TitledPane>
+        <TitledPane animated="false" blendMode="DIFFERENCE" layoutX="567.0" layoutY="252.0" prefHeight="165.0" prefWidth="436.0" text="Employees">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </TitledPane>
+        <TitledPane animated="false" blendMode="DIFFERENCE" layoutX="567.0" layoutY="429.0" prefHeight="165.0" prefWidth="436.0" text="Vehicles/Equipment">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+          </content>
+        </TitledPane>
+      </children>
+    </Pane>
+    <Pane fx:id="displayJobs" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
+      <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#dfdfdf" height="608.0" layoutX="0.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1161.0" />
+        <TitledPane animated="false" blendMode="DIFFERENCE" layoutX="10.0" layoutY="56.0" prefHeight="538.0" prefWidth="510.0" text="Current Jobs">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <ToolBar layoutX="0.0" layoutY="-2.0" prefHeight="31.0" prefWidth="506.0">
+                  <items>
+                    <Button defaultButton="true" mnemonicParsing="false" text="Edit" />
+                    <Button defaultButton="true" mnemonicParsing="false" text="Preview job board" />
+                  </items>
+                </ToolBar>
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+        <TitledPane animated="false" blendMode="DIFFERENCE" layoutX="535.0" layoutY="56.0" prefWidth="399.0" text="Add employee">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <ToolBar layoutX="0.0" layoutY="-2.0" prefWidth="395.0">
+                  <items>
+                    <Button defaultButton="true" mnemonicParsing="false" text="Add" />
+                  </items>
+                </ToolBar>
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+        <TitledPane animated="false" blendMode="DIFFERENCE" layoutX="535.0" layoutY="274.0" prefWidth="399.0" text="Add vehicle/equipment">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <ToolBar layoutX="0.0" layoutY="-2.0" prefWidth="395.0">
+                  <items>
+                    <Button defaultButton="true" mnemonicParsing="false" text="Add" />
+                  </items>
+                </ToolBar>
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+        <ToolBar blendMode="DIFFERENCE" layoutX="0.0" layoutY="0.0" prefHeight="48.0" prefWidth="1222.0">
+          <items>
+            <Button defaultButton="true" mnemonicParsing="false" prefHeight="36.0" prefWidth="125.0" text="Display Job Board" />
+          </items>
+        </ToolBar>
+      </children>
+    </Pane>
+    <Pane layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
+      <children>
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x5" height="608.0" layoutX="0.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1161.0" />
+      </children>
+    </Pane>
+    <Pane layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false" />
+    <Pane layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false" />
+    <Pane layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false" />
+    <Pane layoutX="0.0" layoutY="0.0" prefHeight="48.0" prefWidth="960.0" visible="true">
+      <children>
+        <ImageView blendMode="DIFFERENCE" fitHeight="56.0" fitWidth="2159.0" focusTraversable="false" layoutX="0.0" layoutY="-1.0" opacity="0.67" pickOnBounds="true" preserveRatio="false">
+          <image>
+            <Image url="@grid-background-09.jpg" />
+          </image>
+        </ImageView>
+        <Label alignment="CENTER_LEFT" layoutX="14.0" layoutY="12.0" text="Ryan Schmidt" textFill="WHITE">
+          <font>
+            <Font name="System Bold" size="18.0" />
+          </font>
+        </Label>
+        <Label layoutX="34.0" layoutY="32.0" text="Regional Manager" textFill="WHITE" underline="true" wrapText="false">
+          <font>
+            <Font size="12.0" fx:id="x6" />
+          </font>
+        </Label>
+      </children>
+    </Pane>
+    <Pane layoutX="202.0" layoutY="54.0" prefHeight="607.0" prefWidth="636.0" visible="false" />
+    <Accordion id="" blendMode="SRC_OVER" cache="false" layoutX="0.0" layoutY="55.0" mouseTransparent="false" opacity="1.0" prefHeight="600.0" visible="true">
+      <effect>
+        <ColorAdjust />
+      </effect>
+      <expandedPane>
+        <TitledPane id="x9" fx:id="x4" animated="true" collapsible="true" expanded="true" prefHeight="551.9998779296875" text="Proposals">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <ListView id="proList" prefHeight="530.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children>
+            </AnchorPane>
+          </content>
+          <font>
+            <Font name="System Bold" size="12.0" fx:id="x3" />
+          </font>
+        </TitledPane>
+      </expandedPane>
+      <panes>
+        <TitledPane id="x4" fx:id="x1" animated="true" cache="false" collapsible="true" font="$x3" prefHeight="562.0" text="Administration">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <ListView id="adminList" editable="false" prefHeight="530.0" prefWidth="200.0" scaleY="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                <ListView prefHeight="530.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+        <TitledPane fx:id="x2" animated="true" font="$x3" text="Tasks">
+          <content>
+            <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+              <children>
+                <ListView fx:id="taskList" cache="false" editable="false" prefHeight="530.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+              </children>
+            </AnchorPane>
+          </content>
+        </TitledPane>
+        <fx:reference source="x4" />
+      </panes>
+    </Accordion>
+  </children>
+</AnchorPane>
