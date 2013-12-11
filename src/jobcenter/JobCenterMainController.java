@@ -80,9 +80,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private ScreenPane myScreenPane;
     public ListView adminList, taskList, proList, employeeSelect, employeeSelected,
             vehicleEquipSelect, vehicleEquipSelected, custListing;
-    public Label changeMe;
-    public TitledPane ManagerStatus, PeopleBox, VehiclesBox, ReportsBox, createJob;
-    public Pane CreateJobBox, settingsPane, displayJobs;
+    public Pane CreateJobBox, settingsPane, displayJobs, equipVehPane, employeePane, managerPane,
+            usersPane, proposalsPane;
     public ToolBar AdminToolBar, FunctionsToolBar, ReportsToolBar, employeeToolbar;
     public TableView usersTable;
     public TableView<employee> employeeTable = new TableView<employee>();
@@ -139,24 +138,61 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //*****************************
         //****************MENU OPTIONS
         //******************************
-        
-        //loads the task list in the menu option
+
+        //loads the 'Administration' list in the menu option
+        adminList.setItems(admin);
+        adminList.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<String>() {
+                    public void changed(ObservableValue<? extends String> ov,
+                            String old_val, String new_val) {
+                        //clear pane first
+                        clearPane();
+
+                        if (new_val == "Manager status") {
+                            managerPane.setVisible(true);
+                        }
+                        if (new_val == "People") {
+                            employeePane.setVisible(true);
+                        }
+                        if (new_val == "Vehicles") {
+                            equipVehPane.setVisible(true);
+                        }
+                        if (new_val == "Settings") {
+                            settingsPane.setVisible(true);
+                        }
+                        if (new_val == "Create/Delete a JobCenter User") {
+                            usersPane.setVisible(true);
+                        }
+
+                    }
+                });
+
+        //loads the 'Tasks' list in the menu option
         taskList.setItems(tasks);
         taskList.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<String>() {
                     public void changed(ObservableValue<? extends String> ov,
                             String old_val, String new_val) {
-
                         clearPane();
                         if (new_val == "Create new job") {
-                            clearPane();
-                            CreateJobBox.setVisible(true);                            
+                            CreateJobBox.setVisible(true);
                         }
                         if (new_val == "Display jobs") {
-                            clearPane();
-                            displayJobs.setVisible(true);                                
+                            displayJobs.setVisible(true);
                         }
 
+                    }
+                });
+
+        proList.setItems(proposals);
+        proList.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<String>() {
+                    public void changed(ObservableValue<? extends String> ov,
+                            String old_val, String new_val) {
+                        clearPane();
+                        if (new_val == "New proposal") {
+                            proposalsPane.setVisible(true);        
+                        }  
                     }
                 });
 
@@ -165,8 +201,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public void clearPane() {
         //clears the main task area
         CreateJobBox.setVisible(false);
-        displayJobs.setVisible(false); 
-
+        displayJobs.setVisible(false);
+        equipVehPane.setVisible(false);
+        employeePane.setVisible(false);
+        managerPane.setVisible(false);
+        usersPane.setVisible(false);
+        settingsPane.setVisible(false);
+        usersPane.setVisible(false);
+        proposalsPane.setVisible(false);
     }
 
 }

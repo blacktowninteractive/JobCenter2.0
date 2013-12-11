@@ -27,7 +27,7 @@ public class JobCenter extends Application {
         ScreenPane mainContainer = new ScreenPane();
         mainContainer.loadScreen("login", MultipleScreenFramework.loginFXML);
         mainContainer.loadScreen("mainScreen", MultipleScreenFramework.mainFXML);          
-        mainContainer.setScreen("login");        
+        mainContainer.setScreen("mainScreen");        
         
         Scene scene = new Scene(mainContainer); 
         stage.setScene(scene); 
