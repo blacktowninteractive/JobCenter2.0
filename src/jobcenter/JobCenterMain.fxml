@@ -17,7 +17,7 @@
   <children>
     <Pane fx:id="equipVehPane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" height="609.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0">
+        <Rectangle arcHeight="5.0" arcWidth="5.0" height="635.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0">
           <fill>
             <Color blue="0.375" green="0.375" red="0.375" fx:id="x7" />
           </fill>
@@ -53,7 +53,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" layoutX="201.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
+    <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" layoutX="201.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x7" height="629.0" layoutX="0.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1161.0" y="-1.0" />
         <ToolBar blendMode="SRC_OVER" layoutX="3.0" layoutY="1.0" prefHeight="39.0" prefWidth="1276.0">
@@ -96,6 +96,7 @@
                     <Button defaultButton="true" mnemonicParsing="false" text="Preview job board" />
                   </items>
                 </ToolBar>
+                <TreeView fx:id="currentJobsDisplay" prefHeight="482.9999000000025" prefWidth="506.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0" />
               </children>
             </AnchorPane>
           </content>
@@ -106,9 +107,10 @@
               <children>
                 <ToolBar layoutX="0.0" layoutY="-2.0" prefWidth="395.0">
                   <items>
-                    <Button defaultButton="true" mnemonicParsing="false" text="Add" />
+                    <Button fx:id="addEmpToTreeBut" defaultButton="true" mnemonicParsing="false" onAction="#addEmpToTree" text="Add" />
                   </items>
                 </ToolBar>
+                <ListView fx:id="empAddJobView" prefHeight="151.0" prefWidth="395.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0" />
               </children>
             </AnchorPane>
           </content>
@@ -119,23 +121,25 @@
               <children>
                 <ToolBar layoutX="0.0" layoutY="-2.0" prefWidth="395.0">
                   <items>
-                    <Button defaultButton="true" mnemonicParsing="false" text="Add" />
+                    <Button fx:id="addVehEqToTreeBut" defaultButton="true" mnemonicParsing="false" onAction="#addVehEqToTree" text="Add" />
                   </items>
                 </ToolBar>
+                <ListView fx:id="vehAddJobView" prefHeight="151.0" prefWidth="395.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="29.0" />
               </children>
             </AnchorPane>
           </content>
         </TitledPane>
         <ToolBar blendMode="SRC_OVER" layoutX="4.0" layoutY="0.0" prefHeight="39.0" prefWidth="1219.0">
           <items>
-            <Button defaultButton="true" mnemonicParsing="false" prefHeight="21.0" prefWidth="116.0" text="Display Job Board" />
+            <Button fx:id="displayJobBut" defaultButton="true" mnemonicParsing="false" onAction="#displayJobAction" prefHeight="21.0" prefWidth="116.0" text="Display Job Board" />
+            <Button defaultButton="true" mnemonicParsing="false" text="Display Calendar" />
           </items>
         </ToolBar>
       </children>
     </Pane>
     <Pane fx:id="employeePane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" height="609.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0">
+        <Rectangle arcHeight="5.0" arcWidth="5.0" height="635.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0">
           <fill>
             <Color blue="0.376" green="0.376" red="0.376" fx:id="x3" />
           </fill>
@@ -204,7 +208,7 @@
     </Pane>
     <Pane fx:id="usersPane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
-        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="609.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
+        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="639.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" font="$x5" layoutX="14.0" layoutY="14.0" minWidth="568.0" prefHeight="501.0" prefWidth="568.0" text="Jobcenter Users">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="475.0" prefWidth="621.0">
@@ -253,7 +257,7 @@
         </Label>
       </children>
     </Pane>
-    <Pane fx:id="settingsPane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="607.0" prefWidth="1065.0" visible="true">
+    <Pane fx:id="settingsPane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="607.0" prefWidth="1065.0" visible="false">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="640.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" collapsible="false" layoutX="14.0" layoutY="14.0" prefHeight="221.0" prefWidth="448.0" text="Preferences">
