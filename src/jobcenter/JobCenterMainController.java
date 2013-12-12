@@ -83,7 +83,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     ObservableList<String> tasks = FXCollections.observableArrayList(
             "Create new job", "Display jobs");
     ObservableList<String> proposals = FXCollections.observableArrayList(
-            "New proposal");
+            "New proposal", "View Current Proposals");
     List<String> list = new ArrayList<String>();
     ObservableList<String> options = FXCollections.observableList(list);
 
