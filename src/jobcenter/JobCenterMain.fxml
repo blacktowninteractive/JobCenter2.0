@@ -28,25 +28,25 @@
               <children>
                 <ToolBar layoutX="0.0" layoutY="-2.0" prefHeight="33.0" prefWidth="621.0">
                   <items>
-                    <Button blendMode="SRC_OVER" defaultButton="true" mnemonicParsing="false" text="Delete" underline="true" />
+                    <Button fx:id="deleteEquipBut" blendMode="SRC_OVER" defaultButton="true" mnemonicParsing="false" onAction="#deleteEquipAction" text="Delete" underline="true" />
                   </items>
                 </ToolBar>
-                <TableView prefHeight="444.0" prefWidth="335.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="229.0" AnchorPane.topAnchor="31.0">
-                  <columns>
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="113.0" text="Vehicle Name" />
-                    <TableColumn prefWidth="75.0" text="Type" />
-                    <TableColumn prefWidth="75.0" text="Status" />
-                  </columns>
-                </TableView>
-                <TextField blendMode="SRC_OVER" layoutX="359.0" layoutY="74.0" prefHeight="33.0" prefWidth="168.0" promptText="Vehicle Name" />
+                <TextField fx:id="vehNameNew" blendMode="SRC_OVER" layoutX="359.0" layoutY="74.0" prefHeight="33.0" prefWidth="168.0" promptText="Vehicle Name" />
                 <Text layoutX="359.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add new equipment/vehicle">
                   <font>
                     <Font name="System Bold" size="12.0" fx:id="x5" />
                   </font>
                 </Text>
-                <TextField blendMode="SRC_OVER" layoutX="359.0" layoutY="114.0" prefHeight="33.0" prefWidth="168.0" promptText="Vehicle Type" />
-                <TextField blendMode="SRC_OVER" layoutX="359.0" layoutY="154.0" prefHeight="33.0" prefWidth="168.0" promptText="Status" />
-                <Button blendMode="SRC_OVER" defaultButton="true" layoutX="359.0" layoutY="199.0" mnemonicParsing="false" text="Add" underline="true" />
+                <TextField fx:id="typeNew" blendMode="SRC_OVER" layoutX="359.0" layoutY="114.0" prefHeight="33.0" prefWidth="168.0" promptText="Vehicle Type" />
+                <TextField fx:id="statusNew" blendMode="SRC_OVER" layoutX="359.0" layoutY="154.0" prefHeight="33.0" prefWidth="168.0" promptText="Status" />
+                <Button fx:id="addEquipBut" blendMode="SRC_OVER" defaultButton="true" layoutX="359.0" layoutY="199.0" mnemonicParsing="false" onAction="#addEquipAction" text="Add" underline="true" />
+                <TableView fx:id="equipmentTable" layoutX="0.0" layoutY="31.0" prefHeight="432.0" prefWidth="335.0">
+                  <columns>
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="111.0" text="Vehicle Name" fx:id="vehNameIns" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="82.0" text="Type" fx:id="typeIns" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="97.0" text="Status" fx:id="typeIns" />
+                  </columns>
+                </TableView>
               </children>
             </AnchorPane>
           </content>
@@ -67,29 +67,29 @@
               <children>
                 <Text font="$x5" layoutX="13.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Job Information" underline="true" />
                 <Text layoutX="13.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Job #V-" />
-                <TextField layoutX="113.0" layoutY="30.0" prefWidth="144.0" />
+                <TextField fx:id="jobTitle" layoutX="113.0" layoutY="30.0" prefWidth="144.0" />
                 <Text layoutX="13.0" layoutY="76.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Job Name" />
-                <TextField layoutX="113.0" layoutY="60.0" prefWidth="144.0" />
+                <TextField fx:id="jobName" layoutX="113.0" layoutY="60.0" prefWidth="144.0" />
                 <Text layoutX="13.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cust Job#" />
-                <TextField layoutX="113.0" layoutY="90.0" prefWidth="144.0" />
+                <TextField fx:id="custJobNum" layoutX="113.0" layoutY="90.0" prefWidth="144.0" />
                 <Text layoutX="13.0" layoutY="136.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Cust Job Name" />
-                <TextField layoutX="113.0" layoutY="120.0" prefWidth="144.0" />
+                <TextField fx:id="custJobName" layoutX="113.0" layoutY="120.0" prefWidth="144.0" />
                 <Text layoutX="13.0" layoutY="166.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Start Date" />
-                <TextField layoutX="113.0" layoutY="150.0" prefWidth="144.0" />
+                <TextField fx:id="startDate" layoutX="113.0" layoutY="150.0" prefWidth="144.0" />
                 <Text layoutX="13.0" layoutY="196.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Start Time" />
-                <TextField layoutX="113.0" layoutY="180.0" prefWidth="144.0" />
+                <TextField fx:id="startTime" layoutX="113.0" layoutY="180.0" prefWidth="144.0" />
                 <Text font="$x5" layoutX="273.0" layoutY="166.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Billing" underline="true" />
-                <RadioButton layoutX="274.0" layoutY="175.0" mnemonicParsing="false" text="Hourly" />
-                <RadioButton layoutX="340.0" layoutY="175.0" mnemonicParsing="false" text="Production" />
+                <RadioButton fx:id="hourChk" layoutX="274.0" layoutY="175.0" mnemonicParsing="false" text="Hourly" />
+                <RadioButton fx:id="prodChk" layoutX="340.0" layoutY="175.0" mnemonicParsing="false" text="Production" />
                 <Text font="$x5" layoutX="273.0" layoutY="21.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Job Site" underline="true" />
                 <Text layoutX="272.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Street Address" />
-                <TextField layoutX="364.0" layoutY="30.0" prefWidth="144.0" />
+                <TextField fx:id="streetAddr" layoutX="364.0" layoutY="30.0" prefWidth="144.0" />
                 <Text layoutX="272.0" layoutY="76.0" strokeType="OUTSIDE" strokeWidth="0.0" text="City" />
-                <TextField layoutX="364.0" layoutY="60.0" prefWidth="144.0" />
+                <TextField fx:id="city" layoutX="364.0" layoutY="60.0" prefWidth="144.0" />
                 <Text layoutX="271.0" layoutY="106.0" strokeType="OUTSIDE" strokeWidth="0.0" text="State" />
-                <TextField layoutX="364.0" layoutY="90.0" prefWidth="144.0" />
+                <TextField fx:id="state" layoutX="364.0" layoutY="90.0" prefWidth="144.0" />
                 <Text layoutX="272.0" layoutY="136.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Zip" />
-                <TextField layoutX="364.0" layoutY="120.0" prefWidth="144.0" />
+                <TextField fx:id="zip" layoutX="364.0" layoutY="120.0" prefWidth="144.0" />
                 <Text font="$x5" layoutX="13.0" layoutY="221.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Customer" underline="true" />
                 <Text layoutX="13.0" layoutY="243.0" scaleX="1.0" scaleY="0.9999937347040251" strokeType="OUTSIDE" strokeWidth="0.0" text="Company Name:" />
                 <Text layoutX="13.0" layoutY="258.0" scaleX="1.0" scaleY="0.9999999999607461" strokeType="OUTSIDE" strokeWidth="0.0" text="Street Address:" />
@@ -100,8 +100,8 @@
                 <Text layoutX="13.0" layoutY="304.0" scaleX="1.0" scaleY="0.9999937347040251" strokeType="OUTSIDE" strokeWidth="0.0" text="Phone:" />
                 <Text layoutX="250.0" layoutY="289.0" scaleX="1.0" scaleY="0.9999937347040251" strokeType="OUTSIDE" strokeWidth="0.0" text="Company phone:" />
                 <Text layoutX="250.0" layoutY="304.0" scaleX="1.0" scaleY="0.9999937347040251" strokeType="OUTSIDE" strokeWidth="0.0" text="Fax:" />
-                <Text font="$x5" layoutX="13.0" layoutY="383.0" scaleX="1.0" scaleY="0.9999923519334313" strokeType="OUTSIDE" strokeWidth="0.0" text="Job status" underline="false" />
-                <ComboBox layoutX="91.0" layoutY="368.0" prefHeight="21.0" prefWidth="132.0">
+                <Text font="$x5" layoutX="273.0" layoutY="221.0" scaleX="1.0" scaleY="0.9999923519334313" strokeType="OUTSIDE" strokeWidth="0.0" text="Job status" underline="true" />
+                <ComboBox fx:id="jobStatus" layoutX="351.0" layoutY="206.0" prefHeight="21.0" prefWidth="151.107421875">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
                       <String fx:value="Item 1" />
@@ -113,7 +113,7 @@
                 <Text font="$x5" layoutX="13.0" layoutY="325.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Task" underline="true" />
                 <Text font="$x5" layoutX="158.0" layoutY="325.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Diameter" underline="true" />
                 <Text font="$x5" layoutX="220.0" layoutY="325.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Feet" underline="true" />
-                <ComboBox layoutX="13.0" layoutY="334.0" prefHeight="21.0" prefWidth="132.0">
+                <ComboBox fx:id="taskComboBox" layoutX="13.0" layoutY="334.0" prefHeight="21.0" prefWidth="132.0">
                   <items>
                     <FXCollections fx:factory="observableArrayList">
                       <String fx:value="Item 1" />
@@ -122,18 +122,29 @@
                     </FXCollections>
                   </items>
                 </ComboBox>
-                <TextField layoutX="158.0" layoutY="334.0" prefWidth="57.046875" />
-                <TextField layoutX="220.0" layoutY="334.0" prefWidth="57.9998779296875" />
-                <Button layoutX="288.0" layoutY="335.0" mnemonicParsing="false" text="Add" />
+                <TextField fx:id="diamStr" layoutX="158.0" layoutY="334.0" prefWidth="57.046875" />
+                <TextField fx:id="feetStr" layoutX="220.0" layoutY="334.0" prefWidth="57.9998779296875" />
+                <Button fx:id="addTask" layoutX="288.0" layoutY="335.0" mnemonicParsing="false" onAction="#addTaskList" text="Add" />
                 <Button layoutX="337.0" layoutY="335.0" mnemonicParsing="false" text="Delete" />
-                <Text font="$x5" layoutX="13.0" layoutY="446.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (disposal)" underline="false" />
-                <Text font="$x5" layoutX="13.0" layoutY="476.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (traffic control)" underline="false" />
-                <Text font="$x5" layoutX="13.0" layoutY="506.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (water source)" underline="false" />
-                <Text font="$x5" layoutX="13.0" layoutY="413.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Special Instructions" underline="false" />
-                <TextArea layoutX="199.0" layoutY="396.0" prefHeight="24.0" prefWidth="245.99990000000253" wrapText="true" />
-                <TextArea layoutX="199.0" layoutY="429.0" prefHeight="24.0" prefWidth="245.99990000000253" wrapText="true" />
-                <TextArea layoutX="199.0" layoutY="459.0" prefHeight="24.0" prefWidth="245.99990000000253" wrapText="true" />
-                <TextArea layoutX="199.0" layoutY="489.0" prefHeight="24.0" prefWidth="245.99990000000253" wrapText="true" />
+                <Text font="$x5" layoutX="251.0" layoutY="436.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (disposal)" underline="false" />
+                <Text font="$x5" layoutX="13.0" layoutY="481.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (traffic control)" underline="false" />
+                <Text font="$x5" layoutX="253.0" layoutY="484.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (water source)" underline="false" />
+                <Text font="$x5" layoutX="12.0" layoutY="436.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Special Instructions" underline="false" />
+                <TextArea layoutX="13.0" layoutY="442.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
+                <TextArea layoutX="253.0" layoutY="442.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
+                <TextArea layoutX="13.0" layoutY="487.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
+                <TextArea layoutX="253.0" layoutY="487.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
+                <ListView fx:id="taskTypeList" layoutX="14.0" layoutY="367.0" prefHeight="48.0" prefWidth="378.0" />
+                <Text fx:id="setCustState" layoutX="282.0" layoutY="274.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                <Text fx:id="setCustName" layoutX="113.0" layoutY="242.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />
+                <Text fx:id="setCustName" layoutX="113.0" layoutY="243.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                <Text fx:id="setCustAddr" layoutX="113.0" layoutY="258.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                <Text fx:id="setCustCity" layoutX="113.0" layoutY="274.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                <Text fx:id="setCustPOC" layoutX="113.0" layoutY="289.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                <Text fx:id="setCustPhone" layoutX="113.0" layoutY="304.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                <Text fx:id="setCustZip" layoutX="349.0" layoutY="274.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                <Text fx:id="setCustFax" layoutX="276.0" layoutY="304.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+                <Text id="phone" fx:id="setCustCompPhone" layoutX="349.0" layoutY="289.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
               </children>
             </AnchorPane>
           </content>
@@ -153,10 +164,10 @@
                         </FXCollections>
                       </items>
                     </ComboBox>
-                    <Button mnemonicParsing="false" text="Add" />
+                    <Button fx:id="addCustBut" mnemonicParsing="false" onAction="#addCustButAction" text="Add" />
                   </items>
                 </ToolBar>
-                <ListView prefHeight="127.0" prefWidth="432.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="31.0" />
+                <ListView fx:id="custListing" prefHeight="121.0" prefWidth="450.0" AnchorPane.bottomAnchor="-13.0" AnchorPane.leftAnchor="-10.0" AnchorPane.rightAnchor="-8.0" AnchorPane.topAnchor="26.0" />
               </children>
             </AnchorPane>
           </content>
@@ -167,17 +178,17 @@
               <children>
                 <ToolBar layoutX="0.0" layoutY="0.0" prefWidth="432.0">
                   <items>
-                    <Button mnemonicParsing="false" text="Add" />
-                    <Button mnemonicParsing="false" text="Delete" />
+                    <Button fx:id="addVehBut" mnemonicParsing="false" onAction="#addVehEquip" text="Add" />
+                    <Button fx:id="deleteVehBut" mnemonicParsing="false" onAction="#deleteVeh" text="Delete" />
                   </items>
                 </ToolBar>
-                <ListView layoutX="0.0" layoutY="36.0" prefHeight="121.0" prefWidth="176.0" />
-                <ListView layoutX="256.0" layoutY="36.0" prefHeight="120.98828125" prefWidth="176.0" />
+                <ListView fx:id="vehicleEquipSelect" layoutX="0.0" layoutY="37.0" prefHeight="122.0" prefWidth="176.0" />
                 <ImageView fitHeight="31.0" fitWidth="41.33333333333333" layoutX="195.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true">
                   <image>
                     <Image url="@../../../JobCenter/src/jobcenter/exchange.png" />
                   </image>
                 </ImageView>
+                <ListView fx:id="vehicleEquipSelected" layoutX="256.0" layoutY="36.0" prefHeight="123.0" prefWidth="176.0" />
               </children>
             </AnchorPane>
           </content>
@@ -188,12 +199,12 @@
               <children>
                 <ToolBar layoutX="0.0" layoutY="0.0" prefWidth="432.0">
                   <items>
-                    <Button mnemonicParsing="false" text="Add" />
-                    <Button mnemonicParsing="false" text="Delete" />
+                    <Button fx:id="addEmp" mnemonicParsing="false" onAction="#addEmpJob" text="Add" />
+                    <Button fx:id="deleteEmpBut" mnemonicParsing="false" onAction="#deleteEmp" text="Delete" />
                   </items>
                 </ToolBar>
-                <ListView layoutX="0.0" layoutY="36.0" prefHeight="121.0" prefWidth="176.0" />
-                <ListView layoutX="256.0" layoutY="36.0" prefHeight="120.98828125" prefWidth="176.0" />
+                <ListView fx:id="employeeSelect" layoutX="0.0" layoutY="35.0" prefHeight="122.0" prefWidth="176.0" />
+                <ListView fx:id="employeeSelected" layoutX="256.0" layoutY="35.0" prefHeight="122.0" prefWidth="176.0" />
                 <ImageView fitHeight="31.0" fitWidth="41.33333333333333" layoutX="195.0" layoutY="77.0" pickOnBounds="true" preserveRatio="true">
                   <image>
                     <Image url="@../../../JobCenter/src/jobcenter/exchange.png" />
@@ -271,12 +282,12 @@
                     <Button blendMode="SRC_OVER" defaultButton="true" mnemonicParsing="false" text="Delete" underline="true" />
                   </items>
                 </ToolBar>
-                <TableView prefHeight="444.0" prefWidth="335.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="229.0" AnchorPane.topAnchor="31.0">
+                <TableView fx:id="employeeTable" prefHeight="444.0" prefWidth="335.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="229.0" AnchorPane.topAnchor="31.0">
                   <columns>
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="91.0" text="First name" />
-                    <TableColumn prefWidth="75.0" text="Last name" />
-                    <TableColumn prefWidth="75.0" text="Phone" />
-                    <TableColumn prefWidth="75.0" text="Email" />
+                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="91.0" text="First name" fx:id="emp_fname" />
+                    <TableColumn prefWidth="75.0" text="Last name" fx:id="emp_lname" />
+                    <TableColumn prefWidth="75.0" text="Phone" fx:id="emp_phone" />
+                    <TableColumn prefWidth="75.0" text="Email" fx:id="emp_email" />
                   </columns>
                 </TableView>
                 <TextField blendMode="SRC_OVER" layoutX="359.0" layoutY="74.0" prefHeight="33.0" prefWidth="168.0" promptText="First Name" />
@@ -437,9 +448,9 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane blendMode="DIFFERENCE" layoutX="0.0" layoutY="54.0" prefHeight="606.0" prefWidth="204.0" visible="true">
+    <Pane blendMode="DIFFERENCE" layoutX="0.0" layoutY="54.0" prefHeight="606.0" prefWidth="144.0" visible="true">
       <children>
-        <Accordion id="" blendMode="SRC_OVER" cache="false" layoutX="0.0" layoutY="0.0" mouseTransparent="false" opacity="1.0" prefHeight="619.0" visible="true">
+        <Accordion id="" blendMode="SRC_OVER" cache="false" layoutX="0.0" layoutY="0.0" minWidth="176.0" mouseTransparent="false" opacity="1.0" prefHeight="619.0" prefWidth="200.0" visible="true">
           <effect>
             <ColorAdjust />
           </effect>
@@ -448,7 +459,7 @@
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView fx:id="proList" prefHeight="538.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <ListView fx:id="proList" prefHeight="538.0" prefWidth="200.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
                   </children>
                 </AnchorPane>
               </content>
@@ -457,10 +468,9 @@
           <panes>
             <TitledPane id="x4" fx:id="x1" animated="true" cache="false" collapsible="true" font="$x5" prefHeight="562.0" text="Administration">
               <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="549.0" prefWidth="188.0">
                   <children>
-                    <ListView id="adminList" editable="false" prefHeight="530.0" prefWidth="200.0" scaleY="0.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                    <ListView fx:id="adminList" prefHeight="538.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <ListView fx:id="adminList" prefHeight="565.0" prefWidth="223.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
                   </children>
                 </AnchorPane>
               </content>
@@ -469,7 +479,7 @@
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView fx:id="taskList" cache="false" editable="false" prefHeight="538.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <ListView fx:id="taskList" cache="false" editable="false" prefHeight="565.0" prefWidth="223.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
                   </children>
                 </AnchorPane>
               </content>

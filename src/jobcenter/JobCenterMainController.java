@@ -41,10 +41,12 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.util.Callback;
@@ -64,18 +66,38 @@ public class JobCenterMainController implements Initializable, ScreenController 
     ResultSet rs = null;
     private static Connection conn;
     private ScreenPane myScreenPane;
+
     public ListView adminList, taskList, proList, employeeSelect, employeeSelected,
-            vehicleEquipSelect, vehicleEquipSelected, custListing, empAddJobView, vehAddJobView;
+            vehicleEquipSelect, vehicleEquipSelected, custListing, empAddJobView, vehAddJobView,
+            taskTypeList;
     public Pane CreateJobBox, settingsPane, displayJobs, equipVehPane, employeePane, managerPane,
             usersPane, proposalsPane;
     public ToolBar AdminToolBar, FunctionsToolBar, ReportsToolBar, employeeToolbar;
     public TableView usersTable;
-    public TableView<employee> employeeTable = new TableView<employee>();
-    public TableColumn emp_fname, emp_lname, emp_phone, emp_email;
+    public static ObservableList<String> jStatus = FXCollections.observableArrayList(
+            "IN PROGRESS", "COMPLETE", "HOLD-CUSTOMER", "HOLD-WEATHER", "HOLD-OTHER", "PROJECTED", "CANCELLED");
+
+    public static TableView<employee> employeeTable = new TableView<employee>();
+    public static TableView<equipment> equipmentTable = new TableView<equipment>();
+    public static TableColumn emp_fname, emp_lname, emp_phone, emp_email,
+            vehNameIns, typeIns, statusIns;
+
     public Button chgPasswd, addEmp, addVehBut, deleteVehBut, clearJob,
             saveJob, confirmJob, cancelJob, addCustBut, addVehEqToTreeBut, addEmpToTreeBut,
-            displayJobBut;
-    public ComboBox screenList;
+            displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut;
+
+    public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
+            streetAddr, city, state, zip, diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
+            vehNameNew, typeNew, statusNew;
+
+    public static String jobTitleStr, jobNameStr, custJobNumStr, custJobNameStr, startDateStr, startTimeStr,
+            streetAddrStr, cityStr, stateStr, zipStr, custAdd, phone, fax, pocName, pocPhone, status, custUniqueID,
+            billing, cid, jobtypecompiled, empCompiled, equipCompiled, sI, dI, tI, wI;
+
+    public Text setCustPhone, setCustName, setCustCity, setCustState, setCustPOC, setCustCompPhone,
+            setCustFax, setCustAddr, setCustZip;
+
+    public ComboBox screenList, taskComboBox, jobStatus;
     ObservableList<String> admin = FXCollections.observableArrayList(
             "Manager status", "People", "Vehicles", "Create/Delete a JobCenter User", "Settings");
     //ObservableList<String> functions = FXCollections.observableArrayList(
@@ -84,9 +106,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
             "Create new job", "Display jobs");
     ObservableList<String> proposals = FXCollections.observableArrayList(
             "New proposal", "View Current Proposals");
-    List<String> list = new ArrayList<String>();
-    ObservableList<String> options = FXCollections.observableList(list);
-
+    public static List<String> list = new ArrayList<String>();
+    public static ObservableList<String> options = FXCollections.observableList(list),
+            taskListBox = FXCollections.observableList(list),
+            taskTypeListStr = FXCollections.observableList(list);
     List<String> empListSel = new ArrayList<String>(),
             vehList = new ArrayList<String>(),
             custList = new ArrayList<String>(),
@@ -111,6 +134,36 @@ public class JobCenterMainController implements Initializable, ScreenController 
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+        //Note** If you want to manipulate objects within the FXML loaded you need to 
+        // initialize them here to obtain a pointer in memory for dynamic changes.
+
+        /*  emp_fname.setCellValueFactory(new PropertyValueFactory<employee, String>("firstName"));
+         emp_lname.setCellValueFactory(new PropertyValueFactory<employee, String>("lastName"));
+         emp_email.setCellValueFactory(new PropertyValueFactory<employee, String>("email"));
+         emp_phone.setCellValueFactory(new PropertyValueFactory<employee, String>("phone"));
+
+         employeeTable.setItems(populateDB());
+        
+         /*  vehNameIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("veh"));
+         typeIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("type"));
+         statusIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("stat"));
+
+         //display data in table
+         equipmentTable.setItems(populateEquip());*/
+        
+        
+        diamStr.setText("");
+        feetStr.setText("");
+                
+        setCustPhone.setText("");
+        setCustName.setText("");
+        setCustCity.setText("");
+        setCustState.setText("");
+        setCustPOC.setText("");
+        setCustCompPhone.setText("");
+        setCustFax.setText("");
+        setCustAddr.setText("");
+        setCustZip.setText("");
 
         //Connect to database
         databaseConnect();
@@ -166,6 +219,53 @@ public class JobCenterMainController implements Initializable, ScreenController 
          currentJobsDisplay.setRoot(root559);
          }
          });*/
+    }
+
+    public ObservableList<equipment> populateEquip() {
+        ObservableList<equipment> tester2 = FXCollections.observableArrayList();
+
+        //make the connection
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select VehicleName, VehicleType, VehicleStatus from vehicles;");
+
+            while (rs.next()) {
+                tester2.add(new equipment(rs.getString(1), rs.getString(2), rs.getString(3)));
+                //System.out.println(rs.getString(1));
+                //System.out.println(rs.getString(2));
+                //System.out.println(rs.getString(3));
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return tester2;
+    }
+
+    public ObservableList<employee> populateDB() {
+        ObservableList<employee> tester2 = FXCollections.observableArrayList();
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+            st = conn.createStatement();
+            rs = st.executeQuery("select fname, lname, phone, email from employees;");
+
+            while (rs.next()) {
+                tester2.add(new employee(rs.getString(1), rs.getString(2), rs.getString(4), rs.getString(3)));
+                //System.out.println(rs.getString(1));
+                //System.out.println(rs.getString(2));
+                //System.out.println(rs.getString(3));
+                //System.out.println(rs.getString(4));
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return tester2;
     }
 
     //returns the title of all jobs for the root node
@@ -310,7 +410,34 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             String old_val, String new_val) {
                         clearPane();
                         if (new_val == "Create new job") {
+                            taskListBox = FXCollections.observableList(new ArrayList<String>());
+
+                            //make the connection
+                            try {
+                                st = conn.createStatement();
+                                rs = st.executeQuery("select jobName from jobtype;");
+                                while (rs.next()) {
+                                    //System.out.println(rs.getString(1));
+                                    taskListBox.add(rs.getString(1));
+                                }
+
+                            } catch (SQLException ex) {
+                                Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+
+                            ObservableList<String> emp = FXCollections.observableArrayList(empList);
+                            ObservableList<String> vehEquip = FXCollections.observableArrayList(vehList);
+                            ObservableList<String> custListingObs = FXCollections.observableArrayList(custList);
+
+                            //set items on the job form
+                            employeeSelect.setItems(emp);
+                            vehicleEquipSelect.setItems(vehEquip);
+                            custListing.setItems(custListingObs);
+
                             CreateJobBox.setVisible(true);
+                            taskComboBox.setItems(taskListBox);
+                            CreateJobBox.setVisible(true);
+                            jobStatus.setItems(jStatus);
                         }
                         if (new_val == "Display jobs") {
                             displayJobs.setVisible(true);
@@ -826,5 +953,182 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     }
 
-    
+    @FXML
+    private void deleteEquipAction(ActionEvent event) throws IOException, SQLException {
+        String vnamestr = equipmentTable.getSelectionModel().selectedItemProperty().getValue().getVeh();
+        String queryDelete = "DELETE FROM vehicles WHERE VehicleName = '" + vnamestr + "'";
+        //System.out.println(queryDelete);
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryDelete);
+            equipmentTable.setItems(populateEquip());
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    private void addEquipAction(ActionEvent event) throws IOException, SQLException {
+
+        String queryRunNow = "insert into vehicles (VehicleName, VehicleType,VehicleStatus) "
+                + " values('" + vehNameNew.getText() + "','" + typeNew.getText() + "','"
+                + statusNew.getText() + "');";
+
+        //insert into database
+        Statement updateDb = null;
+        //System.out.println("Add EQUIP: " + queryRunNow);
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+
+            //set our session id and ip address in order to identify user
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryRunNow);
+            equipmentTable.setItems(populateEquip());
+
+            //show the complete box dialog
+            Label label2;
+            label2 = new Label("Equipment Added");
+            HBox hb2 = new HBox();
+            Group root = new Group();
+
+            Button closeWindow = new Button("Close");
+            hb2.getChildren().addAll(label2, closeWindow);
+            hb2.setSpacing(10);
+            hb2.setLayoutX(25);
+            hb2.setLayoutY(48);
+            root.getChildren().add(hb2);
+
+            final Scene scene2 = new Scene(root);
+            final Stage stage2 = new Stage();
+
+            stage2.close();
+            stage2.setScene(scene2);
+            stage2.setHeight(150);
+            stage2.setWidth(310);
+            stage2.setResizable(false);
+            stage2.show();
+
+            closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    stage2.close();
+                }
+            });
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    @FXML
+    private void addTaskList(ActionEvent event) {
+        String itemChosen = taskComboBox.getValue().toString();
+        itemChosen += "," + diamStr.getText() + ",";
+        itemChosen += feetStr.getText();
+
+        //System.out.println(itemChosen);
+        taskTypeListStr.add(itemChosen);
+        taskTypeList.setItems(taskTypeListStr);
+
+    }
+
+    @FXML
+    private void addEmpJob(ActionEvent event) throws SQLException {
+        String val = employeeSelect.getSelectionModel().selectedItemProperty().getValue().toString();
+        //System.out.println(val);
+
+        if (!empListSel.contains(val)) {
+            empListSel.add(val);
+        }
+        empSelect = FXCollections.observableArrayList(empListSel);
+        employeeSelected.setItems(empSelect);
+    }
+
+    @FXML
+    private void deleteEmp(ActionEvent event) throws SQLException {
+        String del = employeeSelected.getSelectionModel().selectedItemProperty().getValue().toString();
+        //System.out.println("delete: " + del);
+        for (int i = 0; i < empListSel.size(); i++) {
+            if (empListSel.get(i).toString().equals(del)) {
+                empListSel.remove(i);
+            }
+        }
+        empSelect = FXCollections.observableArrayList(empListSel);
+        employeeSelected.setItems(empSelect);
+
+    }
+
+    @FXML
+    private void addVehEquip(ActionEvent event) throws SQLException {
+        String val = vehicleEquipSelect.getSelectionModel().selectedItemProperty().getValue().toString();
+        //System.out.println(val);
+
+        if (!vehList.contains(val)) {
+            vehList.add(val);
+        }
+        vehList11 = FXCollections.observableArrayList(vehList);
+        vehicleEquipSelected.setItems(vehList11);
+    }
+
+    @FXML
+    private void deleteVeh(ActionEvent event) throws SQLException {
+        String del = vehicleEquipSelected.getSelectionModel().selectedItemProperty().getValue().toString();
+        //System.out.println("delete: " + del);
+        for (int i = 0; i < vehList.size(); i++) {
+            if (vehList.get(i).toString().equals(del)) {
+                vehList.remove(i);
+            }
+        }
+        vehList11 = FXCollections.observableArrayList(vehList);
+        vehicleEquipSelected.setItems(vehList11);
+    }
+
+    @FXML
+    private void addCustButAction(ActionEvent event) throws SQLException {
+        custAdd = custListing.getSelectionModel().selectedItemProperty().getValue().toString();
+
+        st = conn.createStatement();
+        String qry = "select * from customer where CompanyName ='" + custAdd.trim() + "';";
+        //System.out.println("qry: " + qry);
+
+        rs = st.executeQuery(qry);
+        while (rs.next()) {
+            cid = rs.getString(1);
+            streetAddrStr = rs.getString(4);
+            cityStr = rs.getString(5);
+            stateStr = rs.getString(6);
+            zipStr = rs.getString(7);
+            phone = rs.getString(8);
+            fax = rs.getString(9);
+            pocName = rs.getString(14);
+            pocPhone = rs.getString(15);
+            custList.add(rs.getString(1));
+        }
+
+        setCustPhone.setText(phone);
+        setCustName.setText(custAdd.trim());
+        setCustCity.setText(cityStr);
+        setCustState.setText(stateStr);
+        setCustPOC.setText(pocPhone);
+        setCustCompPhone.setText(phone);
+        setCustFax.setText(fax);
+        setCustAddr.setText(streetAddrStr);
+        setCustZip.setText(zipStr);
+    }
+
 }
