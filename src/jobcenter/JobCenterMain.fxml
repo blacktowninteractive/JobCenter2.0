@@ -56,9 +56,15 @@
     <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" layoutX="201.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="629.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1161.0" y="-1.0" />
-        <ToolBar blendMode="SRC_OVER" layoutX="3.0" layoutY="1.0" prefHeight="39.0" prefWidth="1276.0">
+        <ToolBar fx:id="createJobToolbar" blendMode="SRC_OVER" layoutX="3.0" layoutY="1.0" prefHeight="39.0" prefWidth="1276.0" visible="true">
           <items>
-            <Button blendMode="SRC_OVER" cache="true" cacheHint="QUALITY" cancelButton="false" defaultButton="true" mnemonicParsing="false" prefHeight="21.0" text="Create job" />
+            <Button id="saveChangesBut" fx:id="saveJob" blendMode="SRC_OVER" cache="true" cacheHint="QUALITY" cancelButton="false" defaultButton="true" mnemonicParsing="false" onAction="#saveJobDb" prefHeight="21.0" text="Save" />
+            <Button fx:id="clearJob" defaultButton="true" mnemonicParsing="false" onAction="#clearJobEntries" text="Clear Form" />
+          </items>
+        </ToolBar>
+        <ToolBar fx:id="editJobToolbar" blendMode="SRC_OVER" layoutX="3.0" layoutY="1.0" prefHeight="39.0" prefWidth="1276.0" visible="false">
+          <items>
+            <Button id="saveChangesBut" blendMode="SRC_OVER" cache="true" cacheHint="QUALITY" cancelButton="false" defaultButton="true" mnemonicParsing="false" onAction="#saveJobDb" prefHeight="21.0" text="Save Changes" />
           </items>
         </ToolBar>
         <TitledPane alignment="TOP_LEFT" animated="false" blendMode="SRC_OVER" collapsible="false" layoutX="11.0" layoutY="52.0" prefHeight="549.0" prefWidth="539.0" text="Create new job">
@@ -125,15 +131,15 @@
                 <TextField fx:id="diamStr" layoutX="158.0" layoutY="334.0" prefWidth="57.046875" />
                 <TextField fx:id="feetStr" layoutX="220.0" layoutY="334.0" prefWidth="57.9998779296875" />
                 <Button fx:id="addTask" layoutX="288.0" layoutY="335.0" mnemonicParsing="false" onAction="#addTaskList" text="Add" />
-                <Button layoutX="337.0" layoutY="335.0" mnemonicParsing="false" text="Delete" />
+                <Button fx:id="delTask" layoutX="337.0" layoutY="335.0" mnemonicParsing="false" onAction="#delTaskList" text="Delete" />
                 <Text font="$x5" layoutX="251.0" layoutY="436.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (disposal)" underline="false" />
                 <Text font="$x5" layoutX="13.0" layoutY="481.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (traffic control)" underline="false" />
                 <Text font="$x5" layoutX="253.0" layoutY="484.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Instructions (water source)" underline="false" />
                 <Text font="$x5" layoutX="12.0" layoutY="436.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Special Instructions" underline="false" />
-                <TextArea layoutX="13.0" layoutY="442.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
-                <TextArea layoutX="253.0" layoutY="442.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
-                <TextArea layoutX="13.0" layoutY="487.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
-                <TextArea layoutX="253.0" layoutY="487.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
+                <TextArea fx:id="sInstr" layoutX="13.0" layoutY="442.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
+                <TextArea fx:id="dInstr" layoutX="253.0" layoutY="442.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
+                <TextArea fx:id="tInstr" layoutX="13.0" layoutY="487.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
+                <TextArea fx:id="wInstr" layoutX="253.0" layoutY="487.0" prefHeight="24.0" prefWidth="200.0" wrapText="true" />
                 <ListView fx:id="taskTypeList" layoutX="14.0" layoutY="367.0" prefHeight="48.0" prefWidth="378.0" />
                 <Text fx:id="setCustState" layoutX="282.0" layoutY="274.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
                 <Text fx:id="setCustName" layoutX="113.0" layoutY="242.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" />

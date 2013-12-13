@@ -80,6 +80,8 @@ public class JobCenterController implements Initializable, ScreenController {
     private void handleButtonAction(ActionEvent event) throws SQLException, InstantiationException, IllegalAccessException, NoSuchAlgorithmException, FileNotFoundException, UnsupportedEncodingException, UnknownHostException {
         user = usernameStr.getText();
         pass = passwd.getText();
+        String uid = "";
+        
         //for secure password
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.reset();
@@ -139,6 +141,18 @@ public class JobCenterController implements Initializable, ScreenController {
                         authorized = true;
                     }
                 }
+                
+                	qry = "select uid_employees from users where userName = '" + user + "';";
+                System.out.println(qry);
+                rs = st.executeQuery(qry);
+
+                while (rs.next()) {
+                    //System.out.println(rs.getString(1));
+                    //check to see if password matches
+                    uid = rs.getString(1);
+                    }
+                
+            
             }
         }
 
@@ -146,7 +160,7 @@ public class JobCenterController implements Initializable, ScreenController {
             Statement updateDb = null;
             updateDb = conn.createStatement();
 
-            String insertSess = "insert into session (userName, ipAddr) values ('" + user + "','" + ipAddr + "');";
+            String insertSess = "insert into session (userName, ipAddr, employees_uid) values ('" + user + "','" + ipAddr + "',"+ uid+");";
             System.out.println(insertSess);
 
             //set our session id and ip address in order to identify user.

@@ -5,7 +5,9 @@
 package jobcenter;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -23,10 +25,13 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.event.EventType;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -34,8 +39,10 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
@@ -59,13 +66,15 @@ import javafx.util.Callback;
 public class JobCenterMainController implements Initializable, ScreenController {
 
     //database connection info
-    private static String url = "jdbc:mysql://localhost/jobcenter";
-    private static String userdb = "vangfc";//Username of database  
-    private static String passdb = "password";//Password of database
+    public static String url = "jdbc:mysql://localhost/jobcenter";
+    public static String userdb = "vangfc";//Username of database  
+    public static String passdb = "password";//Password of database
     Statement st = null;
     ResultSet rs = null;
-    private static Connection conn;
-    private ScreenPane myScreenPane;
+    public static Connection conn;
+    public ScreenPane myScreenPane;
+
+    public RadioButton prodChk, hourChk;
 
     public ListView adminList, taskList, proList, employeeSelect, employeeSelected,
             vehicleEquipSelect, vehicleEquipSelected, custListing, empAddJobView, vehAddJobView,
@@ -87,8 +96,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
-            streetAddr, city, state, zip, diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
-            vehNameNew, typeNew, statusNew;
+            diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
+            vehNameNew, typeNew, statusNew, streetAddr, city, state, zip;
 
     public static String jobTitleStr, jobNameStr, custJobNumStr, custJobNameStr, startDateStr, startTimeStr,
             streetAddrStr, cityStr, stateStr, zipStr, custAdd, phone, fax, pocName, pocPhone, status, custUniqueID,
@@ -110,7 +119,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public static ObservableList<String> options = FXCollections.observableList(list),
             taskListBox = FXCollections.observableList(list),
             taskTypeListStr = FXCollections.observableList(list);
-    List<String> empListSel = new ArrayList<String>(),
+    public static List<String> empListSel = new ArrayList<String>(),
             vehList = new ArrayList<String>(),
             custList = new ArrayList<String>(),
             jobTypePicked = new ArrayList<String>(),
@@ -124,6 +133,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
             jCustField = new TextField(),
             jNameField = new TextField(),
             jStartField = new TextField();
+
+    public TextArea sInstr, tInstr, dInstr, wInstr;
+
+    public int empID;
 
     TreeItem<String> root559;
     @FXML
@@ -150,11 +163,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
          //display data in table
          equipmentTable.setItems(populateEquip());*/
-        
-        
+        prodChk.setSelected(false);
+        hourChk.setSelected(false);
+
+        sInstr.setText("");
+        dInstr.setText("");
+        tInstr.setText("");
+        wInstr.setText("");
+
         diamStr.setText("");
         feetStr.setText("");
-                
+
         setCustPhone.setText("");
         setCustName.setText("");
         setCustCity.setText("");
@@ -164,9 +183,51 @@ public class JobCenterMainController implements Initializable, ScreenController 
         setCustFax.setText("");
         setCustAddr.setText("");
         setCustZip.setText("");
-
+        streetAddr.setText("");
+        city.setText("");
+        state.setText("");
+        zip.setText("");
+        status = "";
+        
+       /* try {
+            empID = getEmpId();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+*/
         //Connect to database
         databaseConnect();
+    }
+
+    public int getEmpId() throws UnknownHostException {
+
+        String myIp = getMyIp(),
+                qryRun = "select employees_uid from session where ipAddr = " + myIp,
+                uidRet="";
+        
+        //make the connection
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery(qryRun);
+
+            while (rs.next()) {
+                uidRet = rs.getString(1); 
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        if(Integer.parseInt(uidRet)>=0)
+            return Integer.parseInt(uidRet);
+        else
+            return -1;
+    }
+
+    private String getMyIp() throws UnknownHostException {
+        //unique identifier for different computers
+        InetAddress IP = InetAddress.getLocalHost();
+        String ipAddr = IP.getHostAddress();
+        return ipAddr;
     }
 
     public void refreshList() {
@@ -1129,6 +1190,192 @@ public class JobCenterMainController implements Initializable, ScreenController 
         setCustFax.setText(fax);
         setCustAddr.setText(streetAddrStr);
         setCustZip.setText(zipStr);
+    }
+
+    @FXML
+    private void delTaskList(ActionEvent event) {
+        String del = taskTypeList.getSelectionModel().selectedItemProperty().getValue().toString();
+        //System.out.println("delete: " + del);
+        for (int i = 0; i < taskTypeListStr.size(); i++) {
+            if (taskTypeListStr.get(i).toString().equals(del)) {
+                taskTypeListStr.remove(i);
+            }
+        }
+        taskTypeList.setItems(taskTypeListStr);
+    }
+
+    @FXML
+    private void saveJobDb(ActionEvent event) throws SQLException, IOException {
+
+        jobTitleStr = jobTitle.getText();
+        jobNameStr = jobName.getText();
+        custJobNumStr = custJobNum.getText();
+        custJobNameStr = custJobName.getText();
+        startDateStr = startDate.getText();
+        startTimeStr = startTime.getText();
+
+        jobtypecompiled = "";
+        empCompiled = "";
+        equipCompiled = "";
+
+        //compile job types 
+        for (int i = 0; i < taskTypeListStr.size(); i++) {
+            jobtypecompiled += "/" + taskTypeListStr.get(i);
+        }
+
+        //compile employees  
+        for (int j = 0; j < empListSel.size(); j++) {
+            empCompiled += "/" + empListSel.get(j);
+        }
+
+        //compile equipment  
+        for (int k = 0; k < vehList.size(); k++) {
+            equipCompiled += "/" + vehList.get(k);
+        }
+
+        //System.out.println("CID: " + cid);
+        //System.out.println("Job name: " + jobNameStr);
+        //System.out.println("Cust job #: " + custJobNumStr);
+        //System.out.println("Cust job name: " + custJobNameStr);
+        //System.out.println("start date: " + startDateStr);
+        //System.out.println("start time: " + startTimeStr);
+        //System.out.println("street: " + streetAddr.getText());
+        //System.out.println("city: " + city.getText());
+        //System.out.println("state: " + state.getText());
+        //System.out.println("zip: " + zip.getText());
+        if (prodChk.isSelected()) {
+            billing = "Production Payment";
+        }
+        if (hourChk.isSelected()) {
+            billing = "Hourly Payment";
+        }
+
+        sI = sInstr.getText();
+        dI = dInstr.getText();
+        tI = tInstr.getText();
+        wI = wInstr.getText();
+        status = jobStatus.getSelectionModel().selectedItemProperty().getValue().toString();
+
+        System.out.println("job type");
+        for (int i = 0; i < jobTypePicked.size(); i++) {
+            System.out.print(jobTypePicked.get(i));
+            System.out.print(",");
+        }
+
+        System.out.println("equipment");
+        for (int i = 0; i < vehList.size(); i++) {
+            System.out.print(vehList.get(i));
+            System.out.print(",");
+        }
+
+        System.out.println("employees");
+        for (int i = 0; i < empListSel.size(); i++) {
+            System.out.println(empListSel.get(i));
+            System.out.print(",");
+        }
+        System.out.println("CID: " + cid);
+        String qry = "INSERT INTO currentjobs (CurJobID, Customer_CID, "
+                + "CustJobNum, CustJobName, JobTitle, JobName, JobWorkDate, "
+                + "JobStartTime, JobType, JobEmployees, JobEandV, S_Instr, "
+                + "D_Instr, T_Instr, W_Instr, billing,status, jobSiteAddr,"
+                + "jobCitySite, jobStateLoc, jobZipLoc,employeeID) "
+                + "VALUES (NULL, '" + cid + "', '" + custJobNumStr + "', '" + custJobNameStr + "', '" + jobTitleStr
+                + "', '" + jobNameStr + "', '" + startDateStr + "', '" + startTimeStr + "', '" + jobtypecompiled
+                + "','" + empCompiled + "', '" + equipCompiled + "', '" + sI + "', '" + dI + "'"
+                + ", '" + tI + "', '" + wI + "', '" + billing + "','" + status + "','" + streetAddr + "','"
+                + city + "','" + state + "','" + zip + "','" + empID + "');";
+
+        System.out.println("qry: " + qry);
+
+        //delete all entries associated with IP before exiting to the login screen
+        Statement updateDb = null;
+        updateDb = conn.createStatement();
+
+        //set our session id and ip address in order to identify user.
+        int executeUpdate = updateDb.executeUpdate(qry);
+
+        if (executeUpdate > 0) {
+            System.out.println("Database updated...");
+            //show the complete box dialog
+            Label label2;
+            label2 = new Label("Job Successfully Added.");
+            HBox hb2 = new HBox();
+            Group root = new Group();
+
+
+            Button closeWindow = new Button("Close");
+            hb2.getChildren().addAll(label2, closeWindow);
+            hb2.setSpacing(10);
+            hb2.setLayoutX(25);
+            hb2.setLayoutY(48);
+            root.getChildren().add(hb2);
+
+            final Scene scene2 = new Scene(root);
+            final Stage stage2 = new Stage();
+
+            stage2.close();
+            stage2.setScene(scene2);
+            stage2.setHeight(150);
+            stage2.setWidth(310);
+            stage2.setResizable(false);
+            stage2.show();
+
+            closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    stage2.close();
+                }
+            });
+            
+        }
+
+    }
+
+    @FXML
+    private void clearJobEntries(ActionEvent event) throws SQLException {
+        vehList.clear();
+        vehList11 = FXCollections.observableArrayList(vehList);
+        vehicleEquipSelected.setItems(vehList11);
+
+        empListSel.clear();
+        empSelect = FXCollections.observableArrayList(empListSel);
+        employeeSelected.setItems(empSelect);
+
+        jobTitle.setText("");
+        jobName.setText("");
+        custJobNum.setText("");
+        custJobName.setText("");
+        jobName.setText("");
+        custJobNum.setText("");
+
+        streetAddr.setText("");
+        city.setText("");
+        state.setText("");
+        zip.setText("");
+        startDate.setText("");
+        startTime.setText("");
+
+        setCustPhone.setText("");
+        setCustName.setText("");
+        setCustCity.setText("");
+        setCustState.setText("");
+        setCustPOC.setText("");
+        setCustCompPhone.setText("");
+        setCustFax.setText("");
+        setCustAddr.setText("");
+        setCustZip.setText("");
+
+        feetStr.setText("");
+        diamStr.setText("");
+
+        sInstr.setText("");
+        dInstr.setText("");
+        tInstr.setText("");
+        wInstr.setText("");
+
+        taskTypeListStr.clear();
+        taskTypeList.setItems(taskTypeListStr);
+
     }
 
 }
