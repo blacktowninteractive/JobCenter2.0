@@ -100,7 +100,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public Pane CreateJobBox, settingsPane, displayJobs, equipVehPane, employeePane, managerPane,
             usersPane, proposalsPane;
     public ToolBar AdminToolBar, FunctionsToolBar, ReportsToolBar, employeeToolbar;
-    public TableView<users> usersTable = new TableView<users>();
+    public TableView usersTable;
     public static ObservableList<String> jStatus = FXCollections.observableArrayList(
             "IN PROGRESS", "COMPLETE", "HOLD-CUSTOMER", "HOLD-WEATHER", "HOLD-OTHER", "PROJECTED", "CANCELLED");
 
@@ -112,7 +112,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public Button chgPasswd, addEmp, addVehBut, deleteVehBut, clearJob,
             saveJob, confirmJob, cancelJob, addCustBut, addVehEqToTreeBut, addEmpToTreeBut,
             displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut,
-            saveChangesBut, previewJob, printSummaryBut, addNewUsr;
+            saveChangesBut, previewJob, printSummaryBut, addNewUsr,
+            addEmployeeBut;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
@@ -178,18 +179,15 @@ public class JobCenterMainController implements Initializable, ScreenController 
         emp_lname.setCellValueFactory(new PropertyValueFactory<employee, String>("lastName"));
         emp_email.setCellValueFactory(new PropertyValueFactory<employee, String>("email"));
         emp_phone.setCellValueFactory(new PropertyValueFactory<employee, String>("phone"));
+
         employeeTable.setItems(populateDB());
 
         vehNameIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("veh"));
         typeIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("type"));
         statusIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("stat"));
-        equipmentTable.setItems(populateEquip());
 
-        usrFName.setCellValueFactory(new PropertyValueFactory<users, String>("firstName"));
-        usrLName.setCellValueFactory(new PropertyValueFactory<users, String>("lastName"));
-        usrUName.setCellValueFactory(new PropertyValueFactory<users, String>("userName"));
-        usrPwd.setCellValueFactory(new PropertyValueFactory<users, String>("password"));
-        usersTable.setItems(populateUsers());
+        //display data in table
+        equipmentTable.setItems(populateEquip());
 
         prodChk.setSelected(false);
         hourChk.setSelected(false);
@@ -370,52 +368,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
          currentJobsDisplay.setRoot(root559);
          }
          });*/
-    }
-
-    private ObservableList<users> populateUsers() {
-      
-      ObservableList<users> tester21 = FXCollections.observableArrayList();
-        
-        //make the connection
-        try {
-            st = conn.createStatement();
-            String qry5 = "SELECT userName,PASSWORD,employees_uid AS eID, "
-                    + "(SELECT fname FROM employees WHERE uid = eID), "
-                    + "(SELECT lname FROM employees WHERE uid = eID) "
-                    + " from users";
-
-            rs = st.executeQuery(qry5);
-
-            while (rs.next()) { 
-
-            tester21.add(new users(rs.getString(4), rs.getString(5), rs.getString(1), rs.getString(2)));
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
-            }
-            
-
-        } catch (SQLException ex) {
-            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-           System.out.println(tester21.get(0).getFirstName());
-        System.out.println(tester21.get(0).getLastName());
-        System.out.println(tester21.get(0).getUsername());
-        System.out.println(tester21.get(0).getPwd());
-        
-        
-        
-        System.out.println(tester21.get(1).getFirstName());
-        System.out.println(tester21.get(1).getLastName());
-        System.out.println(tester21.get(1).getUsername());
-        System.out.println(tester21.get(1).getPwd());
-        
-        
-        return tester21;
- 
     }
 
     public ObservableList<equipment> populateEquip() {
@@ -1066,7 +1018,34 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     System.out.println("Name Exists!!");
                     //popup explain to user that this selection is invalid
                     //show the complete box dialog
-                    displayMsg("Veh/equip already exists.");
+                    Label label2;
+                    label2 = new Label("veh/equip already exists.");
+                    HBox hb2 = new HBox();
+                    Group root = new Group();
+
+                    Button closeWindow = new Button("Close");
+                    hb2.getChildren().addAll(label2, closeWindow);
+                    hb2.setSpacing(10);
+                    hb2.setLayoutX(25);
+                    hb2.setLayoutY(48);
+                    root.getChildren().add(hb2);
+
+                    final Scene scene2 = new Scene(root);
+                    final Stage stage2 = new Stage();
+
+                    stage2.close();
+                    stage2.setScene(scene2);
+                    stage2.setHeight(150);
+                    stage2.setWidth(310);
+                    stage2.setResizable(false);
+                    stage2.show();
+
+                    closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent t) {
+                            stage2.close();
+                        }
+                    });
                 } else {
                     System.out.println("Name not found, adding to job!!");
                     vehList += "/" + vehStrConv;
@@ -1085,7 +1064,34 @@ public class JobCenterMainController implements Initializable, ScreenController 
             } else {
                 //popup explain to user that this selection is invalid
                 //show the complete box dialog
-                displayMsg("Invalid Selection");
+                Label label2;
+                label2 = new Label("Invalid Selection");
+                HBox hb2 = new HBox();
+                Group root = new Group();
+
+                Button closeWindow = new Button("Close");
+                hb2.getChildren().addAll(label2, closeWindow);
+                hb2.setSpacing(10);
+                hb2.setLayoutX(25);
+                hb2.setLayoutY(48);
+                root.getChildren().add(hb2);
+
+                final Scene scene2 = new Scene(root);
+                final Stage stage2 = new Stage();
+
+                stage2.close();
+                stage2.setScene(scene2);
+                stage2.setHeight(150);
+                stage2.setWidth(310);
+                stage2.setResizable(false);
+                stage2.show();
+
+                closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent t) {
+                        stage2.close();
+                    }
+                });
 
             }
 
@@ -1131,8 +1137,34 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     System.out.println("Name Exists!!");
                     //popup explain to user that this selection is invalid
                     //show the complete box dialog
-                    displayMsg("Employee already exists.");
+                    Label label2;
+                    label2 = new Label("Employee already exists.");
+                    HBox hb2 = new HBox();
+                    Group root = new Group();
 
+                    Button closeWindow = new Button("Close");
+                    hb2.getChildren().addAll(label2, closeWindow);
+                    hb2.setSpacing(10);
+                    hb2.setLayoutX(25);
+                    hb2.setLayoutY(48);
+                    root.getChildren().add(hb2);
+
+                    final Scene scene2 = new Scene(root);
+                    final Stage stage2 = new Stage();
+
+                    stage2.close();
+                    stage2.setScene(scene2);
+                    stage2.setHeight(150);
+                    stage2.setWidth(310);
+                    stage2.setResizable(false);
+                    stage2.show();
+
+                    closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent t) {
+                            stage2.close();
+                        }
+                    });
                 } else {
                     System.out.println("Name not found, adding to job!!");
                     empList += "/" + empStrConv;
@@ -1154,7 +1186,35 @@ public class JobCenterMainController implements Initializable, ScreenController 
             } else {
                 //popup explain to user that this selection is invalid
                 //show the complete box dialog
-                displayMsg("Invalid Selection");
+                Label label2;
+                label2 = new Label("Invalid Selection");
+                HBox hb2 = new HBox();
+                Group root = new Group();
+
+                Button closeWindow = new Button("Close");
+                hb2.getChildren().addAll(label2, closeWindow);
+                hb2.setSpacing(10);
+                hb2.setLayoutX(25);
+                hb2.setLayoutY(48);
+                root.getChildren().add(hb2);
+
+                final Scene scene2 = new Scene(root);
+                final Stage stage2 = new Stage();
+
+                stage2.close();
+                stage2.setScene(scene2);
+                stage2.setHeight(150);
+                stage2.setWidth(310);
+                stage2.setResizable(false);
+                stage2.show();
+
+                closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent t) {
+                        stage2.close();
+                    }
+                });
+
             }
 
         } catch (SQLException ex) {
@@ -1699,7 +1759,35 @@ public class JobCenterMainController implements Initializable, ScreenController 
             int executeUpdate = updateDb.executeUpdate(queryRunNow);
             equipmentTable.setItems(populateEquip());
 
-            displayMsg("Equipment Added");
+            //show the complete box dialog
+            Label label2;
+            label2 = new Label("Equipment Added");
+            HBox hb2 = new HBox();
+            Group root = new Group();
+
+            Button closeWindow = new Button("Close");
+            hb2.getChildren().addAll(label2, closeWindow);
+            hb2.setSpacing(10);
+            hb2.setLayoutX(25);
+            hb2.setLayoutY(48);
+            root.getChildren().add(hb2);
+
+            final Scene scene2 = new Scene(root);
+            final Stage stage2 = new Stage();
+
+            stage2.close();
+            stage2.setScene(scene2);
+            stage2.setHeight(150);
+            stage2.setWidth(310);
+            stage2.setResizable(false);
+            stage2.show();
+
+            closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    stage2.close();
+                }
+            });
 
         } catch (SQLException ex) {
             Logger.getLogger(JobCenterController.class
@@ -1912,8 +2000,36 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         if (executeUpdate > 0) {
             System.out.println("Database updated...");
+            //show the complete box dialog
+            Label label2;
+            label2 = new Label("Job Successfully Added.");
+            HBox hb2 = new HBox();
+            Group root = new Group();
 
-            displayMsg("Job Successfully Added.");
+            Button closeWindow = new Button("Close");
+            hb2.getChildren().addAll(label2, closeWindow);
+            hb2.setSpacing(10);
+            hb2.setLayoutX(25);
+            hb2.setLayoutY(48);
+            root.getChildren().add(hb2);
+
+            final Scene scene2 = new Scene(root);
+            final Stage stage2 = new Stage();
+
+            stage2.close();
+            stage2.setScene(scene2);
+            stage2.setHeight(150);
+            stage2.setWidth(310);
+            stage2.setResizable(false);
+            stage2.show();
+
+            closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    stage2.close();
+                }
+            });
+
         }
 
     }
@@ -2297,7 +2413,35 @@ public class JobCenterMainController implements Initializable, ScreenController 
         int executeUpdate = updateDb.executeUpdate(qry);
 
         //show popup that changes are made
-        displayMsg("Job Updated/Saved to Database.");
+        Label label2;
+        label2 = new Label("Job Updated/Saved to Database.");
+        HBox hb2 = new HBox();
+        Group root = new Group();
+
+        Button closeWindow = new Button("Close");
+        hb2.getChildren().addAll(label2, closeWindow);
+        hb2.setSpacing(10);
+        hb2.setLayoutX(25);
+        hb2.setLayoutY(48);
+        root.getChildren().add(hb2);
+
+        final Scene scene2 = new Scene(root);
+        final Stage stage2 = new Stage();
+
+        stage2.close();
+        stage2.setScene(scene2);
+        stage2.setHeight(150);
+        stage2.setWidth(310);
+        stage2.setResizable(false);
+        stage2.show();
+
+        closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                stage2.close();
+            }
+        });
+
     }
 
     @FXML
@@ -2366,4 +2510,96 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     }
 
+    @FXML
+    private void addEmployeeAction(ActionEvent event)
+            throws IOException, SQLException {
+        String queryRun = "insert into employees (fname, lname,address,phone,email) "
+                + "values('" + fNameStrIns.getText() + "','" + lNameStrIns.getText() + "','"
+                + "null','" + phoneStrIns.getText() + "','" + emailStrIns.getText() + "')";
+
+        //insert into database
+        Statement updateDb = null;
+        //System.out.println(queryRun);
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+
+            //set our session id and ip address in order to identify user
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryRun);
+            employeeTable.setItems(populateDB());
+
+            //show the complete box dialog
+            Label label2;
+            label2 = new Label("Employee Added");
+            HBox hb2 = new HBox();
+            Group root = new Group();
+
+            Button closeWindow = new Button("Close");
+            hb2.getChildren().addAll(label2, closeWindow);
+            hb2.setSpacing(10);
+            hb2.setLayoutX(25);
+            hb2.setLayoutY(48);
+            root.getChildren().add(hb2);
+
+            final Scene scene2 = new Scene(root);
+            final Stage stage2 = new Stage();
+
+            stage2.close();
+            stage2.setScene(scene2);
+            stage2.setHeight(150);
+            stage2.setWidth(310);
+            stage2.setResizable(false);
+            stage2.show();
+
+            closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    stage2.close();
+                }
+            });
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+        fNameStrIns.setText("");
+        lNameStrIns.setText("");
+        phoneStrIns.setText("");
+        emailStrIns.setText("");
+
+    }
+    
+    
+     @FXML
+    private void deleteEmpAction(ActionEvent event) throws IOException, SQLException {
+        String emailToDelete = employeeTable.getSelectionModel().selectedItemProperty().getValue().getEmail();
+        String queryDelete = "DELETE FROM employees WHERE email = '" + emailToDelete + "'";
+        //System.out.println(queryDelete);
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryDelete);
+            employeeTable.setItems(populateDB());
+
+
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
 }

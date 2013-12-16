@@ -277,7 +277,7 @@
         </ToolBar>
       </children>
     </Pane>
-    <Pane fx:id="employeePane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
+    <Pane fx:id="employeePane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="635.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" collapsible="false" font="$x5" layoutX="14.0" layoutY="14.0" minWidth="568.0" prefHeight="501.0" prefWidth="568.0" text="Employees">
@@ -286,7 +286,7 @@
               <children>
                 <ToolBar layoutX="0.0" layoutY="-2.0" prefHeight="33.0" prefWidth="621.0">
                   <items>
-                    <Button blendMode="SRC_OVER" defaultButton="true" mnemonicParsing="false" text="Delete" underline="true" />
+                    <Button blendMode="SRC_OVER" defaultButton="true" mnemonicParsing="false" onAction="#deleteEmpAction" text="Delete" underline="true" />
                   </items>
                 </ToolBar>
                 <TableView fx:id="employeeTable" prefHeight="444.0" prefWidth="335.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="229.0" AnchorPane.topAnchor="31.0">
@@ -297,12 +297,12 @@
                     <TableColumn prefWidth="75.0" text="Email" fx:id="emp_email" />
                   </columns>
                 </TableView>
-                <TextField blendMode="SRC_OVER" layoutX="359.0" layoutY="74.0" prefHeight="33.0" prefWidth="168.0" promptText="First Name" />
+                <TextField fx:id="fNameStrIns" blendMode="SRC_OVER" layoutX="359.0" layoutY="74.0" prefHeight="33.0" prefWidth="168.0" promptText="First Name" />
                 <Text font="$x5" layoutX="359.0" layoutY="58.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Add new equipment/vehicle" />
-                <TextField blendMode="SRC_OVER" layoutX="359.0" layoutY="114.0" prefHeight="33.0" prefWidth="168.0" promptText="Last Name" />
-                <TextField blendMode="SRC_OVER" layoutX="359.0" layoutY="154.0" prefHeight="33.0" prefWidth="168.0" promptText="Phone" />
-                <Button blendMode="SRC_OVER" defaultButton="true" layoutX="359.0" layoutY="238.0" mnemonicParsing="false" text="Add" underline="true" />
-                <TextField blendMode="SRC_OVER" layoutX="359.0" layoutY="194.0" prefHeight="33.0" prefWidth="168.0" promptText="Email" />
+                <TextField fx:id="lNameStrIns" blendMode="SRC_OVER" layoutX="359.0" layoutY="114.0" prefHeight="33.0" prefWidth="168.0" promptText="Last Name" />
+                <TextField fx:id="phoneStrIns" blendMode="SRC_OVER" layoutX="359.0" layoutY="154.0" prefHeight="33.0" prefWidth="168.0" promptText="Phone" />
+                <Button fx:id="addEmployeeBut" blendMode="SRC_OVER" defaultButton="true" layoutX="359.0" layoutY="238.0" mnemonicParsing="false" onAction="#addEmployeeAction" text="Add" underline="true" />
+                <TextField fx:id="emailStrIns" blendMode="SRC_OVER" layoutX="359.0" layoutY="194.0" prefHeight="33.0" prefWidth="168.0" promptText="Email" />
               </children>
             </AnchorPane>
           </content>
@@ -342,7 +342,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="usersPane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
+    <Pane fx:id="usersPane" blendMode="DIFFERENCE" layoutX="201.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="639.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" font="$x5" layoutX="14.0" layoutY="14.0" minWidth="568.0" prefHeight="501.0" prefWidth="568.0" text="Jobcenter Users">
@@ -354,11 +354,11 @@
                     <Button blendMode="SRC_OVER" defaultButton="true" mnemonicParsing="false" text="Delete" underline="true" />
                   </items>
                 </ToolBar>
-                <TableView fx:id="usersTable" prefHeight="444.0" prefWidth="335.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="229.0" AnchorPane.topAnchor="31.0">
+                <TableView fx:id="usersTable" prefHeight="444.0" prefWidth="335.0" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="229.0" AnchorPane.topAnchor="31.0">
                   <columns>
                     <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="91.0" text="First name" fx:id="usrFName" />
                     <TableColumn prefWidth="75.0" text="Last name" fx:id="usrLName" />
-                    <TableColumn prefWidth="75.0" text="Username" fx:id="usrUName" />
+                    <TableColumn editable="false" prefWidth="75.0" resizable="true" text="Username" fx:id="usrUName" />
                     <TableColumn prefWidth="75.0" text="Password" fx:id="usrPwd" />
                   </columns>
                 </TableView>
