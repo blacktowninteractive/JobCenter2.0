@@ -27,6 +27,9 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.scene.text.Text;
@@ -82,6 +85,12 @@ public class JobCenterController implements Initializable, ScreenController {
         pass = passwd.getText();
         String uid = "";
         
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        String dateStr = dateFormat.format(date);
+        
+        System.out.println(dateFormat.format(date));
+
         //for secure password
         MessageDigest md = MessageDigest.getInstance("MD5");
         md.reset();
@@ -142,7 +151,7 @@ public class JobCenterController implements Initializable, ScreenController {
                     }
                 }
                 
-                	qry = "select uid_employees from users where userName = '" + user + "';";
+                	qry = "select employees_uid from users where userName = '" + user + "';";
                 System.out.println(qry);
                 rs = st.executeQuery(qry);
 
@@ -160,7 +169,8 @@ public class JobCenterController implements Initializable, ScreenController {
             Statement updateDb = null;
             updateDb = conn.createStatement();
 
-            String insertSess = "insert into session (userName, ipAddr, employees_uid) values ('" + user + "','" + ipAddr + "',"+ uid+");";
+            String insertSess = "insert into session (userName, ipAddr, employees_uid, dateLogged) values ('" 
+                    + user + "','" + ipAddr + "',"+ uid+ ",'"+dateStr+"');";
             System.out.println(insertSess);
 
             //set our session id and ip address in order to identify user.

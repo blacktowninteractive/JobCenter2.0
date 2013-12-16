@@ -100,26 +100,29 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public Pane CreateJobBox, settingsPane, displayJobs, equipVehPane, employeePane, managerPane,
             usersPane, proposalsPane;
     public ToolBar AdminToolBar, FunctionsToolBar, ReportsToolBar, employeeToolbar;
-    public TableView usersTable;
+
     public static ObservableList<String> jStatus = FXCollections.observableArrayList(
             "IN PROGRESS", "COMPLETE", "HOLD-CUSTOMER", "HOLD-WEATHER", "HOLD-OTHER", "PROJECTED", "CANCELLED");
-
+    public TableView usersTable;
+    public TableView<manager> managerView = new TableView<manager>();
     public TableView<employee> employeeTable = new TableView<employee>();
     public TableView<equipment> equipmentTable = new TableView<equipment>();
+
     public TableColumn emp_fname, emp_lname, emp_phone, emp_email,
-            vehNameIns, typeIns, statusIns, usrFName, usrLName, usrUName, usrPwd;
+            vehNameIns, typeIns, statusIns, usrFName, usrLName, usrUName, usrPwd,
+            manage_lname, manage_fname, manage_phone, manage_office, manage_email;
 
     public Button chgPasswd, addEmp, addVehBut, deleteVehBut, clearJob,
             saveJob, confirmJob, cancelJob, addCustBut, addVehEqToTreeBut, addEmpToTreeBut,
             displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut,
             saveChangesBut, previewJob, printSummaryBut, addNewUsr,
-            addEmployeeBut;
+            addEmployeeBut, deleteManagerBut, addManagerBut;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
             vehNameNew, typeNew, statusNew, streetAddr, city, state, zip,
-            newUsrName;
-
+            newUsrName,fname_str,lname_str,phone_str,email_str,office_str;
+        
     public PasswordField newPwd;
 
     public static String jobTitleStr, jobNameStr, custJobNumStr, custJobNameStr, startDateStr, startTimeStr,
@@ -189,6 +192,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //display data in table
         equipmentTable.setItems(populateEquip());
 
+        manage_lname.setCellValueFactory(new PropertyValueFactory<manager, String>("lastName"));
+        manage_fname.setCellValueFactory(new PropertyValueFactory<manager, String>("firstName"));
+        manage_phone.setCellValueFactory(new PropertyValueFactory<manager, String>("phone"));
+        manage_office.setCellValueFactory(new PropertyValueFactory<manager, String>("office"));
+        manage_email.setCellValueFactory(new PropertyValueFactory<manager, String>("email"));
+
+        managerView.setItems(populateManagers());
+        
         prodChk.setSelected(false);
         hourChk.setSelected(false);
 
@@ -370,6 +381,31 @@ public class JobCenterMainController implements Initializable, ScreenController 
          });*/
     }
 
+    public ObservableList<manager> populateManagers() {
+        ObservableList<manager> tester55 = FXCollections.observableArrayList();
+
+        //make the connection
+        try { 
+            st = conn.createStatement();
+            rs = st.executeQuery("select fName, lName, email, phone, office from manager;");
+
+            while (rs.next()) {
+                tester55.add(new manager(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),rs.getString(5)));
+                System.out.println(rs.getString(1));
+                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(3));
+                System.out.println(rs.getString(4));
+                System.out.println(rs.getString(5));
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        return tester55;
+    }
+    
     public ObservableList<equipment> populateEquip() {
         ObservableList<equipment> tester2 = FXCollections.observableArrayList();
 
@@ -2572,9 +2608,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
         emailStrIns.setText("");
 
     }
-    
-    
-     @FXML
+
+    @FXML
     private void deleteEmpAction(ActionEvent event) throws IOException, SQLException {
         String emailToDelete = employeeTable.getSelectionModel().selectedItemProperty().getValue().getEmail();
         String queryDelete = "DELETE FROM employees WHERE email = '" + emailToDelete + "'";
@@ -2593,13 +2628,98 @@ public class JobCenterMainController implements Initializable, ScreenController 
             int executeUpdate = updateDb.executeUpdate(queryDelete);
             employeeTable.setItems(populateDB());
 
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
 
+    @FXML
+    private void addManagerAction(ActionEvent event)
+            throws IOException, SQLException {
+        String queryRun = "insert into manager (fName, lName,email,phone,office) "
+                + "values('" + fname_str.getText() + "','" + lname_str.getText() + "','"
+                + phone_str.getText() + "','" + email_str.getText()+ "','" + office_str.getText()
+                + "')";
+
+        //insert into database
+        Statement updateDb = null;
+        //System.out.println(queryRun);
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+
+            //set our session id and ip address in order to identify user
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryRun);
+            employeeTable.setItems(populateDB());
+
+            //show the complete box dialog
+            Label label2;
+            label2 = new Label("Employee Added");
+            HBox hb2 = new HBox();
+            Group root = new Group();
+
+            Button closeWindow = new Button("Close");
+            hb2.getChildren().addAll(label2, closeWindow);
+            hb2.setSpacing(10);
+            hb2.setLayoutX(25);
+            hb2.setLayoutY(48);
+            root.getChildren().add(hb2);
+
+            final Scene scene2 = new Scene(root);
+            final Stage stage2 = new Stage();
+
+            stage2.close();
+            stage2.setScene(scene2);
+            stage2.setHeight(150);
+            stage2.setWidth(310);
+            stage2.setResizable(false);
+            stage2.show();
+
+            closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent t) {
+                    stage2.close();
+                }
+            });
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+        fname_str.setText("");
+        lname_str.setText("");
+        phone_str.setText("");
+        email_str.setText("");
+        office_str.setText("");         
+
+    }
+
+    @FXML
+    private void deleteManagerAction(ActionEvent event) throws IOException, SQLException {
+        String emailToDelete = managerView.getSelectionModel().selectedItemProperty().getValue().getEmail();
+        String queryDelete = "DELETE FROM manager WHERE email = '" + emailToDelete + "'";
+        //System.out.println(queryDelete);
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try { 
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryDelete);
+            managerView.setItems(populateManagers());
 
         } catch (SQLException ex) {
             Logger.getLogger(JobCenterController.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    
+
 }
