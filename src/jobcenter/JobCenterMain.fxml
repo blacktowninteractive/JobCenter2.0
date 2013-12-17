@@ -53,7 +53,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" layoutX="201.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
+    <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" layoutX="201.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="629.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1161.0" y="-1.0" />
         <ToolBar fx:id="createJobToolbar" blendMode="SRC_OVER" layoutX="3.0" layoutY="1.0" prefHeight="39.0" prefWidth="1276.0" visible="false">
@@ -309,7 +309,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="managerPane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
+    <Pane fx:id="managerPane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="640.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" font="$x5" layoutX="14.0" layoutY="14.0" minWidth="568.0" prefHeight="501.0" prefWidth="665.0" text="Managers">
@@ -470,11 +470,11 @@
             <ColorAdjust />
           </effect>
           <expandedPane>
-            <TitledPane fx:id="x2" animated="true" font="$x5" text="Tasks">
+            <TitledPane id="x9" fx:id="x4" animated="true" collapsible="true" disable="false" expanded="true" font="$x5" prefHeight="563.9998779296875" text="Proposals" visible="true">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView fx:id="taskList" cache="false" editable="false" prefHeight="565.0" prefWidth="223.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
+                    <ListView fx:id="proList" prefHeight="538.0" prefWidth="200.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
                   </children>
                 </AnchorPane>
               </content>
@@ -490,16 +490,16 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-            <fx:reference source="x2" />
-            <TitledPane id="x9" fx:id="x4" animated="true" collapsible="true" disable="false" expanded="false" font="$x5" prefHeight="563.9998779296875" text="Proposals" visible="true">
+            <TitledPane fx:id="x2" animated="true" font="$x5" text="Tasks">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                   <children>
-                    <ListView fx:id="proList" prefHeight="538.0" prefWidth="200.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
+                    <ListView fx:id="taskList" cache="false" editable="false" prefHeight="565.0" prefWidth="223.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
                   </children>
                 </AnchorPane>
               </content>
             </TitledPane>
+            <fx:reference source="x4" />
           </panes>
         </Accordion>
       </children>

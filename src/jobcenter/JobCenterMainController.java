@@ -16,7 +16,10 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -35,7 +38,9 @@ import javafx.event.EventType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.print.PageLayout;
 import javafx.print.PageOrientation;
 import javafx.print.Paper;
@@ -62,13 +67,16 @@ import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
@@ -121,8 +129,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
             vehNameNew, typeNew, statusNew, streetAddr, city, state, zip,
-            newUsrName,fname_str,lname_str,phone_str,email_str,office_str;
-        
+            newUsrName, fname_str, lname_str, phone_str, email_str, office_str;
+
     public PasswordField newPwd;
 
     public static String jobTitleStr, jobNameStr, custJobNumStr, custJobNameStr, startDateStr, startTimeStr,
@@ -199,7 +207,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         manage_email.setCellValueFactory(new PropertyValueFactory<manager, String>("email"));
 
         managerView.setItems(populateManagers());
-        
+
         prodChk.setSelected(false);
         hourChk.setSelected(false);
 
@@ -231,6 +239,84 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //Connect to database
         databaseConnect();
+    }
+
+    private int empParser(String listofEmp) {
+        int count = 1;
+        String strManip = listofEmp;
+
+        listofEmp.lastIndexOf("/");
+        System.out.println(listofEmp);
+
+        while (strManip.lastIndexOf("/") > 0) {
+            strManip = strManip.substring(0, strManip.lastIndexOf("/"));
+            count++;
+            System.out.println(strManip);
+        }
+        System.out.println("Employee count: " + count);
+        return count;
+    }
+
+    private int vehParser(String listofVeh) {
+        int count = 1;
+        String strManip = listofVeh;
+
+        strManip.lastIndexOf("/");
+        System.out.println(strManip);
+
+        while (strManip.lastIndexOf("/") > 0) {
+            strManip = strManip.substring(0, strManip.lastIndexOf("/"));
+            count++;
+            System.out.println(strManip);
+        }
+        System.out.println("Veh count: " + count);
+        return count;
+    }
+
+    private void clearJobList() {
+        vehList.clear();
+        vehList11 = FXCollections.observableArrayList(vehList);
+        vehicleEquipSelected.setItems(vehList11);
+
+        empListSel.clear();
+        empSelect = FXCollections.observableArrayList(empListSel);
+        employeeSelected.setItems(empSelect);
+
+        jobTitle.setText("");
+        jobName.setText("");
+        custJobNum.setText("");
+        custJobName.setText("");
+        jobName.setText("");
+        custJobNum.setText("");
+
+        streetAddr.setText("");
+        city.setText("");
+        state.setText("");
+        zip.setText("");
+        startDate.setText("");
+        startTime.setText("");
+
+        setCustPhone.setText("");
+        setCustName.setText("");
+        setCustCity.setText("");
+        setCustState.setText("");
+        setCustPOC.setText("");
+        setCustCompPhone.setText("");
+        setCustFax.setText("");
+        setCustAddr.setText("");
+        setCustZip.setText("");
+
+        feetStr.setText("");
+        diamStr.setText("");
+
+        sInstr.setText("");
+        dInstr.setText("");
+        tInstr.setText("");
+        wInstr.setText("");
+
+        taskTypeListStr.clear();
+        taskTypeList.setItems(taskTypeListStr);
+
     }
 
     // a local accessible method
@@ -385,12 +471,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
         ObservableList<manager> tester55 = FXCollections.observableArrayList();
 
         //make the connection
-        try { 
+        try {
             st = conn.createStatement();
             rs = st.executeQuery("select fName, lName, email, phone, office from manager;");
 
             while (rs.next()) {
-                tester55.add(new manager(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),rs.getString(5)));
+                tester55.add(new manager(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
                 System.out.println(rs.getString(1));
                 System.out.println(rs.getString(2));
                 System.out.println(rs.getString(3));
@@ -405,7 +491,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         return tester55;
     }
-    
+
     public ObservableList<equipment> populateEquip() {
         ObservableList<equipment> tester2 = FXCollections.observableArrayList();
 
@@ -1264,225 +1350,336 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @FXML
     private void previewJobAction(ActionEvent event) throws SQLException {
-        st = conn.createStatement();
+
+        final Group root = new Group();
+        Button printScreen = new Button("Print");
+
+        Rectangle r = new Rectangle(0, 0, 1120, 40);
+        r.setFill(Color.LIGHTGREY);
+        r.strokeProperty().set(Color.GRAY);
+
+        Rectangle r2 = new Rectangle(0, 42, 1120, 18);
+        r2.setFill(Color.YELLOW);
+        r2.strokeProperty().set(Color.YELLOW);
+
+        Rectangle r3 = new Rectangle(0, 342, 1120, 18);
+        r3.setFill(Color.YELLOW);
+        r3.strokeProperty().set(Color.YELLOW);
+
+        GridPane gridpane = new GridPane();
+
         String qry = "select * from currentjobs where status ='IN PROGRESS';";
-        //System.out.println("qry: " + qry);
-        String jobTxtStr = "", jobTypeStr = "", jobDateTxtStr = "", jobStatusStr = "", empListStr = "", equipListStr = "";
-        int countAmt = 1, area1 = 3, area2 = 4, area3 = 5, area4 = 6;
-        Group root = new Group();
-        GridPane grid = new GridPane();
 
         List<String> empListSort = new ArrayList<String>();
         List<String> equipListSort = new ArrayList<String>();
+        String jobTxtStr = "", jobTypeStr = "", jobDateTxtStr = "", jobStatusStr = "",
+                empListStr = "", equipListStr = "", jobNameStr = "";
+
+        //set location and build of grid pane...
+        gridpane.setLayoutY(40);
+        int startAnew = 9, empNumber = 0, vehNumber = 0, numLocation = 0, columnLoc = 0,
+                columnLoc2 =1;
+
+        //set location and build of grid pane...
+        gridpane.setLayoutY(40);
+        for (int i = 0; i < 6; i++) {
+            RowConstraints row = new RowConstraints(20);
+            row.setValignment(VPos.CENTER);
+
+            gridpane.getRowConstraints().add(row);
+
+        }
+        for (int i = 0; i < 10; i++) {
+            ColumnConstraints column = new ColumnConstraints(112);
+            column.setHalignment(HPos.CENTER);
+            gridpane.getColumnConstraints().add(column);
+        }
+
+        // or convenience methods set more than one constraint at once...
+        Text label = new Text("Job Number"),
+                label1 = new Text("Status"),
+                label2 = new Text("Job Name"),
+                label3 = new Text("Work Type"),
+                label4 = new Text("Work Date"),
+                labelTitle = new Text("Job Summary Report: "),
+                labelComp = new Text("Video Pipe Service");
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        Calendar cal = Calendar.getInstance();
+
+        String dateToday = (dateFormat.format(cal.getTime()));
+        Text labelDate = labelDate = new Text(dateToday);
+
+        label.setStyle("-fx-font-size: 10;");
+        label1.setStyle("-fx-font-size: 10;");
+        label2.setStyle("-fx-font-size: 10;");
+        label3.setStyle("-fx-font-size: 10;");
+        label4.setStyle("-fx-font-size: 10;");
+
+        labelTitle.setStyle("-fx-font-size: 16;");
+        labelTitle.setY(25);
+        labelTitle.setX(10);
+        labelDate.setStyle("-fx-font-size: 15;");
+        labelDate.setY(25);
+        labelDate.setX(175);
+        labelComp.setStyle("-fx-font-size: 16;");
+        labelComp.setY(25);
+        labelComp.setX(965);
+        printScreen.setLayoutX(265);
+        printScreen.setLayoutY(7);
+
+        gridpane.add(label, 0, 0); // column=2 row=1        
+        gridpane.add(label1, 0, 1);  // column=3 row=1
+        gridpane.add(label2, 0, 2); // column=1 row=1
+        gridpane.add(label3, 0, 3); // column=2 row=1
+        gridpane.add(label4, 0, 4); // column=2 row=1
+        numLocation = 5;
+        columnLoc = 1;
+        gridpane.setGridLinesVisible(true);
+
+        for (int i = 1; i <= 5; i++) {
+            RowConstraints row = new RowConstraints(20);
+            row.setValignment(VPos.CENTER);
+            String nameLabel = "Person " + i;
+            Text tmpTxt = new Text(nameLabel);
+            tmpTxt.setStyle("-fx-font-size: 10;");
+
+            gridpane.getRowConstraints().add(row);
+            gridpane.add(tmpTxt, 0, numLocation);
+
+            //increment to track which column we are at.
+            numLocation++;
+
+        }
+        for (int i = 1; i <= 5; i++) {
+            RowConstraints row = new RowConstraints(20);
+            row.setValignment(VPos.CENTER);
+            String nameLabel = "Veh/Equip " + i;
+            Text tmpTxt = new Text(nameLabel);
+            tmpTxt.setStyle("-fx-font-size: 10;");
+
+            gridpane.getRowConstraints().add(row);
+            gridpane.add(tmpTxt, 0, numLocation);
+
+            //increment to track which column we are at.
+            numLocation++;
+
+        }
 
         rs = st.executeQuery(qry);
+
         while (rs.next()) {
+
+            int counter = 0;
+
             jobTxtStr = rs.getString(5);
-            jobTypeStr = rs.getString(6);
+            jobTypeStr = rs.getString(9);
+            if (jobTypeStr.length() > 8) {
+                jobTypeStr = jobTypeStr.substring(1, 8);
+            } else {
+                jobTypeStr = jobTypeStr.substring(1, jobTypeStr.length());
+            }
+
             jobDateTxtStr = rs.getString(7);
             jobStatusStr = rs.getString(17);
-
+            jobNameStr = rs.getString(6);
             empListStr = rs.getString(10);
             equipListStr = rs.getString(11);
 
-            //System.out.println(jobTxtStr);
-            //System.out.println("Count: " + Integer.toString(countAmt));
-            ToolBar addme = new ToolBar();
-            Button test = new Button("Print");
+            Text add;
 
-            addme.getItems().add(test);
-            addme.setMinWidth(1255);
-            grid.setHgap(10);
-            grid.setVgap(3);
+            if (columnLoc <= startAnew) {
+                add = new Text(jobTxtStr);
+                add.setStyle("-fx-font-size: 10;");
+                gridpane.add(add, columnLoc, counter);
+                counter++;
+                add = new Text(jobStatusStr);
+                add.setStyle("-fx-font-size: 10;");
+                gridpane.add(add, columnLoc, counter);
+                counter++;
+                add = new Text(jobNameStr);
+                add.setStyle("-fx-font-size: 10;");
+                gridpane.add(add, columnLoc, counter);
+                counter++;
+                add = new Text(jobTypeStr);
+                add.setStyle("-fx-font-size: 10;");
+                gridpane.add(add, columnLoc, counter);
+                counter++;
+                add = new Text(jobDateTxtStr);
+                add.setStyle("-fx-font-size: 10;");
+                gridpane.add(add, columnLoc, counter);
+                counter++;
 
-            //grid.setBlendMode(BlendMode.DIFFERENCE);
-            TextField jobTxt = new TextField(),
-                    jobTypeTxt = new TextField(),
-                    jobDateTxt = new TextField(),
-                    jobStatusBox = new TextField();
+                String strManip = empListStr;
 
-            jobTxt.setStyle("-fx-background-color: lightblue;"
-                    + "-fx-font-size: 12;");
-            jobTxt.setMaxWidth(100);
-            jobTxt.setEditable(false);
-            jobTxt.setText(jobTxtStr);
-            jobTxt.setAlignment(Pos.CENTER);
+                while (strManip.lastIndexOf("/") >= 0) {
 
-            jobTypeTxt.setStyle("-fx-background-color: lightblue;"
-                    + "-fx-font-size: 12;");
-            jobTypeTxt.setMaxWidth(100);
-            jobTypeTxt.setEditable(false);
-            jobTypeTxt.setText(jobTypeStr);
-            jobTypeTxt.setAlignment(Pos.CENTER);
+                    add = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
+                    add.setStyle("-fx-font-size: 10;");
+                    gridpane.add(add, columnLoc, counter);
+                    counter++;
 
-            jobDateTxt.setStyle("-fx-background-color: white;"
-                    + "-fx-font-size: 12;");
-            jobDateTxt.setMaxWidth(100);
-            jobDateTxt.setEditable(false);
-            jobDateTxt.setText(jobDateTxtStr);
-            jobDateTxt.setAlignment(Pos.CENTER);
+                    strManip = strManip.substring(0, strManip.lastIndexOf("/"));
 
-            jobStatusBox.setStyle("-fx-background-color: white;"
-                    + "-fx-font-size: 12;");
-            jobStatusBox.setMaxWidth(100);
-            jobStatusBox.setEditable(false);
-            jobStatusBox.setText(jobStatusStr);
-            jobStatusBox.setAlignment(Pos.CENTER);
-
-            if (countAmt == 10) {
-                countAmt = 1;
-                area1 += 30;
-                area2 += 30;
-                area3 += 30;
-                area4 += 30;
-            }
-            if (countAmt == 20) {
-                countAmt = 1;
-                area1 += 100;
-                area2 += 100;
-                area3 += 100;
-                area4 += 100;
-            }
-            if (countAmt == 30) {
-                countAmt = 1;
-                area1 += 30;
-                area2 += 30;
-                area3 += 30;
-                area4 += 30;
-            }
-            grid.add(jobTxt, countAmt, area1);
-            grid.add(jobTypeTxt, countAmt, area2);
-            grid.add(jobDateTxt, countAmt, area3);
-            grid.add(jobStatusBox, countAmt, area4);
-
-            //System.out.println("Index: " + empListStr.indexOf("/"));
-            //System.out.println("at row: " + countAmt);
-            String nameOfPerson;
-            int counterArea = area4 + 1;
-
-            //displays the employees who are set for the job
-            while (true) {
-
-                if (empListStr.indexOf("/") < 0) {
-                    break;
                 }
 
-                if (empListStr.indexOf("/") >= 0) {
-                    //sort out employees for display
-                    empListStr = empListStr.substring(0, empListStr.length());
+                counter = 10;
+                strManip = equipListStr;
+                while (strManip.lastIndexOf("/") >= 0) {
+                    System.out.println(strManip);
+                    add = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
+                    add.setStyle("-fx-font-size: 10;");
+                    gridpane.add(add, columnLoc, counter);
+                    counter++;
 
-                    //System.out.println("Unprocessed string: " + empListStr);
-                    //System.out.println("Before: " + empListStr);
-                    //System.out.println(empListStr.indexOf("/"));
-                    if (empListStr.indexOf("/") == 0) {
-                        empListStr = empListStr.substring(1, empListStr.length());
+                    strManip = strManip.substring(0, strManip.lastIndexOf("/"));
+                    System.out.println(strManip);
 
-                        if (empListStr.indexOf("/") > 0) {
-                            nameOfPerson = empListStr.substring(0, empListStr.indexOf("/"));
-                            empListStr = empListStr.substring(empListStr.indexOf("/"), empListStr.length());
-                        } else {
-                            nameOfPerson = empListStr.substring(0, empListStr.length());
-                        }
+                }
 
-                        //empListStr = empListStr.substring(empListStr.indexOf("/") + 1, empListStr.length());
-                        //System.out.println("After: " + empListStr);
-                        //System.out.println("Adding: " + nameOfPerson);
-                        TextField nameTxt = new TextField();
-                        nameTxt.setMaxWidth(100);
-                        nameTxt.setStyle("-fx-background-color: lightgreen;"
-                                + "-fx-font-size: 12;");
+            } else {
+                
+                counter = 15;
+                System.out.println("TIME TO PRINT ANOTHER TABLE");
 
-                        nameTxt.setMaxHeight(100);
-                        nameTxt.setEditable(false);
-                        nameTxt.setText(nameOfPerson);
-                        nameTxt.setAlignment(Pos.CENTER);
+                for (int i = 0; i < 14; i++) {
+                    RowConstraints row = new RowConstraints(20);
+                    row.setValignment(VPos.CENTER);
 
-                        grid.add(nameTxt, countAmt, counterArea);
-                        //System.out.println("at row: " + countAmt);
-                        counterArea++;
+                    gridpane.getRowConstraints().add(row);
 
-                    }
+                }
+
+                // or convenience methods set more than one constraint at once...
+                Text label00 = new Text("Job Number"),
+                        label11 = new Text("Status"),
+                        label22 = new Text("Job Name"),
+                        label33 = new Text("Work Type"),
+                        label44 = new Text("Work Date");
+
+                label00.setStyle("-fx-font-size: 10;");
+                label11.setStyle("-fx-font-size: 10;");
+                label22.setStyle("-fx-font-size: 10;");
+                label33.setStyle("-fx-font-size: 10;");
+                label44.setStyle("-fx-font-size: 10;");
+
+                gridpane.add(label00, 0, 15); // column=2 row=1        
+                gridpane.add(label11, 0, 16);  // column=3 row=1
+                gridpane.add(label22, 0, 17); // column=1 row=1
+                gridpane.add(label33, 0, 18); // column=2 row=1
+                gridpane.add(label44, 0, 19); // column=2 row=1
+                numLocation = 20;
+
+                for (int i = 1; i <= 5; i++) {
+                    RowConstraints row = new RowConstraints(20);
+                    row.setValignment(VPos.CENTER);
+                    String nameLabel = "Person " + i;
+                    Text tmpTxt = new Text(nameLabel);
+                    tmpTxt.setStyle("-fx-font-size: 10;");
+
+                    gridpane.getRowConstraints().add(row);
+                    gridpane.add(tmpTxt, 0, numLocation);
+
+                    //increment to track which column we are at.
+                    numLocation++;
+
+                }
+                
+                for (int i = 1; i <= 5; i++) {
+                    RowConstraints row = new RowConstraints(20);
+                    row.setValignment(VPos.CENTER);
+                    String nameLabel = "Veh/Equip " + i;
+                    Text tmpTxt = new Text(nameLabel);
+                    tmpTxt.setStyle("-fx-font-size: 10;");
+
+                    gridpane.getRowConstraints().add(row);
+                    gridpane.add(tmpTxt, 0, numLocation);
+
+                    //increment to track which column we are at.
+                    numLocation++;
+
+                }
+
+                jobTxtStr = rs.getString(5);
+                jobTypeStr = rs.getString(9);
+                if (jobTypeStr.length() > 8) {
+                    jobTypeStr = jobTypeStr.substring(1, 8);
                 } else {
-                    //System.out.println("Adding2: " + empListStr);
-                    nameOfPerson = empListStr;
-                    TextField nameTxt = new TextField();
-                    nameTxt.setStyle("-fx-background-color: green;"
-                            + "-fx-font-size: 12;");
-                    nameTxt.setMaxWidth(100);
-                    nameTxt.setEditable(false);
-                    nameTxt.setText(nameOfPerson);
-                    nameTxt.setAlignment(Pos.CENTER);
-
-                    grid.add(nameTxt, countAmt, counterArea);
-                    //System.out.println("at row2: " + countAmt);
-                    empListStr = "";
-                    counterArea++;
-
-                    break;
+                    jobTypeStr = jobTypeStr.substring(1, jobTypeStr.length());
                 }
 
-            }
-            String equipNameStr;
-            //displays the equipment set for the job
-            while (true) {
-                if (equipListStr.indexOf("/") >= 0) {
-                    //sort out employees for display
-                    equipListStr = equipListStr.substring(1, equipListStr.length() - 1);
-                    //System.out.println("\n\nUnprocessed string: " + equipListStr);
-                    equipNameStr = "";
-                    //System.out.println("Before: " + equipListStr);
-                    //System.out.println(equipListStr.indexOf("/"));
-                    if (equipListStr.indexOf("/") > 0) {
-                        equipNameStr = equipListStr.substring(0, equipListStr.indexOf("/"));
-                        equipListStr = equipListStr.substring(equipListStr.indexOf("/"), equipListStr.length());
-                        //System.out.println("After: " + equipListStr);
+                jobDateTxtStr = rs.getString(7);
+                jobStatusStr = rs.getString(17);
+                jobNameStr = rs.getString(6);
+                empListStr = rs.getString(10);
+                equipListStr = rs.getString(11);
 
-                        //System.out.println("Adding: " + equipNameStr);
-                        TextField nameTxt = new TextField();
+                Text add2;
 
-                        nameTxt.setStyle("-fx-background-color: yellow;"
-                                + "-fx-font-size: 12;");
-                        nameTxt.setMaxWidth(100);
-                        nameTxt.setMaxHeight(70);
-                        nameTxt.setEditable(false);
-                        nameTxt.setText(equipNameStr);
-                        nameTxt.setAlignment(Pos.CENTER);
+                add2 = new Text(jobTxtStr);
+                add2.setStyle("-fx-font-size: 10;");
+                gridpane.add(add2, columnLoc2, counter);
+                counter++;
+                add2 = new Text(jobStatusStr);
+                add2.setStyle("-fx-font-size: 10;");
+                gridpane.add(add2, columnLoc2, counter);
+                counter++;
+                add2 = new Text(jobNameStr);
+                add2.setStyle("-fx-font-size: 10;");
+                gridpane.add(add2, columnLoc2, counter);
+                counter++;
+                add2 = new Text(jobTypeStr);
+                add2.setStyle("-fx-font-size: 10;");
+                gridpane.add(add2, columnLoc2, counter);
+                counter++;
+                add2 = new Text(jobDateTxtStr);
+                add2.setStyle("-fx-font-size: 10;");
+                gridpane.add(add2, columnLoc2, counter);
+                counter++;
 
-                        grid.add(nameTxt, countAmt, counterArea);
-                        //System.out.println("at row: " + countAmt);
-                        counterArea++;
+                String strManip = empListStr;
 
-                    }
-                } else {
-                    //System.out.println("Adding2: " + equipListStr);
-                    equipNameStr = equipListStr;
-                    TextField nameTxt = new TextField();
+                while (strManip.lastIndexOf("/") >= 0) {
 
-                    nameTxt.setStyle("-fx-background-color: yellow;"
-                            + "-fx-font-size: 12;");
-                    nameTxt.setMaxWidth(100);
-                    nameTxt.setEditable(false);
-                    nameTxt.setText(equipNameStr);
-                    nameTxt.setAlignment(Pos.CENTER);
+                    add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
+                    add2.setStyle("-fx-font-size: 10;");
+                    gridpane.add(add2, columnLoc2, counter);
+                    counter++;
 
-                    grid.add(nameTxt, countAmt, counterArea);
-                    //System.out.println("at row2: " + countAmt);
-                    empListStr = "";
-                    counterArea++;
+                    strManip = strManip.substring(0, strManip.lastIndexOf("/"));
 
-                    break;
                 }
 
-            }
+                counter = 25;
+                strManip = equipListStr;
+                while (strManip.lastIndexOf("/") >= 0) {
+                    System.out.println(strManip);
+                    add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
+                    add2.setStyle("-fx-font-size: 10;");
+                    gridpane.add(add2, columnLoc2, counter);
+                    counter++;
 
-            countAmt++;
+                    strManip = strManip.substring(0, strManip.lastIndexOf("/"));
+                    System.out.println(strManip);
+
+                }
+                columnLoc2++;
+            }
+            columnLoc++;
         }
 
-        root.getChildren().add(grid);
+        root.getChildren().add(r);
+        root.getChildren().add(r2);
+        root.getChildren().add(r3);
+        root.getChildren().add(printScreen);
+        root.getChildren().add(labelTitle);
+        root.getChildren().add(labelDate);
+        root.getChildren().add(labelComp);
 
-        Scene scene2 = new Scene(root, Color.BLACK);
+        root.getChildren().add(gridpane);
+
+        Scene scene2 = new Scene(root);
         stageJob = new Stage();
-        stageJob.setHeight(662);
+        stageJob.setHeight(700);
         stageJob.setWidth(1224);
         stageJob.setResizable(false);
 
@@ -1494,7 +1691,269 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stageJob.setX(primaryScreenBounds.getMinX());
         stageJob.setY(primaryScreenBounds.getMinY());
 
+        printScreen.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                Printer printer = Printer.getDefaultPrinter();
+                PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+
+                double scaleX = pageLayout.getPrintableWidth() / 1524;
+                double scaleY = pageLayout.getPrintableHeight() / 662;
+
+                root.getTransforms().add(new Scale(scaleX, scaleY));
+
+                PrinterJob job = PrinterJob.createPrinterJob();
+
+                if (job != null) {
+
+                    boolean success = job.printPage(root);
+
+                    if (success) {
+
+                        job.endJob();
+                        stageJob.close();
+                    }
+
+                }
+
+            }
+        });
+
         stageJob.show();
+
+
+        /*
+         st = conn.createStatement();
+         String qry = "select * from currentjobs where status ='IN PROGRESS';";
+         //System.out.println("qry: " + qry);
+         String jobTxtStr = "", jobTypeStr = "", jobDateTxtStr = "", jobStatusStr = "", empListStr = "", equipListStr = "";
+         int countAmt = 1, area1 = 3, area2 = 4, area3 = 5, area4 = 6;
+         Group root = new Group();
+         GridPane grid = new GridPane();
+
+         List<String> empListSort = new ArrayList<String>();
+         List<String> equipListSort = new ArrayList<String>();
+
+         rs = st.executeQuery(qry);
+         while (rs.next()) {
+         jobTxtStr = rs.getString(5);
+         jobTypeStr = rs.getString(6);
+         jobDateTxtStr = rs.getString(7);
+         jobStatusStr = rs.getString(17);
+
+         empListStr = rs.getString(10);
+         equipListStr = rs.getString(11);
+
+         //System.out.println(jobTxtStr);
+         //System.out.println("Count: " + Integer.toString(countAmt));
+         ToolBar addme = new ToolBar();
+         Button test = new Button("Print");
+
+         addme.getItems().add(test);
+         addme.setMinWidth(1255);
+         grid.setHgap(10);
+         grid.setVgap(3);
+
+         //grid.setBlendMode(BlendMode.DIFFERENCE);
+         TextField jobTxt = new TextField(),
+         jobTypeTxt = new TextField(),
+         jobDateTxt = new TextField(),
+         jobStatusBox = new TextField();
+
+         jobTxt.setStyle("-fx-background-color: lightblue;"
+         + "-fx-font-size: 8;");
+         jobTxt.setMaxWidth(80);
+         jobTxt.setEditable(false);
+         jobTxt.setText(jobTxtStr);
+         jobTxt.setAlignment(Pos.CENTER);
+
+         jobTypeTxt.setStyle("-fx-background-color: lightblue;"
+         + "-fx-font-size: 8;");
+         jobTypeTxt.setMaxWidth(80);
+         jobTypeTxt.setEditable(false);
+         jobTypeTxt.setText(jobTypeStr);
+         jobTypeTxt.setAlignment(Pos.CENTER);
+
+         jobDateTxt.setStyle("-fx-background-color: white;"
+         + "-fx-font-size: 8;");
+         jobDateTxt.setMaxWidth(80);
+         jobDateTxt.setEditable(false);
+         jobDateTxt.setText(jobDateTxtStr);
+         jobDateTxt.setAlignment(Pos.CENTER);
+
+         jobStatusBox.setStyle("-fx-background-color: white;"
+         + "-fx-font-size: 8;");
+         jobStatusBox.setMaxWidth(80);
+         jobStatusBox.setEditable(false);
+         jobStatusBox.setText(jobStatusStr);
+         jobStatusBox.setAlignment(Pos.CENTER);
+
+         if (countAmt == 10) {
+         countAmt = 1;
+         area1 += 30;
+         area2 += 30;
+         area3 += 30;
+         area4 += 30;
+         }
+         if (countAmt == 20) {
+         countAmt = 1;
+         area1 += 100;
+         area2 += 100;
+         area3 += 100;
+         area4 += 100;
+         }
+         if (countAmt == 30) {
+         countAmt = 1;
+         area1 += 30;
+         area2 += 30;
+         area3 += 30;
+         area4 += 30;
+         }
+         grid.add(jobTxt, countAmt, area1);
+         grid.add(jobTypeTxt, countAmt, area2);
+         grid.add(jobDateTxt, countAmt, area3);
+         grid.add(jobStatusBox, countAmt, area4);
+
+         //System.out.println("Index: " + empListStr.indexOf("/"));
+         //System.out.println("at row: " + countAmt);
+         String nameOfPerson;
+         int counterArea = area4 + 1;
+
+         //displays the employees who are set for the job
+         while (true) {
+
+         if (empListStr.indexOf("/") < 0) {
+         break;
+         }
+
+         if (empListStr.indexOf("/") >= 0) {
+         //sort out employees for display
+         empListStr = empListStr.substring(0, empListStr.length());
+
+         //System.out.println("Unprocessed string: " + empListStr);
+         //System.out.println("Before: " + empListStr);
+         //System.out.println(empListStr.indexOf("/"));
+         if (empListStr.indexOf("/") == 0) {
+         empListStr = empListStr.substring(1, empListStr.length());
+
+         if (empListStr.indexOf("/") > 0) {
+         nameOfPerson = empListStr.substring(0, empListStr.indexOf("/"));
+         empListStr = empListStr.substring(empListStr.indexOf("/"), empListStr.length());
+         } else {
+         nameOfPerson = empListStr.substring(0, empListStr.length());
+         }
+
+         //empListStr = empListStr.substring(empListStr.indexOf("/") + 1, empListStr.length());
+         //System.out.println("After: " + empListStr);
+         //System.out.println("Adding: " + nameOfPerson);
+         TextField nameTxt = new TextField();
+         nameTxt.setMaxWidth(80);
+         nameTxt.setStyle("-fx-background-color: lightgreen;"
+         + "-fx-font-size: 8;");
+
+         nameTxt.setMaxHeight(100);
+         nameTxt.setEditable(false);
+         nameTxt.setText(nameOfPerson);
+         nameTxt.setAlignment(Pos.CENTER);
+
+         grid.add(nameTxt, countAmt, counterArea);
+         //System.out.println("at row: " + countAmt);
+         counterArea++;
+
+         }
+         } else {
+         //System.out.println("Adding2: " + empListStr);
+         nameOfPerson = empListStr;
+         TextField nameTxt = new TextField();
+         nameTxt.setStyle("-fx-background-color: green;"
+         + "-fx-font-size: 8;");
+         nameTxt.setMaxWidth(80);
+         nameTxt.setEditable(false);
+         nameTxt.setText(nameOfPerson);
+         nameTxt.setAlignment(Pos.CENTER);
+
+         grid.add(nameTxt, countAmt, counterArea);
+         //System.out.println("at row2: " + countAmt);
+         empListStr = "";
+         counterArea++;
+
+         break;
+         }
+
+         }
+         String equipNameStr;
+         //displays the equipment set for the job
+         while (true) {
+         if (equipListStr.indexOf("/") >= 0) {
+         //sort out employees for display
+         equipListStr = equipListStr.substring(1, equipListStr.length() - 1);
+         //System.out.println("\n\nUnprocessed string: " + equipListStr);
+         equipNameStr = "";
+         //System.out.println("Before: " + equipListStr);
+         //System.out.println(equipListStr.indexOf("/"));
+         if (equipListStr.indexOf("/") > 0) {
+         equipNameStr = equipListStr.substring(0, equipListStr.indexOf("/"));
+         equipListStr = equipListStr.substring(equipListStr.indexOf("/"), equipListStr.length());
+         //System.out.println("After: " + equipListStr);
+
+         //System.out.println("Adding: " + equipNameStr);
+         TextField nameTxt = new TextField();
+
+         nameTxt.setStyle("-fx-background-color: yellow;"
+         + "-fx-font-size: 8;");
+         nameTxt.setMaxWidth(80);
+         nameTxt.setMaxHeight(70);
+         nameTxt.setEditable(false);
+         nameTxt.setText(equipNameStr);
+         nameTxt.setAlignment(Pos.CENTER);
+
+         grid.add(nameTxt, countAmt, counterArea);
+         //System.out.println("at row: " + countAmt);
+         counterArea++;
+
+         }
+         } else {
+         //System.out.println("Adding2: " + equipListStr);
+         equipNameStr = equipListStr;
+         TextField nameTxt = new TextField();
+
+         nameTxt.setStyle("-fx-background-color: yellow;"
+         + "-fx-font-size: 8;");
+         nameTxt.setMaxWidth(80);
+         nameTxt.setEditable(false);
+         nameTxt.setText(equipNameStr);
+         nameTxt.setAlignment(Pos.CENTER);
+
+         grid.add(nameTxt, countAmt, counterArea);
+         //System.out.println("at row2: " + countAmt);
+         empListStr = "";
+         counterArea++;
+
+         break;
+         }
+
+         }
+
+         countAmt++;
+         }
+
+         root.getChildren().add(grid);
+
+         Scene scene2 = new Scene(root, Color.BLACK);
+         stageJob = new Stage();
+         stageJob.setHeight(662);
+         stageJob.setWidth(1224);
+         stageJob.setResizable(false);
+
+         stageJob.setScene(scene2);
+         stageJob.setResizable(false);
+
+         // which screen to display the popup on ....
+         javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(0).getVisualBounds();
+         stageJob.setX(primaryScreenBounds.getMinX());
+         stageJob.setY(primaryScreenBounds.getMinY());
+
+         stageJob.show();*/
     }
 
     @FXML
@@ -1832,7 +2291,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
     }
 
     @FXML
-    private void addTaskList(ActionEvent event) {
+    private void addTaskList(ActionEvent event
+    ) {
         String itemChosen = taskComboBox.getValue().toString();
         itemChosen += "," + diamStr.getText() + ",";
         itemChosen += feetStr.getText();
@@ -1928,7 +2388,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
     }
 
     @FXML
-    private void delTaskList(ActionEvent event) {
+    private void delTaskList(ActionEvent event
+    ) {
         String del = taskTypeList.getSelectionModel().selectedItemProperty().getValue().toString();
         //System.out.println("delete: " + del);
         for (int i = 0; i < taskTypeListStr.size(); i++) {
@@ -2062,6 +2523,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
             closeWindow.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent t) {
+                    taskList.getSelectionModel().select(1);
+                    clearJobList();
+                    CreateJobBox.setVisible(false);
+                    displayJobs.setVisible(true);
+
                     stage2.close();
                 }
             });
@@ -2474,6 +2940,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
         closeWindow.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
+
+                taskList.getSelectionModel().select(1);
+                clearJobList();
+                CreateJobBox.setVisible(false);
+                displayJobs.setVisible(true);
+
                 stage2.close();
             }
         });
@@ -2639,7 +3111,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             throws IOException, SQLException {
         String queryRun = "insert into manager (fName, lName,email,phone,office) "
                 + "values('" + fname_str.getText() + "','" + lname_str.getText() + "','"
-                + phone_str.getText() + "','" + email_str.getText()+ "','" + office_str.getText()
+                + phone_str.getText() + "','" + email_str.getText() + "','" + office_str.getText()
                 + "')";
 
         //insert into database
@@ -2695,7 +3167,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         lname_str.setText("");
         phone_str.setText("");
         email_str.setText("");
-        office_str.setText("");         
+        office_str.setText("");
 
     }
 
@@ -2709,7 +3181,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         Statement updateDb = null;
 
         //make the connection
-        try { 
+        try {
             //set our session id and ip address in order to identify user.
             updateDb = conn.createStatement();
 
