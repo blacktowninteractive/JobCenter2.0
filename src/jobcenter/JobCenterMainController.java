@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -55,6 +56,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
@@ -66,7 +68,10 @@ import javafx.scene.control.ToolBar;
 import javafx.scene.control.TreeCell;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.ComboBoxTreeCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -123,8 +128,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public Button chgPasswd, addEmp, addVehBut, deleteVehBut, clearJob,
             saveJob, confirmJob, cancelJob, addCustBut, addVehEqToTreeBut, addEmpToTreeBut,
             displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut,
-            saveChangesBut, previewJob, printSummaryBut, addNewUsr,
-            addEmployeeBut, deleteManagerBut, addManagerBut;
+            saveChangesBut, previewJob, addNewUsr, addEmployeeBut, deleteManagerBut, addManagerBut;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
@@ -239,6 +243,137 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //Connect to database
         databaseConnect();
+    }
+
+    private final class TextFieldTreeCellImpl extends TreeCell<String> {
+
+        private TextField textField;
+        private ContextMenu addMenu = new ContextMenu();
+        Menu subMenuStatus = new Menu("Toggle");
+ 
+                
+ 
+        public TextFieldTreeCellImpl() {
+            MenuItem addMenuItem = new MenuItem("Delete"),
+                    addMenuItem3 = new MenuItem("IN PROGRESS"),
+                    addMenuItem4 = new MenuItem("COMPLETE"),
+                    addMenuItem5 = new MenuItem("HOLD-CUSTOMER"),
+                    addMenuItem6 = new MenuItem("HOLD-WEATHER"),
+                    addMenuItem7 = new MenuItem("HOLD-OTHER"),
+                    addMenuItem8 = new MenuItem("PROJECTED"),
+                    addMenuItem9 = new MenuItem("CANCELLED");
+             
+            subMenuStatus.getItems().add(addMenuItem3);
+            subMenuStatus.getItems().add(addMenuItem4);
+            subMenuStatus.getItems().add(addMenuItem5);
+            subMenuStatus.getItems().add(addMenuItem6);
+            subMenuStatus.getItems().add(addMenuItem7);
+            subMenuStatus.getItems().add(addMenuItem8);
+            subMenuStatus.getItems().add(addMenuItem9);            
+            
+            addMenu.getItems().add(addMenuItem);
+            addMenu.getItems().add(subMenuStatus); 
+
+            addMenuItem.setOnAction(new EventHandler() {
+
+                public void handle(Event t) {
+                    
+                    System.out.println(getTreeItem().toString());
+                    System.out.println(getTreeItem().getParent().toString());
+                }
+            });
+        }
+
+        @Override
+        public void startEdit() {
+            super.startEdit();
+
+            if (textField == null) {
+                createTextField();
+            }
+            setText(null);
+            setGraphic(textField);
+            textField.selectAll();
+        }
+
+        @Override
+        public void cancelEdit() {
+            super.cancelEdit();
+
+            setText((String) getItem());
+            setGraphic(getTreeItem().getGraphic());
+        }
+
+        @Override
+        public void updateItem(String item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty) {
+                setText(null);
+                setGraphic(null);
+            } else {
+                if (isEditing()) {
+                    if (textField != null) {
+                        textField.setText(getString());
+                    }
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    setText(getString());
+                    setGraphic(getTreeItem().getGraphic());
+                    if (!getTreeItem().isLeaf() && getTreeItem().getParent() != null) {
+                        setContextMenu(addMenu);
+                    }
+                }
+            }
+        }
+
+        private void createTextField() {
+            textField = new TextField(getString());
+            textField.setOnKeyReleased(new EventHandler<KeyEvent>() {
+
+                @Override
+                public void handle(KeyEvent t) {
+                    if (t.getCode() == KeyCode.ENTER) {
+                        commitEdit(textField.getText());
+                    } else if (t.getCode() == KeyCode.ESCAPE) {
+                        cancelEdit();
+                    }
+                }
+            });
+
+        }
+
+        private String getString() {
+            return getItem() == null ? "" : getItem().toString();
+        }
+    }
+
+    public static class Employee {
+
+        private final SimpleStringProperty name;
+        private final SimpleStringProperty department;
+
+        private Employee(String name, String department) {
+            this.name = new SimpleStringProperty(name);
+            this.department = new SimpleStringProperty(department);
+        }
+
+        public String getName() {
+            return name.get();
+        }
+
+        public void setName(String fName) {
+            name.set(fName);
+        }
+
+        public String getDepartment() {
+            return department.get();
+        }
+
+        public void setDepartment(String fName) {
+            department.set(fName);
+        }
     }
 
     private int empParser(String listofEmp) {
@@ -429,42 +564,42 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             depNode.setExpanded(false);
             for (int j = 0; j < jobListInfo.size(); j++) {
-                TreeItem<String> var = new TreeItem<String>(jobListInfo.get(j));
-                depNode.getChildren().add(var);
+                String varStr = jobListInfo.get(j);
+                if (varStr.subSequence(0, 1).equals("/")) {
+                    while (varStr.indexOf("/") >= 0) {
+                        String empNameStr = "";
+                        varStr = varStr.substring(varStr.indexOf("/") + 1, varStr.length());
+
+                        if (varStr.indexOf("/") >= 0) {
+                            empNameStr = varStr.substring(0, varStr.indexOf("/"));
+                        } else {
+                            empNameStr = varStr.substring(0, varStr.length());
+                        }
+
+                        TreeItem<String> var = new TreeItem<String>(empNameStr);
+                        depNode.getChildren().add(var);
+
+                    }
+
+                } else {
+                    TreeItem<String> var = new TreeItem<String>(jobListInfo.get(j));
+                    depNode.getChildren().add(var);
+                }
             }
 
             //add the node and its info into the list
             root559.getChildren().add(depNode);
+
         }
+
+        currentJobsDisplay.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
+            @Override
+            public TreeCell<String> call(TreeView<String> p) {
+                return new TextFieldTreeCellImpl();
+            }
+        });
         currentJobsDisplay.setRoot(root559);
 
-        /*
-         currentJobsDisplay.addEventHandler(EventType.ROOT, new EventHandler<Event>() {
-         @Override
-         public void handle(Event event) {
-         //System.out.println("event " + event);
-         root559 = new TreeItem<String>("Active Jobs");
-         jobList = getJobListTitles();
-         root559.setExpanded(true);
-
-         for (int i = 0; i < jobList.size(); i++) {
-         TreeItem<String> depNode = new TreeItem<String>(jobList.get(i));
-
-         //grab all cust data needed
-         List<String> jobListInfo = getJobListInfo(jobList.get(i));
-
-         depNode.setExpanded(false);
-         for (int j = 0; j < jobListInfo.size(); j++) {
-         TreeItem<String> var = new TreeItem<String>(jobListInfo.get(j));
-         depNode.getChildren().add(var);
-         }
-
-         //add the node and its info into the list
-         root559.getChildren().add(depNode);
-         }
-         currentJobsDisplay.setRoot(root559);
-         }
-         });*/
     }
 
     public ObservableList<manager> populateManagers() {
@@ -1378,7 +1513,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //set location and build of grid pane...
         gridpane.setLayoutY(40);
         int startAnew = 9, empNumber = 0, vehNumber = 0, numLocation = 0, columnLoc = 0,
-                columnLoc2 =1;
+                columnLoc2 = 1;
 
         //set location and build of grid pane...
         gridpane.setLayoutY(40);
@@ -1537,7 +1672,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 }
 
             } else {
-                
+
                 counter = 15;
                 System.out.println("TIME TO PRINT ANOTHER TABLE");
 
@@ -1583,7 +1718,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     numLocation++;
 
                 }
-                
+
                 for (int i = 1; i <= 5; i++) {
                     RowConstraints row = new RowConstraints(20);
                     row.setValignment(VPos.CENTER);

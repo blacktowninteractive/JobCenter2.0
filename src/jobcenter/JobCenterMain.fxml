@@ -53,7 +53,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" layoutX="201.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
+    <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" layoutX="201.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="629.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1161.0" y="-1.0" />
         <ToolBar fx:id="createJobToolbar" blendMode="SRC_OVER" layoutX="3.0" layoutY="1.0" prefHeight="39.0" prefWidth="1276.0" visible="false">
@@ -222,7 +222,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="displayJobs" blendMode="DIFFERENCE" layoutX="200.0" layoutY="56.0" prefHeight="606.0" prefWidth="1054.0" scaleX="1.0" visible="false">
+    <Pane fx:id="displayJobs" blendMode="DIFFERENCE" layoutX="200.0" layoutY="56.0" prefHeight="606.0" prefWidth="1054.0" scaleX="1.0" visible="true">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="633.0" layoutX="0.0" layoutY="-2.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" layoutX="12.0" layoutY="51.0" prefHeight="538.0" prefWidth="510.0" text="Current Jobs">
@@ -232,7 +232,6 @@
                 <ToolBar layoutX="0.0" layoutY="-2.0" prefHeight="31.0" prefWidth="506.0">
                   <items>
                     <Button fx:id="editJobBut" defaultButton="true" mnemonicParsing="false" onAction="#editJobAction" prefWidth="45.0" text="Edit" />
-                    <Button fx:id="printSummaryBut" defaultButton="true" mnemonicParsing="false" onAction="#printSummary" prefWidth="45.0" text="Print" />
                   </items>
                 </ToolBar>
                 <TreeView fx:id="currentJobsDisplay" prefHeight="502.0" prefWidth="531.0" AnchorPane.bottomAnchor="-14.0" AnchorPane.leftAnchor="-10.0" AnchorPane.rightAnchor="-15.0" AnchorPane.topAnchor="24.0" />
