@@ -13,16 +13,16 @@ import javafx.beans.property.SimpleStringProperty;
  * @author vangfc
  */
 public class users {
-    
+        public final SimpleStringProperty username;
+    public final SimpleStringProperty password;
     private final SimpleStringProperty firstName;
     private final SimpleStringProperty lastName;
-    private final SimpleStringProperty userName;
-    private final SimpleStringProperty password;
 
-    public users(String fName, String lName, String uname, String pwd) {
+
+    public users(String fName, String lName, String uName, String pwd) {
         this.firstName = new SimpleStringProperty(fName);
         this.lastName = new SimpleStringProperty(lName);
-        this.userName = new SimpleStringProperty(uname);
+        this.username = new SimpleStringProperty(uName);
         this.password = new SimpleStringProperty(pwd);
     }
 
@@ -42,7 +42,7 @@ public class users {
         password.set(phoneStrVar);
     }
 
-    public String getLastName() {
+        public String getLastName() {
         return lastName.get();
     }
 
@@ -51,10 +51,10 @@ public class users {
     }
 
     public String getUsername() {
-        return userName.get();
+        return username.get();
     }
 
     public void setUsername(String unameset) {
-        userName.set(unameset);
+        username.set(unameset);
     }
 }

@@ -4,6 +4,8 @@
  */
 package jobcenter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -22,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.KeyFrame;
@@ -40,6 +43,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.print.PageLayout;
@@ -80,6 +84,8 @@ import javafx.scene.layout.RowConstraints;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontSmoothingType;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Scale;
@@ -99,6 +105,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public static String url = "jdbc:mysql://localhost/jobcenter";
     public static String userdb = "vangfc";//Username of database  
     public static String passdb = "password";//Password of database
+    public static String scrollingTxt = "";
     Statement st = null;
     ResultSet rs = null;
     public static Connection conn;
@@ -116,10 +123,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     public static ObservableList<String> jStatus = FXCollections.observableArrayList(
             "IN PROGRESS", "COMPLETE", "HOLD-CUSTOMER", "HOLD-WEATHER", "HOLD-OTHER", "PROJECTED", "CANCELLED");
-    public TableView usersTable;
+
     public TableView<manager> managerView = new TableView<manager>();
     public TableView<employee> employeeTable = new TableView<employee>();
     public TableView<equipment> equipmentTable = new TableView<equipment>();
+    public TableView<users> usersTable = new TableView<users>();
 
     public TableColumn emp_fname, emp_lname, emp_phone, emp_email,
             vehNameIns, typeIns, statusIns, usrFName, usrLName, usrUName, usrPwd,
@@ -128,12 +136,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public Button chgPasswd, addEmp, addVehBut, deleteVehBut, clearJob,
             saveJob, confirmJob, cancelJob, addCustBut, addVehEqToTreeBut, addEmpToTreeBut,
             displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut,
-            saveChangesBut, previewJob, addNewUsr, addEmployeeBut, deleteManagerBut, addManagerBut;
+            saveChangesBut, previewJob, addNewUsr, addEmployeeBut, deleteManagerBut, addManagerBut,
+            usrDeleteBut, handlePasswdBut, saveScrollingBut;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
             vehNameNew, typeNew, statusNew, streetAddr, city, state, zip,
-            newUsrName, fname_str, lname_str, phone_str, email_str, office_str;
+            newUsrName, fname_str, lname_str, phone_str, email_str, office_str,
+            scrollingTxtSet;
 
     public PasswordField newPwd;
 
@@ -142,7 +152,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             billing, cid, jobtypecompiled, empCompiled, equipCompiled, sI, dI, tI, wI;
 
     public Text setCustPhone, setCustName, setCustCity, setCustState, setCustPOC, setCustCompPhone,
-            setCustFax, setCustAddr, setCustZip;
+            setCustFax, setCustAddr, setCustZip, useridInfor, nameInfor, emailInfor, phoneInfor, usernameInfor,
+            currentScrolling;
 
     public ComboBox screenList, taskComboBox, jobStatus, empListUsr;
     ObservableList<String> admin = FXCollections.observableArrayList(
@@ -189,7 +200,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public void initialize(URL url, ResourceBundle rb) {
         //Note** If you want to manipulate objects within the FXML loaded you need to 
         // initialize them here to obtain a pointer in memory for dynamic changes.
-
         emp_fname.setCellValueFactory(new PropertyValueFactory<employee, String>("firstName"));
         emp_lname.setCellValueFactory(new PropertyValueFactory<employee, String>("lastName"));
         emp_email.setCellValueFactory(new PropertyValueFactory<employee, String>("email"));
@@ -211,6 +221,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
         manage_email.setCellValueFactory(new PropertyValueFactory<manager, String>("email"));
 
         managerView.setItems(populateManagers());
+
+        usrFName.setCellValueFactory(new PropertyValueFactory<users, String>("firstName"));
+        usrLName.setCellValueFactory(new PropertyValueFactory<users, String>("lastName"));
+        usrUName.setCellValueFactory(new PropertyValueFactory<users, String>("username"));
+        usrPwd.setCellValueFactory(new PropertyValueFactory<users, String>("pwd"));
+
+        usersTable.setItems(populateUsers());
 
         prodChk.setSelected(false);
         hourChk.setSelected(false);
@@ -241,8 +258,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
         createJobToolbar.setVisible(false);
         editJobToolbar.setVisible(false);
 
+        //need to set scrolling text from database...
+        scrollingTxt = getScrollingTxt();
+
         //Connect to database
         databaseConnect();
+
+        //  initialize user settings text
+        initializeText();
     }
 
     private final class TextFieldTreeCellImpl extends TreeCell<String> {
@@ -250,9 +273,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         private TextField textField;
         private ContextMenu addMenu = new ContextMenu();
         Menu subMenuStatus = new Menu("Toggle");
- 
-                
- 
+
         public TextFieldTreeCellImpl() {
             MenuItem addMenuItem = new MenuItem("Delete"),
                     addMenuItem3 = new MenuItem("IN PROGRESS"),
@@ -262,22 +283,22 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     addMenuItem7 = new MenuItem("HOLD-OTHER"),
                     addMenuItem8 = new MenuItem("PROJECTED"),
                     addMenuItem9 = new MenuItem("CANCELLED");
-             
+
             subMenuStatus.getItems().add(addMenuItem3);
             subMenuStatus.getItems().add(addMenuItem4);
             subMenuStatus.getItems().add(addMenuItem5);
             subMenuStatus.getItems().add(addMenuItem6);
             subMenuStatus.getItems().add(addMenuItem7);
             subMenuStatus.getItems().add(addMenuItem8);
-            subMenuStatus.getItems().add(addMenuItem9);            
-            
+            subMenuStatus.getItems().add(addMenuItem9);
+
             addMenu.getItems().add(addMenuItem);
-            addMenu.getItems().add(subMenuStatus); 
+            addMenu.getItems().add(subMenuStatus);
 
             addMenuItem.setOnAction(new EventHandler() {
 
                 public void handle(Event t) {
-                    
+
                     System.out.println(getTreeItem().toString());
                     System.out.println(getTreeItem().getParent().toString());
                 }
@@ -349,33 +370,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
         }
     }
 
-    public static class Employee {
-
-        private final SimpleStringProperty name;
-        private final SimpleStringProperty department;
-
-        private Employee(String name, String department) {
-            this.name = new SimpleStringProperty(name);
-            this.department = new SimpleStringProperty(department);
-        }
-
-        public String getName() {
-            return name.get();
-        }
-
-        public void setName(String fName) {
-            name.set(fName);
-        }
-
-        public String getDepartment() {
-            return department.get();
-        }
-
-        public void setDepartment(String fName) {
-            department.set(fName);
-        }
-    }
-
     private int empParser(String listofEmp) {
         int count = 1;
         String strManip = listofEmp;
@@ -406,6 +400,41 @@ public class JobCenterMainController implements Initializable, ScreenController 
         }
         System.out.println("Veh count: " + count);
         return count;
+    }
+
+    private void setScrollingTxt(String textSet) throws SQLException {
+        delScrollTxt();
+
+        String qry3 = "insert into scrolltext (text) values ('" + textSet + "');";
+        Statement updateDb = null;
+        updateDb = conn.createStatement();
+        int executeUpdate = updateDb.executeUpdate(qry3);
+    }
+
+    private String getScrollingTxt() {
+        String qryRun = "select text from scrolltext;",
+                txtReturn = "";
+
+        //make the connection
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery(qryRun);
+
+            while (rs.next()) {
+                txtReturn = rs.getString(1);
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return txtReturn;
+    }
+
+    void delScrollTxt() throws SQLException {
+        String qry3 = "delete from scrolltext;";
+        Statement updateDb = null;
+        updateDb = conn.createStatement();
+        int executeUpdate = updateDb.executeUpdate(qry3);
     }
 
     private void clearJobList() {
@@ -451,6 +480,45 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         taskTypeListStr.clear();
         taskTypeList.setItems(taskTypeListStr);
+
+    }
+
+    private void initializeText() {
+        String idEmpStr = null;
+
+        try {
+            idEmpStr = getEmpId();
+        } catch (UnknownHostException ex) {
+            Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //make the connection
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select (select fname from employees where uid = employees_uid), "
+                    + "(select lname from employees where uid = employees_uid), "
+                    + "(select email from employees where uid = employees_uid),"
+                    + "(select phone from employees where uid = employees_uid),"
+                    + "userName from users where employees_uid = " + idEmpStr + ";");
+
+            while (rs.next()) {
+
+                System.out.println(rs.getString(1));
+                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(3));
+                System.out.println(rs.getString(4));
+                System.out.println(rs.getString(5));
+
+                useridInfor.setText(idEmpStr);
+                nameInfor.setText(rs.getString(1) + " " + rs.getString(2));
+                emailInfor.setText(rs.getString(3));
+                phoneInfor.setText(rs.getString(4));
+                usernameInfor.setText(rs.getString(5));
+
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
@@ -551,9 +619,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
     }
 
     public void refreshList() {
+
         root559 = new TreeItem<String>("Active Jobs");
         jobList = getJobListTitles();
-        root559.setExpanded(true);
+        root559.setExpanded(false);
+
         for (int i = 0; i < jobList.size(); i++) {
 
             //adds each job child node to the treeview
@@ -592,14 +662,41 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         }
 
+        currentJobsDisplay.setRoot(root559);
+        root559.setExpanded(true);
         currentJobsDisplay.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
             @Override
             public TreeCell<String> call(TreeView<String> p) {
                 return new TextFieldTreeCellImpl();
             }
         });
-        currentJobsDisplay.setRoot(root559);
+    }
 
+    public ObservableList<users> populateUsers() {
+        ObservableList<users> tester55 = FXCollections.observableArrayList();
+
+        //make the connection
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select (select fname from employees where uid = employees_uid), (select lname from employees where uid = employees_uid), userName, password from users;");
+
+            while (rs.next()) {
+                tester55.add(new users(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
+                System.out.println(rs.getString(1));
+                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(3));
+                System.out.println(rs.getString(4));
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        System.out.println(tester55.get(0).getPwd());
+        System.out.println(tester55.get(0).getUsername());
+
+        return tester55;
     }
 
     public ObservableList<manager> populateManagers() {
@@ -833,6 +930,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         }
                         if (new_val == "Settings") {
                             settingsPane.setVisible(true);
+
+                            //set the user feedback text to whats in the database
+                            currentScrolling.setText(scrollingTxt);
+
                         }
                         if (new_val == "Create/Delete a JobCenter User") {
                             //make the connection
@@ -861,6 +962,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     public void changed(ObservableValue<? extends String> ov,
                             String old_val, String new_val) {
                         clearPane();
+
                         if (new_val == "Create new job") {
                             createJobToolbar.setVisible(true);
                             editJobToolbar.setVisible(false);
@@ -904,7 +1006,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                             //adds the treeview here!
                             refreshList();
-
                         }
 
                     }
@@ -1248,6 +1349,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String getJobTitle = currentJobsDisplay.getSelectionModel().selectedItemProperty().getValue().toString();
         getJobTitle = getJobTitle.substring(getJobTitle.indexOf(":") + 1, getJobTitle.indexOf("]"));
         getJobTitle = getJobTitle.trim();
+        int indexNode = 1;
 
         //get veh/equip name selected
         String vehStrConv = vehAddJobView.getSelectionModel().selectedItemProperty().getValue().toString();
@@ -1257,11 +1359,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //System.out.println("RootStr: " + currentJobsDisplay.getChildrenUnmodifiable().get(currentJobsDisplay.getSelectionModel().getSelectedIndex()));
         System.out.println("Adding: " + vehStrConv + " to job: " + getJobTitle);
 
+        indexNode = currentJobsDisplay.getSelectionModel().getSelectedIndex();
+
         //check make sure job exists
         //make the connection
         try {
-            conn = DriverManager.getConnection(url, userdb, passdb);
             st = conn.createStatement();
+
             String qryCurJob = "select CurJobID, JobEandV from currentJobs where JobTitle = '" + getJobTitle + "';";
 
             rs = st.executeQuery(qryCurJob);
@@ -1317,6 +1421,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                     int executeUpdate = updateDb.executeUpdate(addEmpStrQry);
                     refreshList();
+                    currentJobsDisplay.getTreeItem(indexNode).setExpanded(true);
                 }
             } else {
                 //popup explain to user that this selection is invalid
@@ -1382,8 +1487,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
             conn = DriverManager.getConnection(url, userdb, passdb);
             st = conn.createStatement();
             String qryCurJob = "select CurJobID, JobEmployees from currentJobs where JobTitle = '" + getJobTitle + "';";
+            int indexNode = 1;
 
             rs = st.executeQuery(qryCurJob);
+            indexNode = currentJobsDisplay.getSelectionModel().getSelectedIndex();
             if (rs.next()) {
                 String idMod = rs.getString(1);
                 String empList = rs.getString(2);
@@ -1438,6 +1545,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                     //refresh the treeview after user clicks add employee....
                     refreshList();
+                    currentJobsDisplay.getTreeItem(indexNode).setExpanded(true);
 
                 }
             } else {
@@ -2308,22 +2416,29 @@ public class JobCenterMainController implements Initializable, ScreenController 
             countAmt++;
         }
 
-        final Rectangle rectBasicTimeline = new Rectangle(100, 50, 100, 50);
+        //starting point -- width -- height
+        //rectangle((x,y),width,height)
+        final Rectangle rectBasicTimeline = new Rectangle(0, 500, 400, 60);
         rectBasicTimeline.setFill(Color.RED);
 
-        final Text txtTimeline = new Text("ICY CONDITIONS -- CAREFUL OUT THERE!");
-        txtTimeline.setFill(Color.RED);
-        txtTimeline.setStyle("-fx-font-size: 50;" + "-fx-background-color: yellow;");
+        final Text txtTimeline = new Text(0, 500, scrollingTxt);
+
+        // txtTimeline.setStyle("-fx-font-size: 50;" + "-fx-background-color: yellow;");
+        // txtTimeline.setTextAlignment(TextAlignment.CENTER);
+        txtTimeline.setFill(Color.WHITE);
+        //txtTimeline.setTextOrigin(VPos.CENTER);
+        txtTimeline.setFont(Font.font("courier", 45));
+        txtTimeline.setFontSmoothingType(FontSmoothingType.LCD);
 
         final Timeline timeline = new Timeline();
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(false);
-        final KeyValue kv = new KeyValue(rectBasicTimeline.xProperty(), 2000);
-        final KeyFrame kf = new KeyFrame(Duration.millis(4500), kv);
+        final KeyValue kv = new KeyValue(txtTimeline.xProperty(), 2000);
+        final KeyFrame kf = new KeyFrame(Duration.millis(7500), kv);
         timeline.getKeyFrames().add(kf);
         timeline.play();
 
-        root.getChildren().addAll(rectBasicTimeline, txtTimeline);
+        root.getChildren().addAll(txtTimeline);
         root.getChildren().add(grid);
 
         Scene scene2 = new Scene(root, Color.BLACK);
@@ -2335,12 +2450,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         stageJob.setScene(scene2);
         stageJob.setResizable(false);
-        javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(1).getVisualBounds();
+
+        //change screens here  --- change to 1 for Video Pipe Services
+        javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(0).getVisualBounds();
         stageJob.setX(primaryScreenBounds.getMinX());
         stageJob.setY(primaryScreenBounds.getMinY());
-
         stageJob.show();
-
     }
 
     @FXML
@@ -3114,12 +3229,21 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 try {
                     updateDb = conn.createStatement();
                     List<String> tmpList = new ArrayList<String>();
-                    boolean nameExists = false;
+                    boolean nameExists = false, uidExists = false;
 
                     rs = st.executeQuery(qry);
                     while (rs.next()) {
                         //System.out.println(rs.getString(1));
                         tmpList.add(rs.getString(1));
+                    }
+
+                    qry = "select userName from users where employees_uid = " + uidSelected + ";";
+                    rs = st.executeQuery(qry);
+                    while (rs.next()) {
+                        if (rs.getString(1) != null) {
+                            uidExists = true;
+                        }
+
                     }
 
                     for (int i = 0; i < tmpList.size(); i++) {
@@ -3131,11 +3255,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                     int executeUpdate;
 
-                    if (!nameExists) {
+                    if (!nameExists && uidExists == false) {
                         executeUpdate = updateDb.executeUpdate(queryRunNow);
 
                         if (executeUpdate > 0) {
                             displayMsg("User successfully added to database.");
+                            usersTable.setItems(populateUsers());
                         }
                     } else {
                         displayMsg("Please check username & try again.");
@@ -3261,7 +3386,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             updateDb = conn.createStatement();
 
             int executeUpdate = updateDb.executeUpdate(queryRun);
-            employeeTable.setItems(populateDB());
+            managerView.setItems(populateManagers());
 
             //show the complete box dialog
             Label label2;
@@ -3327,6 +3452,226 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Logger.getLogger(JobCenterController.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @FXML
+    private void usrDeleteAction(ActionEvent event) {
+        String usrToDelete = usersTable.getSelectionModel().selectedItemProperty().getValue().getUsername();
+        String queryDelete = "DELETE FROM users WHERE userName = '" + usrToDelete + "'";
+        //System.out.println(queryDelete);
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try {
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryDelete);
+            usersTable.setItems(populateUsers());
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @FXML
+    private void handlePasswdAction(ActionEvent event) {
+        //Creating a GridPane container
+        GridPane grid = new GridPane();
+        grid.setPadding(new Insets(10, 10, 10, 10));
+        grid.setVgap(5);
+        grid.setHgap(5);
+
+        //title of pane
+        Label title = new Label("Reset Password");
+        title.getText();
+        GridPane.setConstraints(title, 0, 0);
+        grid.getChildren().add(title);
+
+        //Defining the Name text field
+        final PasswordField oldPass = new PasswordField();
+        oldPass.setPromptText("Enter old password");
+        oldPass.setPrefColumnCount(10);
+        oldPass.getText();
+        GridPane.setConstraints(oldPass, 0, 1);
+        grid.getChildren().add(oldPass);
+
+        //Defining the Name text field
+        final PasswordField newPw = new PasswordField();
+        newPw.setPromptText("Enter new password");
+        newPw.setPrefColumnCount(10);
+        newPw.getText();
+        GridPane.setConstraints(newPw, 0, 2);
+        grid.getChildren().add(newPw);
+        //Defining the Last Name text field
+        final PasswordField verHash = new PasswordField();
+        verHash.setPromptText("Re-enter password");
+        GridPane.setConstraints(verHash, 0, 3);
+        grid.getChildren().add(verHash);
+        //Defining the Submit button
+        Button submit = new Button("Submit");
+
+        GridPane.setConstraints(submit, 1, 3);
+        grid.getChildren().add(submit);
+
+        Group root = new Group(), root2 = new Group(), root3 = new Group();
+        final Stage stage2 = new Stage();
+
+        Scene scene = new Scene(root);
+        root.getChildren().addAll(grid);
+
+        stage2.setScene(scene);
+        stage2.setHeight(150);
+        stage2.setWidth(250);
+        stage2.setResizable(false);
+        stage2.show();
+
+        Label label1 = new Label("Password Changed!");
+        Button closeWindow = new Button("Close");
+        HBox hb = new HBox();
+
+        hb.getChildren().addAll(label1, closeWindow);
+        hb.setSpacing(10);
+        hb.setLayoutX(48);
+        hb.setLayoutY(48);
+
+        final Scene scene2 = new Scene(root2);
+        root2.getChildren().addAll(hb, closeWindow);
+
+        Label label2 = new Label("Password not changed!");
+        HBox hb2 = new HBox();
+
+        hb2.getChildren().addAll(label2, closeWindow);
+        hb2.setSpacing(10);
+        hb2.setLayoutX(48);
+        hb2.setLayoutY(48);
+
+        final Scene scene3 = new Scene(root3);
+        root3.getChildren().addAll(hb2);
+
+        //***************************************************************
+        //here we define what all our buttons do within this transaction :)
+        //***************************************************************
+        submit.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+
+                String idEmpStr = null;
+                String user = "";
+
+                try {
+                    idEmpStr = getEmpId();
+                } catch (UnknownHostException ex) {
+                    Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                //make the connection
+                try {
+                    st = conn.createStatement();
+                    rs = st.executeQuery("select userName from users where employees_uid = " + idEmpStr + ";");
+
+                    while (rs.next()) {
+                        user = rs.getString(1);
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                try {
+                    String pass = oldPass.getText();
+                    boolean authorized = false;
+
+                    //get md5 of old password (for verification); then get md5 of new password to store
+                    String oldPwHash = getMD5(oldPass.getText()),
+                            newPwHash = getMD5(newPw.getText()),
+                            verifyHash = getMD5(verHash.getText());
+
+                    if (verifyHash.equals(newPwHash)) {
+                        st = conn.createStatement();
+                        rs = st.executeQuery("select userName from users;");
+
+                        while (rs.next()) {
+                            System.out.println(rs.getString(1));
+                            //check to see if username matches
+                            if (rs.getString(1).equals(user)) {
+                                String qry = "select password from users where userName = '" + user + "';";
+                                //System.out.println(qry);
+                                rs = st.executeQuery(qry);
+
+                                while (rs.next()) {
+
+                                    //check to see if password matches
+                                    if (rs.getString(1).equals(oldPwHash)) {
+                                        //System.out.println("matched!" + rs.getString(1));
+                                        authorized = true;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (authorized == true) {
+                            String qry3 = "update users set password = '" + newPwHash
+                                    + "' where userName = '" + user + "';";
+                            //System.out.println(qry3);
+                            Statement updateDb = null;
+                            updateDb = conn.createStatement();
+                            int executeUpdate = updateDb.executeUpdate(qry3);
+
+                            stage2.close();
+                            stage2.setScene(scene2);
+                            stage2.setHeight(150);
+                            stage2.setWidth(250);
+                            stage2.setResizable(false);
+                            stage2.show();
+
+                        } else {
+                            stage2.close();
+                            stage2.setScene(scene3);
+                            stage2.setHeight(150);
+                            stage2.setWidth(250);
+                            stage2.setResizable(false);
+                            stage2.show();
+                        }
+                    } //if the hashes for new password do not match then exit immediately.....
+                    else {
+                        stage2.close();
+                        stage2.setScene(scene3);
+                        stage2.setHeight(150);
+                        stage2.setWidth(250);
+                        stage2.setResizable(false);
+                        stage2.show();
+
+                    }
+
+                } catch (SQLException ex) {
+                    Logger.getLogger(JobCenterMainController.class
+                            .getName()).log(Level.SEVERE, null, ex);
+                } catch (NoSuchAlgorithmException ex) {
+                    Logger.getLogger(JobCenterMainController.class
+                            .getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        });
+
+        closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                stage2.close();
+            }
+        });
+
+    }
+
+    @FXML
+    private void saveScrollingText(ActionEvent event) throws SQLException {
+        setScrollingTxt(scrollingTxtSet.getText().toString());
+        //need to set scrolling text from database...
+        scrollingTxt = getScrollingTxt();
     }
 
 }
