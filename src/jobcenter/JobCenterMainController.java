@@ -65,6 +65,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellEditEvent;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -74,6 +75,7 @@ import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.ComboBoxTreeCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -102,7 +104,7 @@ import javafx.util.Duration;
 public class JobCenterMainController implements Initializable, ScreenController {
 
     //database connection info
-    public static String url = "jdbc:mysql://localhost/jobcenter";
+    public static String url = "jdbc:mysql://192.168.1.125/jobcenter";
     public static String userdb = "vangfc";//Username of database  
     public static String passdb = "password";//Password of database
     public static String scrollingTxt = "";
@@ -111,6 +113,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public static Connection conn;
     public ScreenPane myScreenPane;
     public ToolBar editJobToolbar, createJobToolbar;
+    boolean calSet;
 
     public RadioButton prodChk, hourChk;
 
@@ -137,7 +140,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             saveJob, confirmJob, cancelJob, addCustBut, addVehEqToTreeBut, addEmpToTreeBut,
             displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut,
             saveChangesBut, previewJob, addNewUsr, addEmployeeBut, deleteManagerBut, addManagerBut,
-            usrDeleteBut, handlePasswdBut, saveScrollingBut;
+            usrDeleteBut, handlePasswdBut, saveScrollingBut, displayCalendar;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
@@ -188,6 +191,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     public static String empID;
 
+    int start;
+
     TreeItem<String> root559;
     @FXML
     TreeView<String> currentJobsDisplay;
@@ -206,7 +211,54 @@ public class JobCenterMainController implements Initializable, ScreenController 
         emp_phone.setCellValueFactory(new PropertyValueFactory<employee, String>("phone"));
 
         employeeTable.setItems(populateDB());
+        employeeTable.setEditable(true);
 
+        emp_fname.setCellFactory(TextFieldTableCell.forTableColumn());
+        emp_lname.setCellFactory(TextFieldTableCell.forTableColumn());
+        emp_email.setCellFactory(TextFieldTableCell.forTableColumn());
+        emp_phone.setCellFactory(TextFieldTableCell.forTableColumn());
+
+        emp_fname.setOnEditStart(new EventHandler<TableColumn.CellEditEvent<employee, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<employee, String> t) {
+                ((employee) t.getTableView().getItems().get(t.getTablePosition().getRow())).setFirstName(t.getNewValue());
+                System.out.println("onStart");
+                System.out.println(t.getTableView().getItems().get(t.getTablePosition().getRow()).getFirstName());
+            }
+        });
+
+        emp_fname.setOnEditCancel(new EventHandler<TableColumn.CellEditEvent<employee, String>>() {
+            @Override
+            public void handle(TableColumn.CellEditEvent<employee, String> t) {
+                ((employee) t.getTableView().getItems().get(t.getTablePosition().getRow())).setFirstName(t.getNewValue());
+                System.out.println("onCancel");
+                System.out.println(t.getTableView().getItems().get(t.getTablePosition().getRow()).getFirstName());
+            }
+        });
+        emp_fname.setOnEditCommit(new EventHandler() {
+
+            @Override
+            public void handle(Event t) {
+                System.out.println("Commit");
+            }
+        });
+
+        /*emp_fname.setOnEditCommit(
+         new EventHandler<TableColumn.CellEditEvent<employee,String>> (){
+         @Override
+         public void handle(CellEditEvent<employee, String> t) {
+         System.out.println("Changed!");
+         }
+         }
+        
+        
+         new EventHandler<CellEditEvent<employee, String>>() {
+         @Override
+         public void handle(CellEditEvent<employee, String> t) {
+         System.out.println("Changed!");
+         }
+         }
+         );*/
         vehNameIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("veh"));
         typeIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("type"));
         statusIns.setCellValueFactory(new PropertyValueFactory<equipment, String>("stat"));
@@ -911,6 +963,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //****************MENU OPTIONS
         //******************************
         //loads the 'Administration' list in the menu option
+        //get user, if not in the allowed userlist disable the management bar
+        adminList.disableProperty().set(false);
+
         adminList.setItems(admin);
         adminList.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<String>() {
@@ -1964,239 +2019,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         stageJob.show();
 
-
-        /*
-         st = conn.createStatement();
-         String qry = "select * from currentjobs where status ='IN PROGRESS';";
-         //System.out.println("qry: " + qry);
-         String jobTxtStr = "", jobTypeStr = "", jobDateTxtStr = "", jobStatusStr = "", empListStr = "", equipListStr = "";
-         int countAmt = 1, area1 = 3, area2 = 4, area3 = 5, area4 = 6;
-         Group root = new Group();
-         GridPane grid = new GridPane();
-
-         List<String> empListSort = new ArrayList<String>();
-         List<String> equipListSort = new ArrayList<String>();
-
-         rs = st.executeQuery(qry);
-         while (rs.next()) {
-         jobTxtStr = rs.getString(5);
-         jobTypeStr = rs.getString(6);
-         jobDateTxtStr = rs.getString(7);
-         jobStatusStr = rs.getString(17);
-
-         empListStr = rs.getString(10);
-         equipListStr = rs.getString(11);
-
-         //System.out.println(jobTxtStr);
-         //System.out.println("Count: " + Integer.toString(countAmt));
-         ToolBar addme = new ToolBar();
-         Button test = new Button("Print");
-
-         addme.getItems().add(test);
-         addme.setMinWidth(1255);
-         grid.setHgap(10);
-         grid.setVgap(3);
-
-         //grid.setBlendMode(BlendMode.DIFFERENCE);
-         TextField jobTxt = new TextField(),
-         jobTypeTxt = new TextField(),
-         jobDateTxt = new TextField(),
-         jobStatusBox = new TextField();
-
-         jobTxt.setStyle("-fx-background-color: lightblue;"
-         + "-fx-font-size: 8;");
-         jobTxt.setMaxWidth(80);
-         jobTxt.setEditable(false);
-         jobTxt.setText(jobTxtStr);
-         jobTxt.setAlignment(Pos.CENTER);
-
-         jobTypeTxt.setStyle("-fx-background-color: lightblue;"
-         + "-fx-font-size: 8;");
-         jobTypeTxt.setMaxWidth(80);
-         jobTypeTxt.setEditable(false);
-         jobTypeTxt.setText(jobTypeStr);
-         jobTypeTxt.setAlignment(Pos.CENTER);
-
-         jobDateTxt.setStyle("-fx-background-color: white;"
-         + "-fx-font-size: 8;");
-         jobDateTxt.setMaxWidth(80);
-         jobDateTxt.setEditable(false);
-         jobDateTxt.setText(jobDateTxtStr);
-         jobDateTxt.setAlignment(Pos.CENTER);
-
-         jobStatusBox.setStyle("-fx-background-color: white;"
-         + "-fx-font-size: 8;");
-         jobStatusBox.setMaxWidth(80);
-         jobStatusBox.setEditable(false);
-         jobStatusBox.setText(jobStatusStr);
-         jobStatusBox.setAlignment(Pos.CENTER);
-
-         if (countAmt == 10) {
-         countAmt = 1;
-         area1 += 30;
-         area2 += 30;
-         area3 += 30;
-         area4 += 30;
-         }
-         if (countAmt == 20) {
-         countAmt = 1;
-         area1 += 100;
-         area2 += 100;
-         area3 += 100;
-         area4 += 100;
-         }
-         if (countAmt == 30) {
-         countAmt = 1;
-         area1 += 30;
-         area2 += 30;
-         area3 += 30;
-         area4 += 30;
-         }
-         grid.add(jobTxt, countAmt, area1);
-         grid.add(jobTypeTxt, countAmt, area2);
-         grid.add(jobDateTxt, countAmt, area3);
-         grid.add(jobStatusBox, countAmt, area4);
-
-         //System.out.println("Index: " + empListStr.indexOf("/"));
-         //System.out.println("at row: " + countAmt);
-         String nameOfPerson;
-         int counterArea = area4 + 1;
-
-         //displays the employees who are set for the job
-         while (true) {
-
-         if (empListStr.indexOf("/") < 0) {
-         break;
-         }
-
-         if (empListStr.indexOf("/") >= 0) {
-         //sort out employees for display
-         empListStr = empListStr.substring(0, empListStr.length());
-
-         //System.out.println("Unprocessed string: " + empListStr);
-         //System.out.println("Before: " + empListStr);
-         //System.out.println(empListStr.indexOf("/"));
-         if (empListStr.indexOf("/") == 0) {
-         empListStr = empListStr.substring(1, empListStr.length());
-
-         if (empListStr.indexOf("/") > 0) {
-         nameOfPerson = empListStr.substring(0, empListStr.indexOf("/"));
-         empListStr = empListStr.substring(empListStr.indexOf("/"), empListStr.length());
-         } else {
-         nameOfPerson = empListStr.substring(0, empListStr.length());
-         }
-
-         //empListStr = empListStr.substring(empListStr.indexOf("/") + 1, empListStr.length());
-         //System.out.println("After: " + empListStr);
-         //System.out.println("Adding: " + nameOfPerson);
-         TextField nameTxt = new TextField();
-         nameTxt.setMaxWidth(80);
-         nameTxt.setStyle("-fx-background-color: lightgreen;"
-         + "-fx-font-size: 8;");
-
-         nameTxt.setMaxHeight(100);
-         nameTxt.setEditable(false);
-         nameTxt.setText(nameOfPerson);
-         nameTxt.setAlignment(Pos.CENTER);
-
-         grid.add(nameTxt, countAmt, counterArea);
-         //System.out.println("at row: " + countAmt);
-         counterArea++;
-
-         }
-         } else {
-         //System.out.println("Adding2: " + empListStr);
-         nameOfPerson = empListStr;
-         TextField nameTxt = new TextField();
-         nameTxt.setStyle("-fx-background-color: green;"
-         + "-fx-font-size: 8;");
-         nameTxt.setMaxWidth(80);
-         nameTxt.setEditable(false);
-         nameTxt.setText(nameOfPerson);
-         nameTxt.setAlignment(Pos.CENTER);
-
-         grid.add(nameTxt, countAmt, counterArea);
-         //System.out.println("at row2: " + countAmt);
-         empListStr = "";
-         counterArea++;
-
-         break;
-         }
-
-         }
-         String equipNameStr;
-         //displays the equipment set for the job
-         while (true) {
-         if (equipListStr.indexOf("/") >= 0) {
-         //sort out employees for display
-         equipListStr = equipListStr.substring(1, equipListStr.length() - 1);
-         //System.out.println("\n\nUnprocessed string: " + equipListStr);
-         equipNameStr = "";
-         //System.out.println("Before: " + equipListStr);
-         //System.out.println(equipListStr.indexOf("/"));
-         if (equipListStr.indexOf("/") > 0) {
-         equipNameStr = equipListStr.substring(0, equipListStr.indexOf("/"));
-         equipListStr = equipListStr.substring(equipListStr.indexOf("/"), equipListStr.length());
-         //System.out.println("After: " + equipListStr);
-
-         //System.out.println("Adding: " + equipNameStr);
-         TextField nameTxt = new TextField();
-
-         nameTxt.setStyle("-fx-background-color: yellow;"
-         + "-fx-font-size: 8;");
-         nameTxt.setMaxWidth(80);
-         nameTxt.setMaxHeight(70);
-         nameTxt.setEditable(false);
-         nameTxt.setText(equipNameStr);
-         nameTxt.setAlignment(Pos.CENTER);
-
-         grid.add(nameTxt, countAmt, counterArea);
-         //System.out.println("at row: " + countAmt);
-         counterArea++;
-
-         }
-         } else {
-         //System.out.println("Adding2: " + equipListStr);
-         equipNameStr = equipListStr;
-         TextField nameTxt = new TextField();
-
-         nameTxt.setStyle("-fx-background-color: yellow;"
-         + "-fx-font-size: 8;");
-         nameTxt.setMaxWidth(80);
-         nameTxt.setEditable(false);
-         nameTxt.setText(equipNameStr);
-         nameTxt.setAlignment(Pos.CENTER);
-
-         grid.add(nameTxt, countAmt, counterArea);
-         //System.out.println("at row2: " + countAmt);
-         empListStr = "";
-         counterArea++;
-
-         break;
-         }
-
-         }
-
-         countAmt++;
-         }
-
-         root.getChildren().add(grid);
-
-         Scene scene2 = new Scene(root, Color.BLACK);
-         stageJob = new Stage();
-         stageJob.setHeight(662);
-         stageJob.setWidth(1224);
-         stageJob.setResizable(false);
-
-         stageJob.setScene(scene2);
-         stageJob.setResizable(false);
-
-         // which screen to display the popup on ....
-         javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(0).getVisualBounds();
-         stageJob.setX(primaryScreenBounds.getMinX());
-         stageJob.setY(primaryScreenBounds.getMinY());
-
-         stageJob.show();*/
     }
 
     @FXML
@@ -2421,7 +2243,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         final Rectangle rectBasicTimeline = new Rectangle(0, 500, 400, 60);
         rectBasicTimeline.setFill(Color.RED);
 
-        final Text txtTimeline = new Text(0, 500, scrollingTxt);
+        final Text txtTimeline = new Text(-100, 500, scrollingTxt);
 
         // txtTimeline.setStyle("-fx-font-size: 50;" + "-fx-background-color: yellow;");
         // txtTimeline.setTextAlignment(TextAlignment.CENTER);
@@ -2434,7 +2256,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.setAutoReverse(false);
         final KeyValue kv = new KeyValue(txtTimeline.xProperty(), 2000);
-        final KeyFrame kf = new KeyFrame(Duration.millis(7500), kv);
+        final KeyFrame kf = new KeyFrame(Duration.millis(9999), kv);
         timeline.getKeyFrames().add(kf);
         timeline.play();
 
@@ -3343,10 +3165,15 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @FXML
     private void deleteEmpAction(ActionEvent event) throws IOException, SQLException {
-        String emailToDelete = employeeTable.getSelectionModel().selectedItemProperty().getValue().getEmail();
-        String queryDelete = "DELETE FROM employees WHERE email = '" + emailToDelete + "'";
-        //System.out.println(queryDelete);
+        String emailToDelete = employeeTable.getSelectionModel().selectedItemProperty().getValue().getEmail(),
+                fnameToDel = employeeTable.getSelectionModel().selectedItemProperty().getValue().getFirstName(),
+                lnametoDel = employeeTable.getSelectionModel().selectedItemProperty().getValue().getLastName();
 
+        String queryDelete = "DELETE FROM employees WHERE email = '" + emailToDelete + "'"
+                + " and fname = '" + fnameToDel + "'"
+                + " and lname = '" + lnametoDel + "'";
+
+        //System.out.println(queryDelete);
         //insert into database
         Statement updateDb = null;
 
@@ -3672,6 +3499,272 @@ public class JobCenterMainController implements Initializable, ScreenController 
         setScrollingTxt(scrollingTxtSet.getText().toString());
         //need to set scrolling text from database...
         scrollingTxt = getScrollingTxt();
+        displayMsg("Message Updated.");
     }
 
+    @FXML
+    private void displayCalendarAction(ActionEvent event) throws SQLException {
+        final Group root = new Group();
+
+        Rectangle r = new Rectangle(0, 0, 1120, 40);
+        r.setFill(Color.LIGHTGREY);
+        r.strokeProperty().set(Color.GRAY);
+
+        Rectangle r2 = new Rectangle(0, 42, 1120, 18);
+        r2.setFill(Color.YELLOW);
+        r2.strokeProperty().set(Color.YELLOW);
+
+        Rectangle r3 = new Rectangle(0, 342, 1120, 18);
+        r3.setFill(Color.YELLOW);
+        r3.strokeProperty().set(Color.YELLOW);
+
+        GridPane gridpane = new GridPane(),
+                gridCal = new GridPane(),
+                gridJobs = new GridPane();
+
+        String qry = "select * from currentjobs where status ='IN PROGRESS';";
+
+        List<String> empListSort = new ArrayList<String>();
+        List<String> equipListSort = new ArrayList<String>();
+        String jobTxtStr = "", jobTypeStr = "", jobDateTxtStr = "", jobStatusStr = "",
+                empListStr = "", equipListStr = "", jobNameStr = "";
+
+        //set location and build of grid pane...
+        gridpane.setLayoutY(40);
+        int startAnew = 9, empNumber = 0, vehNumber = 0, numLocation = 0, columnLoc = 0,
+                columnLoc2 = 1;
+
+        for (int i = 0; i < 1; i++) {
+            RowConstraints row = new RowConstraints(50);
+           // row.setValignment(VPos.CENTER);
+
+            gridpane.getRowConstraints().add(row);
+
+        }
+        for (int i = 0; i < 7; i++) {
+            ColumnConstraints column = new ColumnConstraints(200);
+            column.setHalignment(HPos.CENTER);
+            gridpane.getColumnConstraints().add(column);
+        }
+
+        // or convenience methods set more than one constraint at once...
+        Text label = new Text("Sunday"),
+                label1 = new Text("Monday"),
+                label2 = new Text("Tuesday"),
+                label3 = new Text("Wednesday"),
+                label4 = new Text("Thursday"),
+                label5 = new Text("Friday"),
+                label6 = new Text("Saturday"),
+                labelTitle = new Text(""),
+                labelComp = new Text("Video Pipe Service");
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+
+        Calendar cal = Calendar.getInstance();
+        int year = cal.getWeekYear();
+
+        //should auto adjust for each month, only way to check is to wait till february and see if march comes up....
+        int month = cal.get(Calendar.MONTH + 1);
+        int date = 1;
+
+        String monthStr = "";
+
+        if (month == 0) {
+            monthStr = "January";
+        } else if (month == 1) {
+            monthStr = "February";
+        } else if (month == 2) {
+            monthStr = "March";
+        } else if (month == 3) {
+            monthStr = "April";
+        } else if (month == 4) {
+            monthStr = "May";
+        } else if (month == 5) {
+            monthStr = "June";
+        } else if (month == 6) {
+            monthStr = "July";
+        } else if (month == 7) {
+            monthStr = "August";
+        } else if (month == 8) {
+            monthStr = "September";
+        } else if (month == 9) {
+            monthStr = "October";
+        } else if (month == 10) {
+            monthStr = "November";
+        } else if (month == 11) {
+            monthStr = "December";
+        }
+
+        String yrStr = Integer.toString(year);
+        String dateToday = (dateFormat.format(cal.getTime()));
+
+        String monYrStr = monthStr + " " + yrStr;
+
+        if (dateToday.substring(0, dateToday.indexOf("/")).equals("01")) {
+            labelTitle = new Text(monYrStr);
+        }
+
+        Text labelDate = labelDate = new Text(dateToday);
+
+        label.setStyle("-fx-font-size: 20;");
+        label1.setStyle("-fx-font-size: 20;");
+        label2.setStyle("-fx-font-size: 20;");
+        label3.setStyle("-fx-font-size: 20;");
+        label4.setStyle("-fx-font-size: 20;");
+        label5.setStyle("-fx-font-size: 20;");
+        label6.setStyle("-fx-font-size: 20;");
+
+        labelTitle.setStyle("-fx-font-size: 20;");
+        labelTitle.setY(25);
+        labelTitle.setX(10);
+        // labelDate.setStyle("-fx-font-size: 20;");
+        // labelDate.setY(25);
+        // labelDate.setX(175);
+        labelComp.setStyle("-fx-font-size: 20;");
+        labelComp.setY(25);
+        labelComp.setX(1165);
+
+        gridpane.add(label, 0, 0); // column=2 row=1        
+        gridpane.add(label1, 1, 0);  // column=3 row=1
+        gridpane.add(label2, 2, 0); // column=1 row=1
+        gridpane.add(label3, 3, 0); // column=2 row=1
+        gridpane.add(label4, 4, 0); // column=2 row=1
+        gridpane.add(label5, 5, 0); // column=2 row=1
+        gridpane.add(label6, 6, 0); // column=2 row=1
+        numLocation = 5;
+        columnLoc = 1;
+        gridpane.setGridLinesVisible(true);
+
+        calSet = false;
+
+        cal.set(year, month, date);
+        int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+        System.out.println("Number of Days: " + days);
+        start = 1;
+
+        //days of week 1-7 starting with monday-sunday
+        System.out.println(cal.get(Calendar.DAY_OF_WEEK));
+
+        //set location and build of grid pane...
+        gridCal.setLayoutY(90);
+        gridJobs.setLayoutY(90);
+        gridJobs.setGridLinesVisible(true);
+
+        //build the job board pane... each calendar should have about 8 or so spots ***START
+        //how many rows = 8*5
+        for (int i = 0; i < 40; i++) {
+            //set to 160 when deploying
+            RowConstraints row = new RowConstraints(20);
+           // row.setValignment(VPos.TOP);
+            gridJobs.getRowConstraints().add(row);
+        }
+        //7 columns
+        for (int i = 1; i <= 7; i++) {
+            ColumnConstraints column = new ColumnConstraints(200);
+            column.setHalignment(HPos.LEFT); 
+            gridJobs.getColumnConstraints().add(column);
+        }
+        //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+         //build the job board pane... each calendar should have about 5 or so spots ***FINISH
+        
+        //build the calendar days
+        for (int i = 0; i < 5; i++) {
+
+            //set to 160 when deploying
+            RowConstraints row = new RowConstraints(160);
+
+            row.setValignment(VPos.TOP);
+
+            gridCal.getRowConstraints().add(row);
+
+        }
+
+        for (int i = 1; i <= 7; i++) {
+            ColumnConstraints column = new ColumnConstraints(200);
+            //column.setHalignment(HPos.LEFT);
+
+            if (cal.get(Calendar.DAY_OF_WEEK) == i) {
+                Text tmpTxt = new Text(new Integer(start).toString());
+
+                tmpTxt.setStyle("-fx-font-size: 25;");
+                // tmpTxt.setStyle("-fx-font-size:10;");
+                tmpTxt.setX(77);
+                tmpTxt.setY(-77);
+                gridCal.add(tmpTxt, i - 1, 0);
+
+                int countIn = i,
+                        countCal = cal.get(Calendar.DAY_OF_WEEK);
+                while (countCal <= 7) {
+                    start++;
+                    Text tmpTxt2 = new Text(new Integer(start).toString());
+                    tmpTxt2.setStyle("-fx-font-size: 25;");                   
+
+                    gridCal.add(tmpTxt2, countCal, 0);
+                    countCal++;
+                }
+                calSet = true;
+            }
+            gridCal.getColumnConstraints().add(column);
+        }
+
+        if (calSet) {
+            Text tmpTxt2 = new Text(new Integer(start).toString());
+            Text tmpTxt3 = new Text(new Integer(start + 1).toString());
+
+            int columns = 1;
+            while (start <= days) {
+                for (int j = 0; j < 7; j++) {
+                    if (start <= days) {
+                        tmpTxt2.setStyle("-fx-font-size: 25;");
+                        tmpTxt2.setX(0);
+                        tmpTxt2.setLayoutY(66);
+                        gridCal.add(tmpTxt2, j, columns);
+                        /*
+                        Rectangle tr = new Rectangle(0, 0, 45,20);
+                        tr.setFill(Color.LIGHTGREY);
+                        tr.strokeProperty().set(Color.GRAY);
+                        
+
+                        gridCal.add(tr, j, columns);
+*/
+                    } else {
+                        break;
+                    }
+
+                    // gridCal.add(tmpTxt2, 1,1);
+                    //gridCal.add(tmpTxt3, 1,1);
+                    start++;
+                    tmpTxt2 = new Text(new Integer(start).toString());
+
+                }
+                columns++;
+            }
+        }
+
+        gridCal.setGridLinesVisible(true);
+
+        root.getChildren().add(labelTitle);
+        root.getChildren().add(labelDate);
+        root.getChildren().add(labelComp);
+
+        root.getChildren().add(gridpane);
+        root.getChildren().add(gridCal);
+        root.getChildren().add(gridJobs);
+
+        Scene scene2 = new Scene(root);
+        stageJob = new Stage();
+        stageJob.setHeight(700);
+        stageJob.setWidth(1224);
+        stageJob.setResizable(false);
+
+        stageJob.setScene(scene2);
+        stageJob.setResizable(false);
+
+        // which screen to display the popup on ....
+        javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(0).getVisualBounds();
+        stageJob.setX(primaryScreenBounds.getMinX());
+        stageJob.setY(primaryScreenBounds.getMinY());
+        stageJob.setFullScreen(true);
+
+        stageJob.show();
+    }
 }
