@@ -4,6 +4,8 @@
  */
 package jobcenter;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,6 +57,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
@@ -76,6 +79,8 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.ComboBoxTreeCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -93,8 +98,13 @@ import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Scale;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import javax.imageio.ImageIO;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.MimeMultipart;
 
 /**
  * FXML Controller class
@@ -103,8 +113,9 @@ import javafx.util.Duration;
  */
 public class JobCenterMainController implements Initializable, ScreenController {
 
-    //database connection info
-    public static String url = "jdbc:mysql://192.168.1.125/jobcenter";
+    //database connection info -- 192.168.1.112 customer ip
+    //my ip 192.168.1.125
+    public static String url = "jdbc:mysql://localhost/jobcenter";
     public static String userdb = "vangfc";//Username of database  
     public static String passdb = "password";//Password of database
     public static String scrollingTxt = "";
@@ -140,7 +151,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             saveJob, confirmJob, cancelJob, addCustBut, addVehEqToTreeBut, addEmpToTreeBut,
             displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut,
             saveChangesBut, previewJob, addNewUsr, addEmployeeBut, deleteManagerBut, addManagerBut,
-            usrDeleteBut, handlePasswdBut, saveScrollingBut, displayCalendar;
+            usrDeleteBut, handlePasswdBut, saveScrollingBut, displayCalendar,
+            emailJobBoard;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
@@ -203,6 +215,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
+
         //Note** If you want to manipulate objects within the FXML loaded you need to 
         // initialize them here to obtain a pointer in memory for dynamic changes.
         emp_fname.setCellValueFactory(new PropertyValueFactory<employee, String>("firstName"));
@@ -2268,15 +2281,18 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stageJob.setHeight(662);
         stageJob.setWidth(1224);
         stageJob.setResizable(false);
-        stageJob.setFullScreen(true);
 
-        stageJob.setScene(scene2);
-        stageJob.setResizable(false);
-
-        //change screens here  --- change to 1 for Video Pipe Services
+        //change screens here  --- change to 2 for Video Pipe Services production
         javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(0).getVisualBounds();
         stageJob.setX(primaryScreenBounds.getMinX());
         stageJob.setY(primaryScreenBounds.getMinY());
+
+        stageJob.setFullScreen(true);
+
+        stageJob.initStyle(StageStyle.UNDECORATED);
+        stageJob.setScene(scene2);
+        stageJob.setResizable(false);
+
         stageJob.show();
     }
 
@@ -3505,6 +3521,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     @FXML
     private void displayCalendarAction(ActionEvent event) throws SQLException {
         final Group root = new Group();
+        String curDateStr = "";
 
         Rectangle r = new Rectangle(0, 0, 1120, 40);
         r.setFill(Color.LIGHTGREY);
@@ -3536,7 +3553,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         for (int i = 0; i < 1; i++) {
             RowConstraints row = new RowConstraints(50);
-           // row.setValignment(VPos.CENTER);
+            // row.setValignment(VPos.CENTER);
 
             gridpane.getRowConstraints().add(row);
 
@@ -3563,7 +3580,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
         int year = cal.getWeekYear();
 
         //should auto adjust for each month, only way to check is to wait till february and see if march comes up....
-        int month = cal.get(Calendar.MONTH + 1);
+        int month = cal.get(Calendar.MONTH);
+        month = month + 1;
         int date = 1;
 
         String monthStr = "";
@@ -3642,90 +3660,176 @@ public class JobCenterMainController implements Initializable, ScreenController 
         start = 1;
 
         //days of week 1-7 starting with monday-sunday
-        System.out.println(cal.get(Calendar.DAY_OF_WEEK));
+        int startingDay = cal.get(Calendar.DAY_OF_WEEK);
+
+        int monthCorrection = month + 1;
+        curDateStr = monthCorrection + "/" + start + "/" + year;
+        System.out.println(startingDay);
 
         //set location and build of grid pane...
         gridCal.setLayoutY(90);
         gridJobs.setLayoutY(90);
+
+        //set gridlines on/off for the jobs listings
         gridJobs.setGridLinesVisible(true);
 
         //build the job board pane... each calendar should have about 8 or so spots ***START
-        //how many rows = 8*5
-        for (int i = 0; i < 40; i++) {
+        //how many rows = 130/5 = 26 <------
+        for (int i = 0; i < 26; i++) {
             //set to 160 when deploying
-            RowConstraints row = new RowConstraints(20);
-           // row.setValignment(VPos.TOP);
+            RowConstraints row = new RowConstraints(26);
+            row.setValignment(VPos.TOP);
             gridJobs.getRowConstraints().add(row);
         }
-        //7 columns
+        //7 columns...
         for (int i = 1; i <= 7; i++) {
             ColumnConstraints column = new ColumnConstraints(200);
-            column.setHalignment(HPos.LEFT); 
+            column.setHalignment(HPos.CENTER);
             gridJobs.getColumnConstraints().add(column);
         }
         //^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-         //build the job board pane... each calendar should have about 5 or so spots ***FINISH
-        
+        //build the job board pane... each calendar should have about 5 or so spots ***FINISH
+
         //build the calendar days
         for (int i = 0; i < 5; i++) {
-
-            //set to 160 when deploying
-            RowConstraints row = new RowConstraints(160);
-
+            //set to 130 when deploying -- fits to screen ... i think
+            RowConstraints row = new RowConstraints(130);
             row.setValignment(VPos.TOP);
-
             gridCal.getRowConstraints().add(row);
-
         }
 
         for (int i = 1; i <= 7; i++) {
             ColumnConstraints column = new ColumnConstraints(200);
             //column.setHalignment(HPos.LEFT);
 
-            if (cal.get(Calendar.DAY_OF_WEEK) == i) {
+            if (startingDay == i) {
                 Text tmpTxt = new Text(new Integer(start).toString());
-
                 tmpTxt.setStyle("-fx-font-size: 25;");
                 // tmpTxt.setStyle("-fx-font-size:10;");
                 tmpTxt.setX(77);
                 tmpTxt.setY(-77);
                 gridCal.add(tmpTxt, i - 1, 0);
+                //if the job is in the month/day we are looking for then we add it to the column                       
 
                 int countIn = i,
-                        countCal = cal.get(Calendar.DAY_OF_WEEK);
-                while (countCal <= 7) {
+                        countCal = startingDay;
+
+                while (countCal <= 6) {
                     start++;
                     Text tmpTxt2 = new Text(new Integer(start).toString());
-                    tmpTxt2.setStyle("-fx-font-size: 25;");                   
-
+                    tmpTxt2.setStyle("-fx-font-size: 25;");
                     gridCal.add(tmpTxt2, countCal, 0);
+
+                    //if the job is in the month/day we are looking for then we add it to the column                       
+                    Text tmpTxt7 = new Text(curDateStr);
+
+                    gridJobs.add(tmpTxt7, countCal, 0);
                     countCal++;
+
                 }
                 calSet = true;
             }
+
             gridCal.getColumnConstraints().add(column);
         }
 
+        //add's the rest of the calendar days
         if (calSet) {
             Text tmpTxt2 = new Text(new Integer(start).toString());
             Text tmpTxt3 = new Text(new Integer(start + 1).toString());
+            int columns = 1, colToAdd = 1;
+            boolean setToZero = true, setToZero1 = true, setToZero2 = true, setToZero3 = true;
 
-            int columns = 1;
             while (start <= days) {
+                String jobDateStr = "",
+                        qryRun = "";
+
                 for (int j = 0; j < 7; j++) {
+                    qryRun = "select JobWorkDate from currentjobs where JobWorkDate = '" + curDateStr + "';";
+
                     if (start <= days) {
                         tmpTxt2.setStyle("-fx-font-size: 25;");
                         tmpTxt2.setX(0);
                         tmpTxt2.setLayoutY(66);
                         gridCal.add(tmpTxt2, j, columns);
+
+                        //make the connection
+                        try {
+                            st = conn.createStatement();
+                            rs = st.executeQuery(qryRun);
+                            while (rs.next()) {
+                                jobDateStr = rs.getString(1);
+
+                                if (jobDateStr.equals(curDateStr)) {
+                                    System.out.println(start);
+                                    qryRun = "select JobTitle from currentjobs where JobWorkDate = '" + curDateStr + "';";
+
+                                    rs = st.executeQuery(qryRun);
+                                    String JobTitleStr = "";
+                                    while (rs.next()) {
+                                        JobTitleStr = rs.getString(1);
+
+                                        Text tmpTxt7 = new Text(JobTitleStr);
+
+                                        if (columns == 1) {
+                                            gridJobs.add(tmpTxt7, j, (5 + colToAdd));
+                                            //for every column added we add one to the row so that the next start - coltoadd == number of columns to skip
+                                            colToAdd++;
+                                        }
+                                        if (columns == 2) {
+                                            if (setToZero == true) {
+                                                colToAdd = 1;
+                                                setToZero = false;
+                                            }
+                                            gridJobs.add(tmpTxt7, j, (10 + colToAdd));
+                                            colToAdd++;
+                                        }
+
+                                        if (columns == 3) {
+                                            if (setToZero1 == true) {
+                                                colToAdd = 1;
+                                                setToZero1 = false;
+                                            }
+                                            gridJobs.add(tmpTxt7, j, (15 + colToAdd));
+                                            colToAdd++;
+                                        }
+                                        if (columns == 4) {
+                                            if (setToZero2 == true) {
+                                                colToAdd = 1;
+                                                setToZero2 = false;
+                                            }
+                                            gridJobs.add(tmpTxt7, j, (20 + colToAdd));
+                                            colToAdd++;
+                                        }
+
+                                        if (columns == 5) {
+                                            if (setToZero3 == true) {
+                                                colToAdd = 1;
+                                                setToZero3 = false;
+                                            }
+                                            gridJobs.add(tmpTxt7, j, (24 + colToAdd));
+                                            colToAdd++;
+                                        }
+                                        //still one more bug, jobs in the same work week also needs to be reset...
+
+                                    }
+
+                                }
+
+                            }
+                        } catch (Exception e) {
+                            System.err.println(e);
+                        }
+
+
                         /*
-                        Rectangle tr = new Rectangle(0, 0, 45,20);
-                        tr.setFill(Color.LIGHTGREY);
-                        tr.strokeProperty().set(Color.GRAY);
+                         Rectangle tr = new Rectangle(0, 0, 45,20);
+                         tr.setFill(Color.LIGHTGREY);
+                         tr.strokeProperty().set(Color.GRAY);
                         
 
-                        gridCal.add(tr, j, columns);
-*/
+                         gridCal.add(tr, j, columns);
+                         */
                     } else {
                         break;
                     }
@@ -3733,6 +3837,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     // gridCal.add(tmpTxt2, 1,1);
                     //gridCal.add(tmpTxt3, 1,1);
                     start++;
+
+                    curDateStr = monthCorrection + "/" + start + "/" + year;
                     tmpTxt2 = new Text(new Integer(start).toString());
 
                 }
@@ -3740,6 +3846,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             }
         }
 
+        //add's the data into the rows
         gridCal.setGridLinesVisible(true);
 
         root.getChildren().add(labelTitle);
@@ -3751,6 +3858,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
         root.getChildren().add(gridJobs);
 
         Scene scene2 = new Scene(root);
+
+        WritableImage snapshot = root.snapshot(new SnapshotParameters(), null);
+
+        root.getChildren().add(new ImageView(snapshot));
+
+        saveImage(snapshot);
+
         stageJob = new Stage();
         stageJob.setHeight(700);
         stageJob.setWidth(1224);
@@ -3759,7 +3873,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stageJob.setScene(scene2);
         stageJob.setResizable(false);
 
-        // which screen to display the popup on ....
+        stageJob.initStyle(StageStyle.UNDECORATED);
+
+        // which screen to display the popup on .... CALENDAR set to 1 for production
         javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(0).getVisualBounds();
         stageJob.setX(primaryScreenBounds.getMinX());
         stageJob.setY(primaryScreenBounds.getMinY());
@@ -3767,4 +3883,35 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         stageJob.show();
     }
+
+    private void saveImage(WritableImage snapshot) {
+        BufferedImage bufferedImage = new BufferedImage(550, 400, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage image;
+        File file = new File("C:/Users/vangfc/Desktop/test.jpg");
+
+        image = javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, bufferedImage);
+        try {
+            Graphics2D gd = (Graphics2D) image.getGraphics();
+            // gd.translate(root.getWidth(), vbox.getHeight());
+            ImageIO.write(image, "png", file);
+            
+            
+        } catch (IOException ex) {
+            System.err.print(ex);
+        };
+         
+}
+    
+@FXML
+        private void emailJobBoardAction(ActionEvent event) throws MessagingException  { 
+         // here we make image from vbox and add it to scene, can be repeated :) 
+        GoogleMail sendMail=new GoogleMail();
+        sendMail.Send("fucheevang", "tanehtmf10","blacktowninteractive@gmail.com","fucheevang@gmail.com","test email","gogo power rangers");
+        
+
+}
+
+    
+    
+    
 }

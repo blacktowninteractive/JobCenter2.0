@@ -272,6 +272,7 @@
             <Button fx:id="displayJobBut" defaultButton="true" mnemonicParsing="false" onAction="#displayJobAction" prefHeight="21.0" prefWidth="116.0" text="Display Job Board" />
             <Button fx:id="displayCalendar" defaultButton="true" mnemonicParsing="false" onAction="#displayCalendarAction" prefWidth="116.0" text="Display Calendar" />
             <Button fx:id="previewJob" defaultButton="true" mnemonicParsing="false" onAction="#previewJobAction" prefWidth="116.0" text="Preview job board" />
+            <Button fx:id="emailJobBoard" defaultButton="true" mnemonicParsing="false" onAction="#emailJobBoardAction" text="Email Job Board" />
           </items>
         </ToolBar>
       </children>
