@@ -222,7 +222,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="displayJobs" blendMode="DIFFERENCE" layoutX="200.0" layoutY="56.0" prefHeight="606.0" prefWidth="1054.0" scaleX="1.0" visible="true">
+    <Pane fx:id="displayJobs" blendMode="DIFFERENCE" layoutX="200.0" layoutY="56.0" prefHeight="606.0" prefWidth="1054.0" scaleX="1.0" visible="false">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="633.0" layoutX="0.0" layoutY="-2.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" layoutX="12.0" layoutY="51.0" prefHeight="538.0" prefWidth="510.0" text="Current Jobs">
@@ -343,7 +343,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="usersPane" blendMode="DIFFERENCE" layoutX="201.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
+    <Pane fx:id="usersPane" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="639.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" font="$x5" layoutX="14.0" layoutY="14.0" minWidth="568.0" prefHeight="501.0" prefWidth="568.0" text="Jobcenter Users">
@@ -453,11 +453,22 @@
     </Pane>
     <Pane blendMode="DIFFERENCE" layoutX="0.0" layoutY="54.0" prefHeight="619.0" prefWidth="144.0" visible="true">
       <children>
-        <Accordion id="" blendMode="SRC_OVER" cache="false" layoutX="0.0" layoutY="0.0" minWidth="176.0" mouseTransparent="false" opacity="1.0" prefHeight="619.0" prefWidth="200.0" visible="true">
+        <Accordion id="" blendMode="SRC_OVER" cache="false" layoutX="0.0" layoutY="0.0" minWidth="176.0" mouseTransparent="false" opacity="1.0" prefHeight="634.0" prefWidth="200.0" visible="true">
           <effect>
             <ColorAdjust />
           </effect>
           <expandedPane>
+            <TitledPane id="x9" fx:id="x4" animated="true" collapsible="true" disable="false" expanded="true" font="$x5" minWidth="200.0" prefHeight="575.0" prefWidth="200.0" text="Proposals" visible="true">
+              <content>
+                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                  <children>
+                    <ListView fx:id="proList" prefHeight="538.0" prefWidth="200.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
+                  </children>
+                </AnchorPane>
+              </content>
+            </TitledPane>
+          </expandedPane>
+          <panes>
             <TitledPane id="x4" fx:id="x1" animated="true" cache="false" collapsible="true" font="$x5" prefHeight="562.0" text="Administration">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="549.0" prefWidth="188.0">
@@ -467,9 +478,6 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-          </expandedPane>
-          <panes>
-            <fx:reference source="x1" />
             <TitledPane fx:id="x2" animated="true" font="$x5" text="Tasks">
               <content>
                 <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
@@ -479,15 +487,7 @@
                 </AnchorPane>
               </content>
             </TitledPane>
-            <TitledPane id="x9" fx:id="x4" animated="true" collapsible="true" disable="false" expanded="false" font="$x5" minWidth="200.0" prefHeight="575.0" prefWidth="200.0" text="Proposals" visible="true">
-              <content>
-                <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                  <children>
-                    <ListView fx:id="proList" prefHeight="538.0" prefWidth="200.0" AnchorPane.bottomAnchor="-8.0" AnchorPane.leftAnchor="-14.0" AnchorPane.rightAnchor="-14.0" AnchorPane.topAnchor="-8.0" />
-                  </children>
-                </AnchorPane>
-              </content>
-            </TitledPane>
+            <fx:reference source="x4" />
           </panes>
         </Accordion>
       </children>
@@ -508,6 +508,19 @@
             <Font name="System Bold" size="36.0" />
           </font>
         </Text>
+      </children>
+    </Pane>
+    <Pane fx:id="userHist" blendMode="DIFFERENCE" layoutX="202.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
+      <children>
+        <TableView fx:id="usrHistTable" editable="false" layoutX="-2.0" layoutY="0.0" prefHeight="648.0" prefWidth="1087.0">
+          <columns>
+            <TableColumn editable="false" maxWidth="5000.0" minWidth="15.0" prefWidth="100.0" text="Last name" fx:id="lnme" />
+            <TableColumn editable="false" prefWidth="100.0" text="First name" fx:id="fnme" />
+            <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="100.0" text="Job modified" fx:id="jname" />
+            <TableColumn editable="false" maxWidth="5000.0" minWidth="10.0" prefWidth="100.0" text="Date modified" fx:id="dte" />
+            <TableColumn editable="false" prefWidth="100.0" text="Description" fx:id="descrpt" />
+          </columns>
+        </TableView>
       </children>
     </Pane>
   </children>
