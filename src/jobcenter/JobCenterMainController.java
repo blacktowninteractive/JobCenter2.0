@@ -125,6 +125,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     Statement st = null;
     ResultSet rs = null;
+
     public static Connection conn;
     public ScreenPane myScreenPane;
     public ToolBar editJobToolbar, createJobToolbar;
@@ -134,7 +135,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     public ListView adminList, taskList, proList, employeeSelect, employeeSelected,
             vehicleEquipSelect, vehicleEquipSelected, custListing, empAddJobView, vehAddJobView,
-            taskTypeList;
+            taskTypeList, empEmailListView, empAdminListView;
     public Pane CreateJobBox, settingsPane, displayJobs, equipVehPane, employeePane, managerPane,
             usersPane, proposalsPane, userHist;
     public ToolBar AdminToolBar, FunctionsToolBar, ReportsToolBar, employeeToolbar;
@@ -158,7 +159,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             displayJobBut, deleteEquipBut, addEquipBut, addTask, deleteEmpBut,
             saveChangesBut, previewJob, addNewUsr, addEmployeeBut, deleteManagerBut, addManagerBut,
             usrDeleteBut, handlePasswdBut, saveScrollingBut, displayCalendar,
-            emailJobBoard, deleteJob, editCustBut;
+            emailJobBoard, deleteJob, editCustBut, addEmpEmailerBut,
+            deleteEmpEmailBut, delAdminBut;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
@@ -168,15 +170,15 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     public PasswordField newPwd;
 
-    public static String jobTitleStr, jobNameStr, custJobNumStr, custJobNameStr, startDateStr, startTimeStr,
-            streetAddrStr, cityStr, stateStr, zipStr, custAdd, phone, fax, pocName, pocPhone, status, custUniqueID,
-            billing, cid, jobtypecompiled, empCompiled, equipCompiled, sI, dI, tI, wI;
+    public static String jobTitleStr = "", jobNameStr = "", custJobNumStr = "", custJobNameStr = "", startDateStr = "", startTimeStr = "",
+            streetAddrStr = "", cityStr = "", stateStr = "", zipStr = "", custAdd = "", phone = "", fax = "", pocName = "", pocPhone = "", status = "", custUniqueID = "",
+            billing = "", cid = "", jobtypecompiled = "", empCompiled = "", equipCompiled = "", sI = "", dI = "", tI = "", wI = "";
 
     public Text setCustPhone, setCustName, setCustCity, setCustState, setCustPOC, setCustCompPhone,
             setCustFax, setCustAddr, setCustZip, useridInfor, nameInfor, emailInfor, phoneInfor, usernameInfor,
             currentScrolling;
 
-    public ComboBox screenList, taskComboBox, jobStatus, empListUsr;
+    public ComboBox screenList, taskComboBox, jobStatus, empListUsr, selEmpEmail, selEmpAdmin;
     ObservableList<String> admin = FXCollections.observableArrayList(
             "Manager status", "People", "Vehicles", "Create/Delete a JobCenter User", "Settings");
     //ObservableList<String> functions = FXCollections.observableArrayList(
@@ -185,7 +187,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             "Create new job", "Display jobs", "Changelog");
     ObservableList<String> proposals = FXCollections.observableArrayList(
             "New proposal", "View Current Proposals");
-    
+
     public static List<String> list = new ArrayList<String>();
     public static ObservableList<String> options = FXCollections.observableList(list),
             taskListBox = FXCollections.observableList(list),
@@ -196,12 +198,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
             custList = new ArrayList<String>(),
             jobTypePicked = new ArrayList<String>(),
             jobList = new ArrayList<String>(),
-            editH = new ArrayList<String>();
+            editH = new ArrayList<String>(),
+            empEmailList = new ArrayList<String>(),
+            adminNameBox = new ArrayList<String>(),
+            listAdmin = new ArrayList<String>();
 
     ObservableList<String> vehList11 = FXCollections.observableArrayList(vehList);
     ObservableList<String> empSelect = FXCollections.observableArrayList(empListSel);
     ObservableList<String> custListingObs = FXCollections.observableArrayList(custList);
     ObservableList<String> editHistory = FXCollections.observableArrayList(editH);
+    ObservableList<String> empEmailObs = FXCollections.observableArrayList(empEmailList);
+    ObservableList<String> adminObs = FXCollections.observableArrayList(adminNameBox);
 
     TextField jTitleField = new TextField(),
             jCustField = new TextField(),
@@ -831,6 +838,37 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     }
 
+    //returns t/f if a current user is an administrator.
+    public boolean isAdmin() throws UnknownHostException {
+
+        String ans = "0";
+        //make the connection
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select adminPriv from administrators where employees_uid = " + getEmpId() + ";");
+
+            while (rs.next()) {
+                System.out.println(rs.getString(1));
+                ans = rs.getString(1);
+                System.out.println(ans);
+                //System.out.println(rs.getString(2));
+                //System.out.println(rs.getString(3));
+
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if (ans.equals("0")) {
+            return false;
+        } else if (ans.equals("1")) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public ObservableList<equipment> populateEquip() {
         ObservableList<equipment> tester2 = FXCollections.observableArrayList();
 
@@ -963,6 +1001,57 @@ public class JobCenterMainController implements Initializable, ScreenController 
         }
     }
 
+    public void updateEmailList() {
+        empEmailObs.clear();
+        empEmailList.clear();
+
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select emailSend from emaillist;");
+            while (rs.next()) {
+                //System.out.println(rs.getString(1));
+                empEmailList.add(rs.getString(1));
+            }
+        } catch (Exception e) {
+            System.err.print(e);
+        }
+
+        empEmailObs = FXCollections.observableArrayList(empEmailList);
+        empEmailListView.setItems(empEmailObs);
+
+    }
+
+    public void updateAdminList() {
+        adminObs.clear();
+        adminNameBox.clear();
+        listAdmin = new ArrayList<String>();
+        
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select employees_uid from administrators;");
+            while (rs.next()) {
+                System.out.println(rs.getString(1));
+                listAdmin.add(rs.getString(1));
+            }
+
+            for (int k = 0; k < listAdmin.size(); k++) {
+                rs = st.executeQuery("select fname, lname from employees where uid = " + listAdmin.get(k) + ";");
+                while (rs.next()) {
+                    System.out.println(rs.getString(1));
+                    System.out.println(rs.getString(2));
+                    adminNameBox.add(rs.getString(2) + ", " + rs.getString(1)+":"+listAdmin.get(k));
+                }
+            }
+
+        } catch (Exception e) {
+            System.err.print(e);
+        }
+ 
+        adminObs = FXCollections.observableArrayList(adminNameBox);
+        empAdminListView.setItems(adminObs);
+
+    }
+
     public void clearPane() {
         //clears the main task area
         userHist.setVisible(false);
@@ -977,6 +1066,35 @@ public class JobCenterMainController implements Initializable, ScreenController 
         proposalsPane.setVisible(false);
     }
 
+    public boolean emailExist(String emailToAdd, String listEmpEmail) {
+        if (listEmpEmail.contains(emailToAdd)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    public boolean adminExist(String theUserID)
+    {
+        String test ="";
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select aid from administrators where employees_uid = "+theUserID+";");
+            while (rs.next()) {
+            System.out.println(rs.getString(1));
+             test = rs.getString(1);
+            }
+           
+        }
+        catch(Exception e)
+        {
+            System.err.print(e);
+        }
+        if(test.equals(""))
+            return false;
+        else
+            return true;
+    }
+
     //returns true or false if an employee exists in a list
     public boolean empExist(String listEmp, String empToAdd) {
         if (listEmp.contains(empToAdd)) {
@@ -988,12 +1106,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @Override
     public void setScreenPane(ScreenPane screenPage) {
-        //*****************************
-        //**************Initialize data
-        //*****************************
         final List<String> empList = new ArrayList<String>();
         final List<String> vehList = new ArrayList<String>();
-
         try {
             st = conn.createStatement();
             rs = st.executeQuery("select fname,lname from employees;");
@@ -1022,59 +1136,102 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        //*****************************
-        //****************MENU OPTIONS
-        //******************************
-        //loads the 'Administration' list in the menu option
-        //get user, if not in the allowed userlist disable the management bar
-        adminList.disableProperty().set(false);
-
         adminList.setItems(admin);
-
         adminList.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<String>() {
                     public void changed(ObservableValue<? extends String> ov,
                             String old_val, String new_val) {
-                        //clear pane first
-                        clearPane();
+                        try {
+                            //clear pane first
+                            //get user, if not in the allowed userlist disable the management bar
+                            if (isAdmin()) {
+                                adminList.disableProperty().set(false);
+                                clearPane();
 
-                        if (new_val == "Manager status") {
-                            managerPane.setVisible(true);
-                        }
-                        if (new_val == "People") {
-                            employeePane.setVisible(true);
-                        }
-                        if (new_val == "Vehicles") {
-                            equipVehPane.setVisible(true);
-                        }
-                        if (new_val == "Settings") {
-                            settingsPane.setVisible(true);
+                                if (new_val == "Manager status") {
+                                    managerPane.setVisible(true);
+                                }
+                                if (new_val == "People") {
+                                    employeePane.setVisible(true);
+                                }
+                                if (new_val == "Vehicles") {
+                                    equipVehPane.setVisible(true);
+                                }
+                                if (new_val == "Settings") {
+                                    settingsPane.setVisible(true);
+                                    empNameBox.clear();
 
-                            //set the user feedback text to whats in the database
-                            currentScrolling.setText(scrollingTxt);
+                                    updateEmailList();
 
-                        }
-                        if (new_val == "Create/Delete a JobCenter User") {
-                            //make the connection
-                            try {
-                                st = conn.createStatement();
-                                rs = st.executeQuery("select fname, lname, uid from employees;");
-                                while (rs.next()) {
-                                    //System.out.println(rs.getString(1));
-                                    empNameBox.add(rs.getString(2) + ", " + rs.getString(1) + ", " + rs.getString(3));
+                                    //set the user feedback text to whats in the database
+                                    currentScrolling.setText(scrollingTxt);
+
+                                    //make the connection
+                                    try {
+                                        String uidToDel="";
+                                        
+                                        st = conn.createStatement();
+                                        rs = st.executeQuery("select fname, lname, email from employees;");
+                                        while (rs.next()) {
+                                            //System.out.println(rs.getString(1));
+                                            empNameBox.add(rs.getString(1) + " " + rs.getString(2) + ": " + rs.getString(3));
+                                        }
+                                        selEmpEmail.setItems(empNameBox);
+                                        selEmpAdmin.setItems(empNameBox);
+
+                                        adminNameBox.clear();
+                                        st = conn.createStatement();
+                                        rs = st.executeQuery("select employees_uid from administrators;");
+                                        while (rs.next()) {
+                                            System.out.println(rs.getString(1));
+                                            uidToDel = rs.getString(1);
+                                            rs = st.executeQuery("select fname, lname from employees where uid = " + rs.getString(1) + ";");
+                                            while (rs.next()) {
+                                                System.out.println(rs.getString(1));
+                                                System.out.println(rs.getString(2));
+                                                adminNameBox.add(rs.getString(2) + ", " + rs.getString(1)+":"+ uidToDel);
+                                            }
+                                        }
+                                        adminObs = FXCollections.observableArrayList(adminNameBox);
+                                        empAdminListView.setItems(adminObs);
+                                        updateAdminList();
+
+                                    } catch (SQLException ex) {
+                                        Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+
+                                }
+                                if (new_val == "Create/Delete a JobCenter User") {
+                                    empNameBox.clear();
+
+                                    //make the connection
+                                    try {
+                                        st = conn.createStatement();
+                                        rs = st.executeQuery("select fname, lname, uid from employees;");
+                                        while (rs.next()) {
+                                            //System.out.println(rs.getString(1));
+                                            empNameBox.add(rs.getString(2) + ", " + rs.getString(1) + ", " + rs.getString(3));
+                                        }
+
+                                    } catch (SQLException ex) {
+                                        Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+                                    updateEmailList();
+                                    empListUsr.setItems(empNameBox);
+
+                                    usersPane.setVisible(true);
                                 }
 
-                            } catch (SQLException ex) {
-                                Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+                            } else {
+                                adminList.disableProperty().set(true);
                             }
-                            empListUsr.setItems(empNameBox);
-                            usersPane.setVisible(true);
+
+                        } catch (UnknownHostException ex) {
+                            Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
                         }
 
                     }
                 });
-
-        //loads the 'Tasks' list in the menu option
         taskList.setItems(tasks);
         taskList.getSelectionModel().selectedItemProperty().addListener(
                 new ChangeListener<String>() {
@@ -1136,20 +1293,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                     }
                 });
-
-       /* proList.setItems(proposals);
-        
-        proList.getSelectionModel().selectedItemProperty().addListener(
-                new ChangeListener<String>() {
-                    public void changed(ObservableValue<? extends String> ov,
-                            String old_val, String new_val) {
-                        clearPane();
-                        if (new_val == "New proposal") {
-                            proposalsPane.setVisible(true);
-                        }
-                    }
-                });*/
-
     }
 
     //*****************************
@@ -2559,7 +2702,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @FXML
     private void saveJobDb(ActionEvent event) throws SQLException, IOException {
-
         try {
             empID = getEmpId();
         } catch (UnknownHostException ex) {
@@ -2571,7 +2713,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
         custJobNameStr = custJobName.getText();
         startDateStr = startDate.getText();
         startTimeStr = startTime.getText();
-
         jobtypecompiled = "";
         empCompiled = "";
         equipCompiled = "";
@@ -2580,56 +2721,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
         Calendar cal123 = Calendar.getInstance();
         String dateTimeStamp = dateFormat.format(cal123.getTime());
 
-        //UPDATE THE LOGGING DATABASE TABLE
-        String queryRunNow = "insert into edithistory (DateEdited, JobName,usrFname, usrLname, EmpEditorID,  description) "
-                + " values('" + dateTimeStamp + "','" + jobTitleStr + "',"
-                + "(select fname from employees where uid = " + empID + "),"
-                + "(select lname from employees where uid = " + empID + "),"
-                + empID + ",'Job Creation'"
-                + statusNew.getText() + ");";
-
-        //insert into database
-        Statement updateLog = null;
-
-        //make the connection
-        try {
-            conn = DriverManager.getConnection(url, userdb, passdb);
-
-            //set our session id and ip address in order to identify user
-            updateLog = conn.createStatement();
-
-            usrHistTable.setItems(populateHist());
-
-            int executeUpdate = updateLog.executeUpdate(queryRunNow);
-        } catch (SQLException e) {
-            System.err.println(e);
-        }
-
-        //compile job types 
-        for (int i = 0; i < taskTypeListStr.size(); i++) {
-            jobtypecompiled += "/" + taskTypeListStr.get(i);
-        }
-
-        //compile employees  
-        for (int j = 0; j < empListSel.size(); j++) {
-            empCompiled += "/" + empListSel.get(j);
-        }
-
-        //compile equipment  
-        for (int k = 0; k < vehList.size(); k++) {
-            equipCompiled += "/" + vehList.get(k);
-        }
-
-        //System.out.println("CID: " + cid);
-        //System.out.println("Job name: " + jobNameStr);
-        //System.out.println("Cust job #: " + custJobNumStr);
-        //System.out.println("Cust job name: " + custJobNameStr);
-        //System.out.println("start date: " + startDateStr);
-        //System.out.println("start time: " + startTimeStr);
-        //System.out.println("street: " + streetAddr.getText());
-        //System.out.println("city: " + city.getText());
-        //System.out.println("state: " + state.getText());
-        //System.out.println("zip: " + zip.getText());
         if (prodChk.isSelected()) {
             billing = "Production Payment";
         }
@@ -2641,83 +2732,171 @@ public class JobCenterMainController implements Initializable, ScreenController 
         dI = dInstr.getText();
         tI = tInstr.getText();
         wI = wInstr.getText();
-        status = jobStatus.getSelectionModel().selectedItemProperty().getValue().toString();
 
-        System.out.println("job type");
-        for (int i = 0; i < jobTypePicked.size(); i++) {
-            System.out.print(jobTypePicked.get(i));
-            System.out.print(",");
-        }
+        if (jobTitleStr.equals("")) {
+            displayMsg("Job Title Information Missing.");
+        } else if (jobStatus.getSelectionModel().isEmpty()) {
+            displayMsg("Job Status Missing.");
+        } else if (jobNameStr.equals("")) {
+            displayMsg("Job Name Information Missing.");
+        } else if (custJobNumStr.equals("")) {
+            displayMsg("Cust Job No. Information Missing.");
+        } else if (custJobNameStr.equals("")) {
+            displayMsg("Cust Job Name Information Missing.");
+        } else if (startDateStr.equals("")) {
+            displayMsg("Start Date Information Missing.");
+        } else if (startTimeStr.equals("")) {
+            displayMsg("Start Time Information Missing.");
+        } else if (sI.equals("")) {
+            displayMsg("Special Instructions Missing.");
+        } else if (dI.equals("")) {
+            displayMsg("Disposal Missing.");
+        } else if (tI.equals("")) {
+            displayMsg("Traffic Control Missing.");
+        } else if (wI.equals("")) {
+            displayMsg("Water Source Missing.");
+        } else {
+            status = jobStatus.getSelectionModel().selectedItemProperty().getValue().toString();
 
-        System.out.println("equipment");
-        for (int i = 0; i < vehList.size(); i++) {
-            System.out.print(vehList.get(i));
-            System.out.print(",");
-        }
+            //UPDATE THE LOGGING DATABASE TABLE
+            String queryRunNow = "insert into edithistory (DateEdited, JobName,usrFname, usrLname, EmpEditorID,  description) "
+                    + " values('" + dateTimeStamp + "','" + jobTitleStr + "',"
+                    + "(select fname from employees where uid = " + empID + "),"
+                    + "(select lname from employees where uid = " + empID + "),"
+                    + empID + ",'Job Creation'"
+                    + statusNew.getText() + ");";
 
-        System.out.println("employees");
-        for (int i = 0; i < empListSel.size(); i++) {
-            System.out.println(empListSel.get(i));
-            System.out.print(",");
-        }
-        System.out.println("CID: " + cid);
-        String qry = "INSERT INTO currentjobs (CurJobID, Customer_CID, "
-                + "CustJobNum, CustJobName, JobTitle, JobName, JobWorkDate, "
-                + "JobStartTime, JobType, JobEmployees, JobEandV, S_Instr, "
-                + "D_Instr, T_Instr, W_Instr, billing,status, jobSiteAddr,"
-                + "jobCitySite, jobStateLoc, jobZipLoc,employeeID) "
-                + "VALUES (NULL, '" + cid + "', '" + custJobNumStr + "', '" + custJobNameStr + "', '" + jobTitleStr
-                + "', '" + jobNameStr + "', '" + startDateStr + "', '" + startTimeStr + "', '" + jobtypecompiled
-                + "','" + empCompiled + "', '" + equipCompiled + "', '" + sI + "', '" + dI + "'"
-                + ", '" + tI + "', '" + wI + "', '" + billing + "','" + status + "','" + streetAddr.getText() + "','"
-                + city.getText() + "','" + state.getText() + "','" + zip.getText() + "'," + empID + ");";
+            //insert into database
+            Statement updateLog = null;
 
-        System.out.println("qry: " + qry);
+            //make the connection
+            try {
+                conn = DriverManager.getConnection(url, userdb, passdb);
 
-        //delete all entries associated with IP before exiting to the login screen
-        Statement updateDb = null;
-        updateDb = conn.createStatement();
+                //set our session id and ip address in order to identify user
+                updateLog = conn.createStatement();
 
-        //set our session id and ip address in order to identify user.
-        int executeUpdate = updateDb.executeUpdate(qry);
+                usrHistTable.setItems(populateHist());
 
-        if (executeUpdate > 0) {
-            System.out.println("Database updated...");
-            //show the complete box dialog
-            Label label2;
-            label2 = new Label("Job Successfully Added.");
-            HBox hb2 = new HBox();
-            Group root = new Group();
+                int executeUpdate = updateLog.executeUpdate(queryRunNow);
+            } catch (SQLException e) {
+                System.err.println(e);
+            }
 
-            Button closeWindow = new Button("Close");
-            hb2.getChildren().addAll(label2, closeWindow);
-            hb2.setSpacing(10);
-            hb2.setLayoutX(25);
-            hb2.setLayoutY(48);
-            root.getChildren().add(hb2);
+            //compile job types 
+            for (int i = 0; i < taskTypeListStr.size(); i++) {
+                jobtypecompiled += "/" + taskTypeListStr.get(i);
+            }
 
-            final Scene scene2 = new Scene(root);
-            final Stage stage2 = new Stage();
+            //compile employees  
+            for (int j = 0; j < empListSel.size(); j++) {
+                empCompiled += "/" + empListSel.get(j);
+            }
 
-            stage2.close();
-            stage2.setScene(scene2);
-            stage2.setHeight(150);
-            stage2.setWidth(310);
-            stage2.setResizable(false);
-            stage2.show();
+            //compile equipment  
+            for (int k = 0; k < vehList.size(); k++) {
+                equipCompiled += "/" + vehList.get(k);
+            }
 
-            closeWindow.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent t) {
-                    taskList.getSelectionModel().select(1);
-                    clearJobList();
-                    CreateJobBox.setVisible(false);
-                    displayJobs.setVisible(true);
+            if (equipCompiled.equals("")) {
+                displayMsg("Equipment Missing.");
+
+            } else if (jobtypecompiled.equals("")) {
+                displayMsg("Job Type Missing.");
+
+            } else if (empCompiled.equals("")) {
+                displayMsg("Employees Missing.");
+            } else if (cid.equals("")) {
+                displayMsg("Customer not selected.");
+            } else {
+                //System.out.println("CID: " + cid);
+                //System.out.println("Job name: " + jobNameStr);
+                //System.out.println("Cust job #: " + custJobNumStr);
+                //System.out.println("Cust job name: " + custJobNameStr);
+                //System.out.println("start date: " + startDateStr);
+                //System.out.println("start time: " + startTimeStr);
+                //System.out.println("street: " + streetAddr.getText());
+                //System.out.println("city: " + city.getText());
+                //System.out.println("state: " + state.getText());
+                //System.out.println("zip: " + zip.getText());
+            /*  System.out.println("job type");
+                 for (int i = 0; i < jobTypePicked.size(); i++) {
+                 System.out.print(jobTypePicked.get(i));
+                 System.out.print(",");
+                 }
+
+                 System.out.println("equipment");
+                 for (int i = 0; i < vehList.size(); i++) {
+                 System.out.print(vehList.get(i));
+                 System.out.print(",");
+                 }
+
+                 System.out.println("employees");
+                 for (int i = 0; i < empListSel.size(); i++) {
+                 System.out.println(empListSel.get(i));
+                 System.out.print(",");
+                 }
+                 System.out.println("CID: " + cid);
+                 */
+                String qry = "INSERT INTO currentjobs (CurJobID, Customer_CID, "
+                        + "CustJobNum, CustJobName, JobTitle, JobName, JobWorkDate, "
+                        + "JobStartTime, JobType, JobEmployees, JobEandV, S_Instr, "
+                        + "D_Instr, T_Instr, W_Instr, billing,status, jobSiteAddr,"
+                        + "jobCitySite, jobStateLoc, jobZipLoc,employeeID) "
+                        + "VALUES (NULL, '" + cid + "', '" + custJobNumStr + "', '" + custJobNameStr + "', '" + jobTitleStr
+                        + "', '" + jobNameStr + "', '" + startDateStr + "', '" + startTimeStr + "', '" + jobtypecompiled
+                        + "','" + empCompiled + "', '" + equipCompiled + "', '" + sI + "', '" + dI + "'"
+                        + ", '" + tI + "', '" + wI + "', '" + billing + "','" + status + "','" + streetAddr.getText() + "','"
+                        + city.getText() + "','" + state.getText() + "','" + zip.getText() + "'," + empID + ");";
+
+                System.out.println("qry: " + qry);
+
+                //delete all entries associated with IP before exiting to the login screen
+                Statement updateDb = null;
+                updateDb = conn.createStatement();
+
+                //set our session id and ip address in order to identify user.
+                int executeUpdate = updateDb.executeUpdate(qry);
+
+                if (executeUpdate > 0) {
+                    System.out.println("Database updated...");
+                    //show the complete box dialog
+                    Label label2;
+                    label2 = new Label("Job Successfully Added.");
+                    HBox hb2 = new HBox();
+                    Group root = new Group();
+
+                    Button closeWindow = new Button("Close");
+                    hb2.getChildren().addAll(label2, closeWindow);
+                    hb2.setSpacing(10);
+                    hb2.setLayoutX(25);
+                    hb2.setLayoutY(48);
+                    root.getChildren().add(hb2);
+
+                    final Scene scene2 = new Scene(root);
+                    final Stage stage2 = new Stage();
 
                     stage2.close();
-                }
-            });
+                    stage2.setScene(scene2);
+                    stage2.setHeight(150);
+                    stage2.setWidth(310);
+                    stage2.setResizable(false);
+                    stage2.show();
 
+                    closeWindow.setOnAction(new EventHandler<ActionEvent>() {
+                        @Override
+                        public void handle(ActionEvent t) {
+                            taskList.getSelectionModel().select(1);
+                            clearJobList();
+                            CreateJobBox.setVisible(false);
+                            displayJobs.setVisible(true);
+
+                            stage2.close();
+                        }
+                    });
+
+                }
+            }
         }
 
     }
@@ -4008,9 +4187,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void saveImage(WritableImage snapshot) {
         BufferedImage bufferedImage = new BufferedImage(550, 400, BufferedImage.TYPE_INT_ARGB);
         BufferedImage image;
-        //for Production
-        File file = new File("C:/Users/administrator/Documents/job_board.jpg");
-        //File file = new File("C:/Users/vangfc/Desktop/test.jpg");
+        //for Production -- administrator
+        //File file = new File("C:/Users/vangfc/Documents/job_board.jpg");
+        File file = new File("C:/Users/administrator/Desktop/job_board.jpg");
         image = javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, bufferedImage);
         try {
             Graphics2D gd = (Graphics2D) image.getGraphics();
@@ -4360,7 +4539,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         final Label label122, emailDisp, usrNme, pwdEnt;
 
         st = conn.createStatement();
-        String qry555 = "select email from employees;";
+        String qry555 = "select emailSend from emaillist;";
 
         rs = st.executeQuery(qry555);
         emailList = "";
@@ -4433,21 +4612,21 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 GoogleMail sendMail = new GoogleMail();
 
                 try {
-                    /* for (int k = 0; k < emailTo.length; k++) {
-                     if (emailTo[k] == null || emailTo[k] == "") {
-                     break;
-                     }
+                    for (int k = 0; k < emailTo.length; k++) {
+                        if (emailTo[k] == null || emailTo[k] == "") {
+                            break;
+                        }
 
-                     System.out.println("sending: " + emailTo[k]);
-                     sendMail.Send("fucheevang", "tanehtmf10", emailTo[k], "", "Job Board Daily Mail", "Job board email.");
-                     }*/
+                        System.out.println("sending: " + emailTo[k]);
+                        System.out.println(usrNameField.getText().toString());
+                        System.out.println(pazz.getText().toString());
 
-                    System.out.println(usrNameField.getText().toString());
-                    System.out.println(pazz.getText().toString());
+                        //sendMail.Send("fucheevang", "tanehtmf10", emailTo[k], "", "Job Board Daily Mail", "Job board email.");
+                        sendMail.Send(usrNameField.getText().toString(), pazz.getText().toString(), emailTo[k], "", "Job Board Daily Mail", "Job board email.");
+                    }
 
-                    sendMail.Send(usrNameField.getText().toString(), pazz.getText().toString(), "bellis@videopipeservices.com", "", "Job Board Daily Mail", "Job board email.");
-
-                    //File file = new File("C:/Users/vangfc/Desktop/test.jpg");
+                    //sendMail.Send(usrNameField.getText().toString(), pazz.getText().toString(), "bellis@videopipeservices.com", "", "Job Board Daily Mail", "Job board email.");
+                    //File file = new File("C:/Users/vangfc/Documents/job_board.jpg");
                     File file = new File("C:/Users/administrator/Documents/job_board.jpg");
                     file.delete();
 
@@ -4751,4 +4930,136 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     }
 
+    @FXML
+    private void addEmpEmailerAction(ActionEvent event) throws SQLException {
+        String empToAdd = selEmpEmail.getSelectionModel().getSelectedItem().toString();
+        empToAdd = empToAdd.substring(empToAdd.indexOf(":") + 2, empToAdd.length());
+
+        String queryDelete = "insert into emaillist (emailSend) values('" + empToAdd + "');";
+        //System.out.println(queryDelete);
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try {
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            String emailChkr = "";
+            for (int l = 0; l < empEmailList.size(); l++) {
+                emailChkr += empEmailList.get(l) + ",";
+            }
+            if (!emailExist(empToAdd, emailChkr)) {
+                int executeUpdate = updateDb.executeUpdate(queryDelete);
+                refreshList();
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+        updateEmailList();
+
+    }
+
+    @FXML
+    private void deleteEmpEmailAction(ActionEvent event) throws SQLException {
+        String EmailStr = empEmailListView.getSelectionModel().selectedItemProperty().getValue().toString();
+        String queryDelete = "DELETE FROM emaillist WHERE emailSend = '" + EmailStr + "'";
+        //System.out.println(queryDelete);
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryDelete);
+            updateEmailList();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    @FXML
+    private void addAdminAction(ActionEvent event) throws SQLException {
+     
+        String getEmail = selEmpAdmin.getSelectionModel().getSelectedItem().toString();
+        getEmail = getEmail.substring(getEmail.indexOf(":") + 2, getEmail.length());
+
+        String queryAdmin = "", empidtoadd="";
+        System.out.println(queryAdmin);
+
+        //make the connection
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery("select uid from employees where email = '" + getEmail + "';");
+            while (rs.next()) {
+                empidtoadd=rs.getString(1);
+                queryAdmin = "insert into administrators (adminPriv, employees_uid) values(1," + empidtoadd + ");";
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try {
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            if(adminExist(empidtoadd)==false)
+            {
+                int executeUpdate = updateDb.executeUpdate(queryAdmin);                 
+            }
+             
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+        updateAdminList();
+
+    }
+
+     @FXML
+    private void delAdminAction(ActionEvent event) throws SQLException {
+        String uidToDelNow = empAdminListView.getSelectionModel().selectedItemProperty().getValue().toString();
+        uidToDelNow=uidToDelNow.substring(uidToDelNow.indexOf(":")+1,uidToDelNow.length());
+        
+        String queryDelete = "DELETE FROM administrators WHERE employees_uid = '" + uidToDelNow + "'";
+        System.out.println(queryDelete);
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryDelete);
+            updateAdminList();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
 }

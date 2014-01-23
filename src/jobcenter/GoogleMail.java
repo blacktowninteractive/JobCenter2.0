@@ -107,7 +107,9 @@ public class GoogleMail {
 
          // Part two is attachment
          messageBodyPart = new MimeBodyPart();
-         String filename = "C:/Users/vangfc/Desktop/test.jpg";
+         //change to administrator for production
+         String filename = "C:/Users/administrator/Documents/job_board.jpg";
+         //String filename = "C:/Users/vangfc/Documents/job_board.jpg";
          DataSource source = new FileDataSource(filename);
          messageBodyPart.setDataHandler(new DataHandler(source));
          messageBodyPart.setFileName(filename);
