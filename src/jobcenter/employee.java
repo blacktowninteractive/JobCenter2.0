@@ -16,14 +16,26 @@ public class employee {
     private final SimpleStringProperty lastName;
     private final SimpleStringProperty email;
     private final SimpleStringProperty phoneStr;
+    private final SimpleStringProperty shpEmp55;
 
-    public employee(String fName, String lName, String email, String phone) {
+    public employee(String fName, String lName, String email, String phone, String shpEmp2) {
         this.firstName = new SimpleStringProperty(fName);
         this.lastName = new SimpleStringProperty(lName);
         this.email = new SimpleStringProperty(email);
         this.phoneStr = new SimpleStringProperty(phone);
+        this.shpEmp55 = new SimpleStringProperty(shpEmp2);
     }
 
+    
+    public String getShopEmp() {
+        return shpEmp55.get();
+    }
+
+    public void setShopEmp(String fName) {
+        shpEmp55.set(fName);
+    }
+
+    
     public String getFirstName() {
         return firstName.get();
     }
