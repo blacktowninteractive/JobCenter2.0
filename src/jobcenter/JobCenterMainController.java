@@ -116,7 +116,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     //database connection info -- 192.168.1.112 customer ip
     //my ip 192.168.1.108
-    public static String url = "jdbc:mysql://192.168.1.112/jobcenter";
+   // public static String url = "jdbc:mysql://192.168.1.112/jobcenter";
+    public static String url = "jdbc:mysql://localhost/jobcenter";
     public static String userdb = "vangfc";//Username of database  
     public static String passdb = "password";//Password of database
     public static String scrollingTxt = "";
@@ -2475,8 +2476,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
             while (true) {
                 if (equipListStr.indexOf("/") >= 0) {
                     //sort out employees for display
-                    equipListStr = equipListStr.substring(1, equipListStr.length() - 1);
-                    //System.out.println("\n\nUnprocessed string: " + equipListStr);
+                    int strLenTester=equipListStr.length();             
+                     
+                    equipListStr = equipListStr.substring(1, strLenTester);
+                    System.out.println("\n\nUnprocessed string: " + equipListStr);
                     equipNameStr = "";
                     //System.out.println("Before: " + equipListStr);
                     //System.out.println(equipListStr.indexOf("/"));
@@ -2568,10 +2571,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         stageJob.setFullScreen(true);
 
-        stageJob.setX(Screen.getScreens().get(2).getVisualBounds().getMinX());
-        stageJob.setY(Screen.getScreens().get(2).getVisualBounds().getMinY());
-        stageJob.setWidth(Screen.getScreens().get(2).getVisualBounds().getWidth());
-        stageJob.setHeight(Screen.getScreens().get(2).getVisualBounds().getHeight());
+        stageJob.setX(Screen.getScreens().get(0).getVisualBounds().getMinX());
+        stageJob.setY(Screen.getScreens().get(0).getVisualBounds().getMinY());
+        stageJob.setWidth(Screen.getScreens().get(0).getVisualBounds().getWidth());
+        stageJob.setHeight(Screen.getScreens().get(0).getVisualBounds().getHeight());
 
         //stageJob.initStyle(StageStyle.UNDECORATED);
         stageJob.setScene(scene2);
