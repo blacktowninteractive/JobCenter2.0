@@ -4049,7 +4049,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //should auto adjust for each month, only way to check is to wait till february and see if march comes up....
         //jan=0 feb=1 march=2 etc...
         int month = cal.get(Calendar.MONTH);
-        month=2;
+        //month=2;
         int date = 1;
 
         String monthStr = "";
@@ -4120,7 +4120,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         columnLoc = 1;
 
         //calendar gridlines
-        gridpane.setGridLinesVisible(false);
+        gridpane.setGridLinesVisible(true);
 
         calSet = false;
 
