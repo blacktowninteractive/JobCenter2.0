@@ -112,11 +112,11 @@ import javax.mail.internet.MimeMultipart;
  *
  * @author angelacaicedo
  */
-public class JobCenterMainController implements Initializable, ScreenController {
+public class JobCenterMainController implements Initializable, ScreenController  {
 
     //database connection info -- 192.168.1.112 customer ip
     //my ip 192.168.1.108
-   // public static String url = "jdbc:mysql://192.168.1.112/jobcenter";
+    //public static String url = "jdbc:mysql://192.168.1.112/jobcenter";
     public static String url = "jdbc:mysql://localhost/jobcenter";
     public static String userdb = "vangfc";//Username of database  
     public static String passdb = "password";//Password of database
@@ -162,7 +162,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             usrDeleteBut, handlePasswdBut, saveScrollingBut, displayCalendar,
             emailJobBoard, deleteJob, editCustBut, addEmpEmailerBut,
             deleteEmpEmailBut, delAdminBut, insertReportBut, showEmpBut, viewChosenTrackerBut,
-            deleteTrackerBut, createCustBut, chkEmp, archiveBut;
+            deleteTrackerBut, createCustBut, chkEmp, archiveBut, printJobInfoBut;
 
     public TextField jobTitle, jobName, custJobNum, custJobName, startDate, startTime,
             diamStr, feetStr, fNameStrIns, lNameStrIns, phoneStrIns, emailStrIns,
@@ -182,7 +182,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     public ComboBox screenList, taskComboBox, jobStatus, empListUsr, selEmpEmail, selEmpAdmin, trackingBox;
     ObservableList<String> admin = FXCollections.observableArrayList(
-            "Manager status", "People", "Vehicles", "Create/Delete a JobCenter User", "Settings");
+            "Shop employees/managers", "People", "Vehicles", "Create/Delete a JobCenter User", "Settings");
     //ObservableList<String> functions = FXCollections.observableArrayList(
     //      "Show job board", "Summary report");
     ObservableList<String> tasks = FXCollections.observableArrayList(
@@ -743,6 +743,26 @@ public class JobCenterMainController implements Initializable, ScreenController 
         return uidRet;
     }
 
+    private boolean checkIfJobExists(String theJobTitle)
+    {
+        String chkIfJobQry = "select * from currentjobs where JobTitle = '"+theJobTitle+"'";
+        boolean jobexist = false;
+        
+        //make the connection
+        try {
+            st = conn.createStatement();
+            rs = st.executeQuery(chkIfJobQry);
+
+            while (rs.next()) {
+                jobexist = true;
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return jobexist;
+    }
     private String getMD5(String val) throws NoSuchAlgorithmException {
         //for secure password
         MessageDigest md = MessageDigest.getInstance("MD5");
@@ -1249,6 +1269,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                                             //System.out.println(rs.getString(1));
                                             empNameBox.add(rs.getString(1) + " " + rs.getString(2) + ": " + rs.getString(3));
                                         }
+                                        
                                         selEmpEmail.setItems(empNameBox);
                                         selEmpAdmin.setItems(empNameBox);
 
@@ -2571,10 +2592,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         stageJob.setFullScreen(true);
 
-        stageJob.setX(Screen.getScreens().get(0).getVisualBounds().getMinX());
-        stageJob.setY(Screen.getScreens().get(0).getVisualBounds().getMinY());
-        stageJob.setWidth(Screen.getScreens().get(0).getVisualBounds().getWidth());
-        stageJob.setHeight(Screen.getScreens().get(0).getVisualBounds().getHeight());
+        stageJob.setX(Screen.getScreens().get(2).getVisualBounds().getMinX());
+        stageJob.setY(Screen.getScreens().get(2).getVisualBounds().getMinY());
+        stageJob.setWidth(Screen.getScreens().get(2).getVisualBounds().getWidth());
+        stageJob.setHeight(Screen.getScreens().get(2).getVisualBounds().getHeight());
 
         //stageJob.initStyle(StageStyle.UNDECORATED);
         stageJob.setScene(scene2);
@@ -2673,6 +2694,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //System.out.println(itemChosen);
         taskTypeListStr.add(itemChosen);
         taskTypeList.setItems(taskTypeListStr);
+        jobName.setText(taskComboBox.getValue().toString());
 
     }
 
@@ -2799,6 +2821,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
         jobtypecompiled = "";
         empCompiled = "";
         equipCompiled = "";
+        
+        //check if jobtitle doesn't already exist in db
+        //the same jobtitle will result in duplicate entries
+        if(checkIfJobExists(jobTitleStr))
+        {
+            displayMsg("Job Number already exists!");
+            return;
+        }
 
         DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
         Calendar cal123 = Calendar.getInstance();
@@ -2824,7 +2854,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
             displayMsg("Job Name Information Missing.");
         } else if (custJobNumStr.equals("")) {
             displayMsg("Cust Job No. Information Missing.");
-        } /*else if (custJobNameStr.equals("")) {
+        } 
+        else if (startDateStr.equals("")) {  
+            displayMsg("Start Date Information Missing.");        
+        }
+             
+        /*else if (custJobNameStr.equals("")) {
          displayMsg("Cust Job Name Information Missing.");
          } else if (startDateStr.equals("")) {
          displayMsg("Start Date Information Missing.");
@@ -3724,6 +3759,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Logger.getLogger(JobCenterController.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
+        
+        
+        managerView.getSelectionModel().selectNext();
     }
 
     @FXML
@@ -4009,8 +4047,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
         int year = cal.getWeekYear();
 
         //should auto adjust for each month, only way to check is to wait till february and see if march comes up....
+        //jan=0 feb=1 march=2 etc...
         int month = cal.get(Calendar.MONTH);
-        month = month + 1;
+        month=2;
         int date = 1;
 
         String monthStr = "";
@@ -4045,10 +4084,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String dateToday = (dateFormat.format(cal.getTime()));
 
         String monYrStr = monthStr + " " + yrStr;
-
-        if (dateToday.substring(0, dateToday.indexOf("/")).equals("01")) {
-            labelTitle = new Text(monYrStr);
-        }
+        String labelDateStr = dateToday.substring(0, dateToday.indexOf("/"));
+        
+        labelTitle = new Text(monYrStr);
+         
 
         Text labelDate = labelDate = new Text(dateToday);
 
@@ -4164,10 +4203,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
             gridCal.getColumnConstraints().add(column);
         }
 
+        //once done increment one before starting new day adding
+        start++;
+        
         //add's the rest of the calendar days
         if (calSet) {
+            
             Text tmpTxt2 = new Text(new Integer(start).toString());
-            Text tmpTxt3 = new Text(new Integer(start + 1).toString());
             int columns = 1, colToAdd = 1;
             boolean setToZero = true, setToZero1 = true, setToZero2 = true, setToZero3 = true;
 
@@ -6175,8 +6217,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
          BufferedImage bufferedImage = new BufferedImage(550, 400, BufferedImage.TYPE_INT_ARGB);
         BufferedImage image;
         //for Production -- administrator
-        File file = new File("C:/Users/vangfc/Desktop/job_board.jpg");
-        //File file = new File("C:/Users/administrator/Desktop/job_board.jpg");
+        //File file = new File("C:/Users/vangfc/Desktop/job_board.jpg");
+        File file = new File("C:/Users/administrator/Desktop/jobCenter/archive/job_board.jpg");
         image = javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, bufferedImage);
         try {
             Graphics2D gd = (Graphics2D) image.getGraphics();
@@ -6192,6 +6234,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
         
         
         
+    }
+    
+    
+    @FXML
+    private void printJobInfo(ActionEvent event)
+    {
+        System.out.println("test");
     }
 
 }
