@@ -112,14 +112,18 @@ import javax.mail.internet.MimeMultipart;
  *
  * @author angelacaicedo
  */
-public class JobCenterMainController implements Initializable, ScreenController  {
+public class JobCenterMainController implements Initializable, ScreenController {
 
     //database connection info -- 192.168.1.112 customer ip
     //my ip 192.168.1.108
-    //public static String url = "jdbc:mysql://192.168.1.112/jobcenter";
-    public static String url = "jdbc:mysql://localhost/jobcenter";
+    //jdbc:mysql://hostname:port/databasename
+    public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
     public static String userdb = "vangfc";//Username of database  
     public static String passdb = "password";//Password of database
+
+    // public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
+    //public static String userdb = "videoPipe";//Username of database  
+    //public static String passdb = "Vps1566!!";//Password of database
     public static String scrollingTxt = "";
     String emailList;
     String[] emailTo;
@@ -150,10 +154,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
     public TableView<users> usersTable = new TableView<users>();
     public TableView<editHistClass> usrHistTable = new TableView<editHistClass>();
 
-    public TableColumn emp_fname, emp_lname, emp_phone, emp_email,
+    public TableColumn emp_fname, emp_lname, emp_phone, emp_email, emp_shop,
             vehNameIns, typeIns, statusIns, usrFName, usrLName, usrUName, usrPwd,
             manage_lname, manage_fname, manage_phone, manage_office, manage_email,
-            jname, dte, fnme, lnme, descrpt, shopEmp;
+            jname, dte, fnme, lnme, descrpt;
 
     public Button chgPasswd, addEmp, addVehBut, deleteVehBut, clearJob,
             saveJob, confirmJob, cancelJob, addCustBut, addVehEqToTreeBut, addEmpToTreeBut,
@@ -182,7 +186,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     public ComboBox screenList, taskComboBox, jobStatus, empListUsr, selEmpEmail, selEmpAdmin, trackingBox;
     ObservableList<String> admin = FXCollections.observableArrayList(
-            "Shop employees/managers", "People", "Vehicles", "Create/Delete a JobCenter User", "Settings");
+            "People", "Vehicles", "Create/Delete a JobCenter User", "Settings");
     //ObservableList<String> functions = FXCollections.observableArrayList(
     //      "Show job board", "Summary report");
     ObservableList<String> tasks = FXCollections.observableArrayList(
@@ -244,7 +248,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         emp_lname.setCellValueFactory(new PropertyValueFactory<employee, String>("lastName"));
         emp_email.setCellValueFactory(new PropertyValueFactory<employee, String>("email"));
         emp_phone.setCellValueFactory(new PropertyValueFactory<employee, String>("phone"));
-        shopEmp.setCellValueFactory(new PropertyValueFactory<employee, String>("shpEmp55"));
+        //emp_shop.setCellValueFactory(new PropertyValueFactory<employee, String>("shpEmp55"));
 
         employeeTable.setItems(populateDB());
         employeeTable.setEditable(true);
@@ -253,7 +257,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         emp_lname.setCellFactory(TextFieldTableCell.forTableColumn());
         emp_email.setCellFactory(TextFieldTableCell.forTableColumn());
         emp_phone.setCellFactory(TextFieldTableCell.forTableColumn());
-        shopEmp.setCellFactory(TextFieldTableCell.forTableColumn());
+        // emp_shop.setCellFactory(TextFieldTableCell.forTableColumn());
 
         emp_fname.setOnEditStart(new EventHandler<TableColumn.CellEditEvent<employee, String>>() {
             @Override
@@ -362,6 +366,24 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //  initialize user settings text
         initializeText();
+    }
+
+    public int howManyRowsPrinter() {
+        String qryRun55 = "select count(*) from currentjobs";
+        int number = 0;
+        //make the connection
+        try { 
+            st = conn.createStatement();
+            ResultSet rs2 = st.executeQuery(qryRun55);
+
+            rs2.next();
+            number = rs2.getInt(1);
+            rs2.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return number;
     }
 
     private final class TextFieldTreeCellImpl extends TreeCell<String> {
@@ -743,11 +765,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
         return uidRet;
     }
 
-    private boolean checkIfJobExists(String theJobTitle)
-    {
-        String chkIfJobQry = "select * from currentjobs where JobTitle = '"+theJobTitle+"'";
+    private boolean checkIfJobExists(String theJobTitle) {
+        String chkIfJobQry = "select * from currentjobs where JobTitle = '" + theJobTitle + "'";
         boolean jobexist = false;
-        
+
         //make the connection
         try {
             st = conn.createStatement();
@@ -760,9 +781,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
         } catch (SQLException ex) {
             Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         return jobexist;
     }
+
     private String getMD5(String val) throws NoSuchAlgorithmException {
         //for secure password
         MessageDigest md = MessageDigest.getInstance("MD5");
@@ -869,6 +891,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         return tester55;
     }
 
+    //popluate the shop employees
     public ObservableList<manager> populateManagers() {
         ObservableList<manager> tester55 = FXCollections.observableArrayList();
 
@@ -957,7 +980,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //make the connection
         try {
             st = conn.createStatement();
-            rs = st.executeQuery("select VehicleName, VehicleType, VehicleStatus from vehicles;");
+            rs = st.executeQuery("select VehicleName, VehicleType, VehicleStatus from vehicles ORDER BY VehicleName ASC;");
 
             while (rs.next()) {
                 tester2.add(new equipment(rs.getString(1), rs.getString(2), rs.getString(3)));
@@ -980,7 +1003,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         try {
             conn = DriverManager.getConnection(url, userdb, passdb);
             st = conn.createStatement();
-            rs = st.executeQuery("select fname, lname, phone, email, shopEmp from employees;");
+            rs = st.executeQuery("select fname, lname, phone, email, shopEmp from employees ORDER BY fname ASC;");
 
             while (rs.next()) {
                 tester2.add(new employee(rs.getString(1), rs.getString(2), rs.getString(4), rs.getString(3), rs.getString(5)));
@@ -1229,9 +1252,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                                 adminList.disableProperty().set(false);
                                 clearPane();
 
-                                if (new_val == "Shop employees/managers") {
-                                    managerPane.setVisible(true);
-                                }
+                                // if (new_val == "Shop employees/managers") {
+                                //      managerPane.setVisible(true);
+                                //  }
                                 if (new_val == "People") {
                                     employeePane.setVisible(true);
                                     tracking = FXCollections.observableList(new ArrayList<String>());
@@ -1269,7 +1292,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                                             //System.out.println(rs.getString(1));
                                             empNameBox.add(rs.getString(1) + " " + rs.getString(2) + ": " + rs.getString(3));
                                         }
-                                        
+
                                         selEmpEmail.setItems(empNameBox);
                                         selEmpAdmin.setItems(empNameBox);
 
@@ -1620,13 +1643,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //stageJob.setWidth(1224);
         //print stuffs
         Printer printer = Printer.getDefaultPrinter();
-        PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
-
-        double scaleX = pageLayout.getPrintableWidth() / 1224;
-
-        double scaleY = pageLayout.getPrintableHeight() / 662;
-
-        root.getTransforms().add(new Scale(scaleX, scaleY));
+        //PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+        PageLayout pageLayout = printer.createPageLayout(Paper.A0, PageOrientation.REVERSE_LANDSCAPE, Printer.MarginType.EQUAL);
+        /*  double scaleX = pageLayout.getPrintableWidth() / 1224;
+         double scaleY = pageLayout.getPrintableHeight() / 662;
+         */
+        // root.getTransforms().add(new Scale(scaleX, scaleY));
 
         /*
          PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.PORTRAIT, Printer.MarginType.DEFAULT);
@@ -2303,14 +2325,32 @@ public class JobCenterMainController implements Initializable, ScreenController 
             @Override
             public void handle(ActionEvent t) {
                 Printer printer = Printer.getDefaultPrinter();
-                PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+                PageLayout pageLayout = printer.createPageLayout(Paper.LEGAL, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
 
-                double scaleX = pageLayout.getPrintableWidth() / 1524;
-                double scaleY = pageLayout.getPrintableHeight() / 662;
+                //figure out how many rows 1 or 2
+                // if more than 9 then 2 rows
+                // if 9 or less then just 1 row
+                if (howManyRowsPrinter() <= 9) {
+                    double scaleX = pageLayout.getPrintableWidth() / 1524;
+                    double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                root.getTransforms().add(new Scale(scaleX, scaleY));
+                    root.getTransforms().add(new Scale(scaleX, scaleY));
+                    root.setRotate(90);
+                    root.setLayoutY(385);
+                    root.setLayoutX(-228);
+                }
+                else
+                {
+                    double scaleX = pageLayout.getPrintableWidth() / 1524;
+                    double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                PrinterJob job = PrinterJob.createPrinterJob();
+                    root.getTransforms().add(new Scale(scaleX, scaleY));
+                    root.setRotate(90);
+                    root.setLayoutY(-100);
+                    root.setLayoutX(-730);
+                }
+
+               PrinterJob job = PrinterJob.createPrinterJob();
 
                 if (job != null) {
 
@@ -2321,7 +2361,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         job.endJob();
                         stageJob.close();
                     }
-
                 }
 
             }
@@ -2497,8 +2536,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             while (true) {
                 if (equipListStr.indexOf("/") >= 0) {
                     //sort out employees for display
-                    int strLenTester=equipListStr.length();             
-                     
+                    int strLenTester = equipListStr.length();
+
                     equipListStr = equipListStr.substring(1, strLenTester);
                     System.out.println("\n\nUnprocessed string: " + equipListStr);
                     equipNameStr = "";
@@ -2821,11 +2860,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
         jobtypecompiled = "";
         empCompiled = "";
         equipCompiled = "";
-        
+
         //check if jobtitle doesn't already exist in db
         //the same jobtitle will result in duplicate entries
-        if(checkIfJobExists(jobTitleStr))
-        {
+        if (checkIfJobExists(jobTitleStr)) {
             displayMsg("Job Number already exists!");
             return;
         }
@@ -2854,12 +2892,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
             displayMsg("Job Name Information Missing.");
         } else if (custJobNumStr.equals("")) {
             displayMsg("Cust Job No. Information Missing.");
-        } 
-        else if (startDateStr.equals("")) {  
-            displayMsg("Start Date Information Missing.");        
-        }
-             
-        /*else if (custJobNameStr.equals("")) {
+        } else if (startDateStr.equals("")) {
+            displayMsg("Start Date Information Missing.");
+        } /*else if (custJobNameStr.equals("")) {
          displayMsg("Cust Job Name Information Missing.");
          } else if (startDateStr.equals("")) {
          displayMsg("Start Date Information Missing.");
@@ -3545,9 +3580,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
     @FXML
     private void addEmployeeAction(ActionEvent event)
             throws IOException, SQLException {
-        String queryRun = "insert into employees (fname, lname,address,phone,email) "
+        String queryRun = "insert into employees (fname, lname,address,phone,email,shopEmp, empAssigned) "
                 + "values('" + fNameStrIns.getText() + "','" + lNameStrIns.getText() + "','"
-                + "null','" + phoneStrIns.getText() + "','" + emailStrIns.getText() + "')";
+                + "null','" + phoneStrIns.getText() + "','" + emailStrIns.getText() + "','"
+                + "no','no')";
 
         //insert into database
         Statement updateDb = null;
@@ -3759,8 +3795,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Logger.getLogger(JobCenterController.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        
-        
+
         managerView.getSelectionModel().selectNext();
     }
 
@@ -4085,9 +4120,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         String monYrStr = monthStr + " " + yrStr;
         String labelDateStr = dateToday.substring(0, dateToday.indexOf("/"));
-        
+
         labelTitle = new Text(monYrStr);
-         
 
         Text labelDate = labelDate = new Text(dateToday);
 
@@ -4205,10 +4239,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //once done increment one before starting new day adding
         start++;
-        
+
         //add's the rest of the calendar days
         if (calSet) {
-            
+
             Text tmpTxt2 = new Text(new Integer(start).toString());
             int columns = 1, colToAdd = 1;
             boolean setToZero = true, setToZero1 = true, setToZero2 = true, setToZero3 = true;
@@ -5762,7 +5796,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     @FXML
     private void chkEmpAction(ActionEvent event) throws SQLException {
 
-        String queryDelete = "select uid from employees where not empAssigned = 'no'";
+        String queryDelete = "select uid from employees where not empAssigned = 'no' and shopEmp = 'no'";
         List<String> employeesAssn = new ArrayList<String>(),
                 employeesParsed = new ArrayList<String>();
         String theStr = "", tmpStr = "";
@@ -5802,11 +5836,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             //set our session id and ip address in order to identify user.
             updateDb5 = conn.createStatement();
-            
-            addEmpStatus= "update employees "
-                        + "set empAssigned = 'no'";
+
+            addEmpStatus = "update employees "
+                    + "set empAssigned = 'no'";
             int executeUpdate = updateDb5.executeUpdate(addEmpStatus);
-            
 
             for (int i = 0; i < employeesParsed.size(); i++) {
                 addEmpStatus = "update employees "
@@ -5824,42 +5857,42 @@ public class JobCenterMainController implements Initializable, ScreenController 
         }
 
         //now we need to scan through the employees table to see if anyone was left out?
-        String findEmpLeft = "select * from employees where not empAssigned = 'yes';";
+        String findEmpLeft = "select * from employees where not empAssigned = 'yes' and shopEmp = 'no';";
         List<String> addToEmp = new ArrayList<String>();
 
         try {
             st = conn.createStatement();
             rs = st.executeQuery(findEmpLeft);
             while (rs.next()) {
-                addToEmp.add(rs.getString(1)+" "+rs.getString(2));
+                addToEmp.add(rs.getString(1) + " " + rs.getString(2));
             }
 
         } catch (SQLException ex) {
             Logger.getLogger(JobCenterController.class
                     .getName()).log(Level.SEVERE, null, ex);
         }
-        String e15="";
-        
-        for(int i=0;i<addToEmp.size();i++){
-            e15+=addToEmp.get(i)+", ";
+        String e15 = "";
+
+        for (int i = 0; i < addToEmp.size(); i++) {
+            e15 += addToEmp.get(i) + "\n";
         }
-        
-        
+
         final TextArea text = new TextArea(e15);
+        text.setWrapText(true);
         Label label125 = new Label("Employees not yet assigned");
-          
+
         HBox hb2 = new HBox();
-        Group root123 = new Group(); 
-        
+        Group root123 = new Group();
+
         Button closeWindow = new Button("Send");
-  
+
         GridPane grid = new GridPane();
         grid.setVgap(4);
         grid.setHgap(10);
         grid.setPadding(new Insets(5, 5, 5, 5));
-        grid.add(new Label("Employees not yet assigned"), 0, 0); 
+        grid.add(new Label("Employees not yet assigned"), 0, 0);
 
-        grid.add(text, 0, 5, 2, 1);  
+        grid.add(text, 0, 5, 2, 1);
         root123.getChildren().add(grid);
 
         final Scene scene2 = new Scene(root123);
@@ -5871,7 +5904,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stage2.setWidth(480);
         stage2.setResizable(false);
         stage2.show();
-        
+
         closeWindow.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
@@ -5882,7 +5915,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @FXML
     private void archiveAction(ActionEvent event) throws SQLException {
-       // here we make image from vbox and add it to scene, can be repeated :) 
+        // here we make image from vbox and add it to scene, can be repeated :) 
         final Group root = new Group();
         Button printScreen = new Button("Print");
 
@@ -6212,13 +6245,20 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         WritableImage snapshot = root.snapshot(new SnapshotParameters(), null);
         root.getChildren().add(new ImageView(snapshot));
-        
-        
-         BufferedImage bufferedImage = new BufferedImage(550, 400, BufferedImage.TYPE_INT_ARGB);
+
+        BufferedImage bufferedImage = new BufferedImage(550, 400, BufferedImage.TYPE_INT_ARGB);
         BufferedImage image;
         //for Production -- administrator
         //File file = new File("C:/Users/vangfc/Desktop/job_board.jpg");
-        File file = new File("C:/Users/administrator/Desktop/jobCenter/archive/job_board.jpg");
+        DateFormat dateFormat2 = new SimpleDateFormat("dd-MM-yyyy");
+        Calendar cal2 = Calendar.getInstance();
+
+        String dateToday2 = (dateFormat.format(cal.getTime()));
+        dateToday2 = dateToday2.replaceAll("/", "-");
+        String fileNameSaver = "C:/Users/administrator/Desktop/jobCenter/archive/job_board_" + dateToday2 + ".jpg";
+
+        File file = new File(fileNameSaver);
+
         image = javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, bufferedImage);
         try {
             Graphics2D gd = (Graphics2D) image.getGraphics();
@@ -6231,16 +6271,137 @@ public class JobCenterMainController implements Initializable, ScreenController 
             System.err.print(ex);
         };
 
-        
-        
-        
     }
-    
-    
+
     @FXML
-    private void printJobInfo(ActionEvent event)
-    {
-        System.out.println("test");
+    private void printJobInfo(ActionEvent event) {
+        final Group root = new Group();
+        String curDateStr = "";
+
+        Rectangle r = new Rectangle(0, 0, 1120, 40);
+        r.setFill(Color.LIGHTGREY);
+        r.strokeProperty().set(Color.GRAY);
+
+        Rectangle r2 = new Rectangle(0, 42, 1120, 18);
+        r2.setFill(Color.YELLOW);
+        r2.strokeProperty().set(Color.YELLOW);
+
+        Rectangle r3 = new Rectangle(0, 342, 1120, 18);
+        r3.setFill(Color.YELLOW);
+        r3.strokeProperty().set(Color.YELLOW);
+
+        GridPane gridpane = new GridPane(),
+                gridpane2 = new GridPane(),
+                gridpane3 = new GridPane();
+
+        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+        Calendar cal = Calendar.getInstance();
+
+        String dateToday = (dateFormat.format(cal.getTime()));
+        dateToday = "Date: " + dateToday;
+
+        Text printText1 = new Text("Video Pipe Services, LLC"),
+                printText2 = new Text("Beltsville, MD"),
+                printText3 = new Text("Job Information Sheet"),
+                printText4 = new Text(dateToday),
+                printText5 = new Text("Customer"),
+                printText6 = new Text("Company name:\t\t" + setCustName.getText()),
+                printText7 = new Text("Street Address:\t\t" + setCustAddr.getText()),
+                printText8 = new Text("City:\t\t\t\t\t" + setCustCity.getText()),
+                printText9 = new Text("Point of contact:\t\t" + setCustPOC.getText()),
+                printText10 = new Text("Phone:\t\t\t\t" + setCustPhone.getText()),
+                printText11 = new Text("State:\t\t\t\t" + setCustState.getText()),
+                printText12 = new Text("Zip:\t\t\t\t\t" + setCustZip.getText()),
+                printText13 = new Text("Job Number:\t\t\t" + jobTitle.getText()),
+                printText14 = new Text("Job Name:\t\t\t" + jobName.getText()),
+                printText15 = new Text("Cust Job Number:\t\t" + custJobNum.getText()),
+                printText16 = new Text("Job Start Date:\t\t\t" + startDate.getText()),
+                printText17 = new Text("Special Instructions:\t\t\t\t" + sInstr.getText()),
+                printText18 = new Text("Instructions (disposal):\t\t\t" + dInstr.getText()),
+                printText19 = new Text("Instructions (traffic control):\t\t" + tInstr.getText()),
+                printText20 = new Text("Instructions (water source):\t\t" + wInstr.getText());
+
+        gridpane.setLayoutY(10);
+
+        //gridlines for edit customer info
+        gridpane.setGridLinesVisible(false);
+
+        gridpane.add(printText1, 1, 1);
+        gridpane.add(printText2, 1, 2);
+        gridpane.add(printText3, 1, 3);
+        gridpane.add(printText4, 1, 4);
+
+        gridpane2.setLayoutY(90);
+
+        //gridlines for edit customer info
+        gridpane2.setGridLinesVisible(false);
+
+        gridpane2.add(printText5, 1, 5);
+        gridpane2.add(printText6, 1, 6);
+        gridpane2.add(printText7, 1, 7);
+        gridpane2.add(printText8, 1, 8);
+        gridpane2.add(printText9, 1, 9);
+        gridpane2.add(printText10, 1, 10);
+        gridpane2.add(printText11, 1, 11);
+        gridpane2.add(printText12, 1, 12);
+        gridpane2.add(printText13, 1, 13);
+        gridpane2.add(printText14, 1, 14);
+        gridpane2.add(printText15, 1, 15);
+        gridpane2.add(printText16, 1, 16);
+
+        gridpane3.setLayoutY(300);
+
+        //gridlines for edit customer info
+        gridpane3.setGridLinesVisible(false);
+
+        gridpane3.add(printText17, 1, 17);
+        gridpane3.add(printText18, 1, 18);
+        gridpane3.add(printText19, 1, 19);
+        gridpane3.add(printText20, 1, 20);
+
+        root.getChildren().add(gridpane);
+        root.getChildren().add(gridpane2);
+        root.getChildren().add(gridpane3);
+
+        Scene scene2 = new Scene(root);
+
+        stageJob = new Stage();
+      //  stageJob.setX(Screen.getScreens().get(1).getVisualBounds().getMinX());
+        // stageJob.setY(Screen.getScreens().get(1).getVisualBounds().getMinY());
+        //stageJob.setResizable(false);    
+        //stageJob.setFullScreen(true);
+        //set the dimesions to the screen size:
+        //stageJob.setWidth(Screen.getScreens().get(1).getVisualBounds().getWidth());
+        // stageJob.setHeight(Screen.getScreens().get(1).getVisualBounds().getHeight());
+
+        //stageJob.initStyle(StageStyle.UNDECORATED);
+        stageJob.setScene(scene2);
+        stageJob.setHeight(600);
+        stageJob.setWidth(700);
+        stageJob.show();
+
+        //Print the root node
+        Printer printer = Printer.getDefaultPrinter();
+        PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+
+        double scaleX = pageLayout.getPrintableWidth() / 1524;
+        double scaleY = pageLayout.getPrintableHeight() / 662;
+
+        root.getTransforms().add(new Scale(scaleX, scaleY));
+
+        PrinterJob job = PrinterJob.createPrinterJob();
+
+        if (job != null) {
+
+            boolean success = job.printPage(root);
+
+            if (success) {
+
+                job.endJob();
+                stageJob.close();
+            }
+
+        }
     }
 
 }

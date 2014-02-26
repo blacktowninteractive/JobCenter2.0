@@ -53,7 +53,7 @@
         </TitledPane>
       </children>
     </Pane>
-    <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" focusTraversable="false" layoutX="200.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
+    <Pane fx:id="CreateJobBox" blendMode="DIFFERENCE" focusTraversable="false" layoutX="200.0" layoutY="55.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="629.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1161.0" y="-1.0" />
         <ToolBar fx:id="createJobToolbar" blendMode="SRC_OVER" layoutX="3.0" layoutY="1.0" prefHeight="39.0" prefWidth="1276.0" visible="false">
@@ -274,7 +274,7 @@
         </ToolBar>
       </children>
     </Pane>
-    <Pane fx:id="employeePane" blendMode="DIFFERENCE" layoutX="200.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
+    <Pane fx:id="employeePane" blendMode="DIFFERENCE" layoutX="200.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="635.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" collapsible="false" font="$x5" layoutX="14.0" layoutY="14.0" minWidth="568.0" prefHeight="501.0" prefWidth="637.0" text="Employees">
@@ -293,7 +293,6 @@
                     <TableColumn prefWidth="75.0" text="Last name" fx:id="emp_lname" />
                     <TableColumn prefWidth="75.0" text="Phone" fx:id="emp_phone" />
                     <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="91.0" text="Email" fx:id="emp_email" />
-                    <TableColumn maxWidth="5000.0" minWidth="10.0" prefWidth="101.0" text="Shop Employee" fx:id="shopEmp" />
                   </columns>
                 </TableView>
                 <TextField fx:id="fNameStrIns" blendMode="SRC_OVER" layoutX="451.0" layoutY="69.0" prefHeight="33.0" prefWidth="168.0" promptText="First Name" />
