@@ -117,13 +117,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
     //database connection info -- 192.168.1.112 customer ip
     //my ip 192.168.1.108
     //jdbc:mysql://hostname:port/databasename
-    public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
-    public static String userdb = "vangfc";//Username of database  
-    public static String passdb = "password";//Password of database
+    //public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
+    //public static String userdb = "vangfc";//Username of database  
+    //public static String passdb = "password";//Password of database
 
-    // public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
-    //public static String userdb = "videoPipe";//Username of database  
-    //public static String passdb = "Vps1566!!";//Password of database
+    public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
+    public static String userdb = "videoPipe";//Username of database  
+    public static String passdb = "Vps1566!!";//Password of database
     public static String scrollingTxt = "";
     String emailList;
     String[] emailTo;
@@ -369,10 +369,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
     }
 
     public int howManyRowsPrinter() {
-        String qryRun55 = "select count(*) from currentjobs";
+        String qryRun55 = "select count(*) from currentjobs where status = 'IN PROGRESS'";
         int number = 0;
         //make the connection
-        try { 
+        try {
             st = conn.createStatement();
             ResultSet rs2 = st.executeQuery(qryRun55);
 
@@ -827,25 +827,27 @@ public class JobCenterMainController implements Initializable, ScreenController 
             depNode.setExpanded(false);
             for (int j = 0; j < jobListInfo.size(); j++) {
                 String varStr = jobListInfo.get(j);
-                if (varStr.subSequence(0, 1).equals("/")) {
-                    while (varStr.indexOf("/") >= 0) {
-                        String empNameStr = "";
-                        varStr = varStr.substring(varStr.indexOf("/") + 1, varStr.length());
+                if (!varStr.equals("")) {
+                    if (varStr.subSequence(0, 1).equals("/")) {
+                        while (varStr.indexOf("/") >= 0) {
+                            String empNameStr = "";
+                            varStr = varStr.substring(varStr.indexOf("/") + 1, varStr.length());
 
-                        if (varStr.indexOf("/") >= 0) {
-                            empNameStr = varStr.substring(0, varStr.indexOf("/"));
-                        } else {
-                            empNameStr = varStr.substring(0, varStr.length());
+                            if (varStr.indexOf("/") >= 0) {
+                                empNameStr = varStr.substring(0, varStr.indexOf("/"));
+                            } else {
+                                empNameStr = varStr.substring(0, varStr.length());
+                            }
+
+                            TreeItem<String> var = new TreeItem<String>(empNameStr);
+                            depNode.getChildren().add(var);
+
                         }
 
-                        TreeItem<String> var = new TreeItem<String>(empNameStr);
+                    } else {
+                        TreeItem<String> var = new TreeItem<String>(jobListInfo.get(j));
                         depNode.getChildren().add(var);
-
                     }
-
-                } else {
-                    TreeItem<String> var = new TreeItem<String>(jobListInfo.get(j));
-                    depNode.getChildren().add(var);
                 }
             }
 
@@ -2338,19 +2340,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setRotate(90);
                     root.setLayoutY(385);
                     root.setLayoutX(-228);
-                }
-                else
-                {
+                } else {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
                     root.setLayoutY(-100);
-                    root.setLayoutX(-730);
+                    root.setLayoutX(-724);
                 }
 
-               PrinterJob job = PrinterJob.createPrinterJob();
+                PrinterJob job = PrinterJob.createPrinterJob();
 
                 if (job != null) {
 
