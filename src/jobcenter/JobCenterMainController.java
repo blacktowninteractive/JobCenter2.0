@@ -117,13 +117,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
     //database connection info -- 192.168.1.112 customer ip
     //my ip 192.168.1.108
     //jdbc:mysql://hostname:port/databasename
-    //public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
-    //public static String userdb = "vangfc";//Username of database  
-    //public static String passdb = "password";//Password of database
+    public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
+    public static String userdb = "vangfc";//Username of database  
+    public static String passdb = "password";//Password of database
 
-    public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
-    public static String userdb = "videoPipe";//Username of database  
-    public static String passdb = "Vps1566!!";//Password of database
+    //public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
+    //public static String userdb = "videoPipe";//Username of database  
+    //public static String passdb = "Vps1566!!";//Password of database
     public static String scrollingTxt = "";
     String emailList;
     String[] emailTo;
@@ -211,7 +211,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             empEmailList = new ArrayList<String>(),
             adminNameBox = new ArrayList<String>(),
             listAdmin = new ArrayList<String>(),
-            theReportList = new ArrayList<String>();
+            theReportList = new ArrayList<String>(),
+            vehListSelected= new ArrayList<String>();
 
     ObservableList<String> vehList11 = FXCollections.observableArrayList(vehList);
     ObservableList<String> empSelect = FXCollections.observableArrayList(empListSel);
@@ -384,6 +385,29 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return number;
+    }
+
+    private void refreshVeh() {
+        try {
+            vehListSelected.clear();
+            
+            st = conn.createStatement();
+            rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
+            while (rs.next()) {
+                //System.out.println(rs.getString(1));
+                vehListSelected.add(rs.getString(1));
+            }
+
+            ObservableList<String> vehiLister = FXCollections.observableArrayList(vehListSelected);
+
+            //update items for vehicle/equipment
+             vehicleEquipSelect.setItems(vehiLister);
+             vehAddJobView.setItems(vehiLister);
+
+        } catch (Exception e) {
+            System.err.println(e);
+        }
+
     }
 
     private final class TextFieldTreeCellImpl extends TreeCell<String> {
@@ -1216,12 +1240,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
         final List<String> vehList = new ArrayList<String>();
         try {
             st = conn.createStatement();
-            rs = st.executeQuery("select fname,lname from employees;");
+            rs = st.executeQuery("select fname,lname from employees order by fname;");
             while (rs.next()) {
                 //System.out.println(rs.getString(1));
                 empList.add(rs.getString(1) + " " + rs.getString(2));
             }
-            rs = st.executeQuery("select VehicleName from vehicles;");
+            rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
             while (rs.next()) {
                 //System.out.println(rs.getString(1));
                 vehList.add(rs.getString(1));
@@ -1363,7 +1387,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             editJobToolbar.setVisible(false);
 
                             taskListBox = FXCollections.observableList(new ArrayList<String>());
-
+                            
+                            //refresh equip/veh
+                            refreshVeh();
+                            
                             //make the connection
                             try {
                                 st = conn.createStatement();
@@ -1404,6 +1431,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                             //adds the treeview here!
                             refreshList();
+                            
+                            //refresh the veh/equip view
+                            refreshVeh();
+                            
                         }
                         if (new_val == "Changelog") {
                             usrHistTable.setItems(populateHist());
@@ -1796,7 +1827,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         }
                     });
                 } else {
-                    System.out.println("Name not found, adding to job!!");
+                    //System.out.println("Name not found, adding to job!!");
                     vehList += "/" + vehStrConv;
 
                     String addEmpStrQry = "update currentjobs set "
@@ -1804,12 +1835,23 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             + "' where CurJobID = " + idMod;
 
                     Statement updateDb = null;
+
                     //set our session id and ip address in order to identify user
                     updateDb = conn.createStatement();
 
+                    //mark the vehicle/equip as unavailable
+                    updateVehStatus("ASSIGNED", vehStrConv);
+                    
+                    //refresh the veh/equip views
+                    refreshVeh();
+
+                    //execute the query
                     int executeUpdate = updateDb.executeUpdate(addEmpStrQry);
+
+                    //refresh the tree nodes and expand changed item
                     refreshList();
                     currentJobsDisplay.getTreeItem(indexNode).setExpanded(true);
+
                 }
             } else {
                 //popup explain to user that this selection is invalid
@@ -2767,6 +2809,29 @@ public class JobCenterMainController implements Initializable, ScreenController 
         }
     }
 
+    private void updateVehStatus(String changeStatus, String VehName) {
+        String queryDelete = "update vehicles set VehicleStatus = '" + changeStatus + "' where VehicleName = '" + VehName + "'";
+        //System.out.println(queryDelete);
+
+        //insert into database
+        Statement updateDb = null;
+
+        //make the connection
+        try {
+            conn = DriverManager.getConnection(url, userdb, passdb);
+
+            //set our session id and ip address in order to identify user.
+            updateDb = conn.createStatement();
+
+            int executeUpdate = updateDb.executeUpdate(queryDelete);
+
+            //may need to refresh the 2 vehicle tables
+        } catch (SQLException ex) {
+            Logger.getLogger(JobCenterController.class
+                    .getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     @FXML
     private void addVehEquip(ActionEvent event) throws SQLException {
         String val = vehicleEquipSelect.getSelectionModel().selectedItemProperty().getValue().toString();
@@ -2777,6 +2842,15 @@ public class JobCenterMainController implements Initializable, ScreenController 
         }
         vehList11 = FXCollections.observableArrayList(vehList);
         vehicleEquipSelected.setItems(vehList11);
+        
+        
+        //mark the vehicle/equip as available
+        updateVehStatus("ASSIGNED", val);
+         
+        refreshVeh();
+        
+        vehicleEquipSelect.getSelectionModel().selectNext();
+        
     }
 
     @FXML
@@ -2791,7 +2865,16 @@ public class JobCenterMainController implements Initializable, ScreenController 
             }
             vehList11 = FXCollections.observableArrayList(vehList);
             vehicleEquipSelected.setItems(vehList11);
+
+            //mark the vehicle/equip as available
+            updateVehStatus("AVAILABLE", del);
+            
+            //refresh the lists of vehicle/equip
+            refreshVeh();
+            
             vehicleEquipSelected.getSelectionModel().selectNext();
+            vehicleEquipSelect.getSelectionModel().selectNext();
+
         } catch (Exception e) {
             System.err.println(e);
         }
@@ -3053,6 +3136,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 }
             }
         }
+        
+        refreshVeh();
 
     }
 
@@ -3062,6 +3147,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
         getJobTitle = getJobTitle.substring(getJobTitle.indexOf(":") + 1, getJobTitle.indexOf("]"));
         getJobTitle = getJobTitle.trim();
 
+        //refresh veh/equip
+        refreshVeh();
+        
         //clear the entries on job form first
         clearJobEntriesNow();
 
@@ -3281,12 +3369,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
         final List<String> vehList = new ArrayList<String>();
         try {
             st = conn.createStatement();
-            rs = st.executeQuery("select fname,lname from employees;");
+            rs = st.executeQuery("select fname,lname from employees order by fname;");
             while (rs.next()) {
                 //System.out.println(rs.getString(1));
                 empList.add(rs.getString(1) + " " + rs.getString(2));
             }
-            rs = st.executeQuery("select VehicleName from vehicles;");
+            rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
             while (rs.next()) {
                 //System.out.println(rs.getString(1));
                 vehList.add(rs.getString(1));
@@ -3485,6 +3573,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stage2.setWidth(310);
         stage2.setResizable(false);
         stage2.show();
+        
+        refreshVeh();
 
         closeWindow.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -4379,15 +4469,15 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stageJob.setScene(scene2);
 
         // which screen to display the popup on .... CALENDAR set to 1 for production
-        javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(1).getVisualBounds();
+        javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(0).getVisualBounds();
         stageJob.setX(primaryScreenBounds.getMinX());
         stageJob.setY(primaryScreenBounds.getMinY());
         stageJob.setFullScreen(true);
 
-        stageJob.setX(Screen.getScreens().get(1).getVisualBounds().getMinX());
-        stageJob.setY(Screen.getScreens().get(1).getVisualBounds().getMinY());
-        stageJob.setWidth(Screen.getScreens().get(1).getVisualBounds().getWidth());
-        stageJob.setHeight(Screen.getScreens().get(1).getVisualBounds().getHeight());
+        stageJob.setX(Screen.getScreens().get(0).getVisualBounds().getMinX());
+        stageJob.setY(Screen.getScreens().get(0).getVisualBounds().getMinY());
+        stageJob.setWidth(Screen.getScreens().get(0).getVisualBounds().getWidth());
+        stageJob.setHeight(Screen.getScreens().get(0).getVisualBounds().getHeight());
 
         stageJob.show();
     }
