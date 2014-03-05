@@ -212,7 +212,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             adminNameBox = new ArrayList<String>(),
             listAdmin = new ArrayList<String>(),
             theReportList = new ArrayList<String>(),
-            vehListSelected= new ArrayList<String>();
+            vehListSelected = new ArrayList<String>();
 
     ObservableList<String> vehList11 = FXCollections.observableArrayList(vehList);
     ObservableList<String> empSelect = FXCollections.observableArrayList(empListSel);
@@ -390,7 +390,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void refreshVeh() {
         try {
             vehListSelected.clear();
-            
+
             st = conn.createStatement();
             rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
             while (rs.next()) {
@@ -401,8 +401,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             ObservableList<String> vehiLister = FXCollections.observableArrayList(vehListSelected);
 
             //update items for vehicle/equipment
-             vehicleEquipSelect.setItems(vehiLister);
-             vehAddJobView.setItems(vehiLister);
+            vehicleEquipSelect.setItems(vehiLister);
+            vehAddJobView.setItems(vehiLister);
 
         } catch (Exception e) {
             System.err.println(e);
@@ -1387,10 +1387,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             editJobToolbar.setVisible(false);
 
                             taskListBox = FXCollections.observableList(new ArrayList<String>());
-                            
+
                             //refresh equip/veh
                             refreshVeh();
-                            
+
                             //make the connection
                             try {
                                 st = conn.createStatement();
@@ -1431,10 +1431,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                             //adds the treeview here!
                             refreshList();
-                            
+
                             //refresh the veh/equip view
                             refreshVeh();
-                            
+
                         }
                         if (new_val == "Changelog") {
                             usrHistTable.setItems(populateHist());
@@ -1841,7 +1841,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                     //mark the vehicle/equip as unavailable
                     updateVehStatus("ASSIGNED", vehStrConv);
-                    
+
                     //refresh the veh/equip views
                     refreshVeh();
 
@@ -2784,9 +2784,16 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String val = employeeSelect.getSelectionModel().selectedItemProperty().getValue().toString();
         //System.out.println(val);
 
-        if (!empListSel.contains(val)) {
-            empListSel.add(val);
+        if (empListSel.size() < 5) {
+
+            if (!empListSel.contains(val)) {
+                empListSel.add(val);
+            }
+        } else {
+            displayMsg("Cannot add more than 5 items per job.");
+            return;
         }
+
         empSelect = FXCollections.observableArrayList(empListSel);
         employeeSelected.setItems(empSelect);
     }
@@ -2837,20 +2844,24 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String val = vehicleEquipSelect.getSelectionModel().selectedItemProperty().getValue().toString();
         //System.out.println(val);
 
-        if (!vehList.contains(val)) {
-            vehList.add(val);
+        if (vehList.size() < 5) {
+            if (!vehList.contains(val)) {
+                vehList.add(val);
+            }
+        } else {
+            displayMsg("Cannot add more than 5 items per job.");
+            return;
         }
         vehList11 = FXCollections.observableArrayList(vehList);
         vehicleEquipSelected.setItems(vehList11);
-        
-        
+
         //mark the vehicle/equip as available
         updateVehStatus("ASSIGNED", val);
-         
+
         refreshVeh();
-        
+
         vehicleEquipSelect.getSelectionModel().selectNext();
-        
+
     }
 
     @FXML
@@ -2868,10 +2879,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             //mark the vehicle/equip as available
             updateVehStatus("AVAILABLE", del);
-            
+
             //refresh the lists of vehicle/equip
             refreshVeh();
-            
+
             vehicleEquipSelected.getSelectionModel().selectNext();
             vehicleEquipSelect.getSelectionModel().selectNext();
 
@@ -3136,7 +3147,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 }
             }
         }
-        
+
         refreshVeh();
 
     }
@@ -3149,7 +3160,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //refresh veh/equip
         refreshVeh();
-        
+
         //clear the entries on job form first
         clearJobEntriesNow();
 
@@ -3222,18 +3233,34 @@ public class JobCenterMainController implements Initializable, ScreenController 
             }
 
             String tmpStr = "", holder = "", tmpStr2 = "", tmpStr3;
-
             tmpStr = listOfTasks.substring(1, listOfTasks.length());
-            tmpStr2 = empLister.substring(1, empLister.length());
-            tmpStr3 = vehLister.substring(1, vehLister.length());
+
+            System.out.println("EMP SIZE: " + empLister.length());
+            System.out.println("VEH SIZE: " + vehLister.length());
+
+            if (empLister.length() > 0) {
+                tmpStr2 = empLister.substring(1, empLister.length());
+            } else {
+                tmpStr2 = "";
+            }
+            if (vehLister.length() > 0) {
+                tmpStr3 = vehLister.substring(1, vehLister.length());
+            } else {
+                tmpStr3 = "";
+            }
 
             //3 while statements
             //1. add equipment list
             while (true) {
-                if (tmpStr3.indexOf("/") < 0) {
-                    vehList.add(tmpStr3.substring(0, tmpStr3.length()));
-                    break;
+                //this means there is only 1 item in the list, unless its empty then it will also hit, we need to 
+                //wrap it with another if
+                if (tmpStr3 != "") {
+                    if (tmpStr3.indexOf("/") < 0) {
+                        vehList.add(tmpStr3.substring(0, tmpStr3.length()));
+                        break;
+                    }
                 }
+
                 if (tmpStr3.indexOf("/") == 0) {
                     tmpStr3 = tmpStr3.substring(1, tmpStr3.length());
                     if (tmpStr3.indexOf("/") < 0) {
@@ -3246,6 +3273,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                 } else {
 
+                    if (tmpStr3 == "") {
+                        break;
+                    }
+
                     holder = tmpStr3;
                     tmpStr3 = tmpStr3.substring(0, tmpStr3.indexOf("/"));
                     vehList.add(tmpStr3);
@@ -3256,14 +3287,21 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 }
             }
             vehList11 = FXCollections.observableArrayList(vehList);
-            vehicleEquipSelected.setItems(vehList11);
+
+            if (tmpStr3 != "") {
+                vehicleEquipSelected.setItems(vehList11);
+                vehicleEquipSelected.getSelectionModel().selectNext();
+            }
 
             //2. add employee list
             while (true) {
-                if (tmpStr2.indexOf("/") < 0) {
-                    empListSel.add(tmpStr2.substring(0, tmpStr2.length()));
-                    break;
+                if (tmpStr2 != "") {
+                    if (tmpStr2.indexOf("/") < 0) {
+                        empListSel.add(tmpStr2.substring(0, tmpStr2.length()));
+                        break;
+                    }
                 }
+
                 if (tmpStr2.indexOf("/") == 0) {
                     tmpStr2 = tmpStr2.substring(1, tmpStr2.length());
                     if (tmpStr2.indexOf("/") < 0) {
@@ -3276,6 +3314,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                 } else {
 
+                    if (tmpStr2 == "") {
+                        break;
+                    }
+
                     holder = tmpStr2;
                     tmpStr2 = tmpStr2.substring(0, tmpStr2.indexOf("/"));
                     empListSel.add(tmpStr2);
@@ -3286,8 +3328,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 }
             }
             empSelect = FXCollections.observableArrayList(empListSel);
-            employeeSelected.setItems(empSelect);
 
+            if (tmpStr2 != "") {
+                employeeSelected.setItems(empSelect);
+                employeeSelected.getSelectionModel().selectNext();
+            }
             //3. add task type list
             while (true) {
 
@@ -3573,7 +3618,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stage2.setWidth(310);
         stage2.setResizable(false);
         stage2.show();
-        
+
         refreshVeh();
 
         closeWindow.setOnAction(new EventHandler<ActionEvent>() {
