@@ -117,7 +117,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
     //database connection info -- 192.168.1.112 customer ip
     //my ip 192.168.1.108
     //jdbc:mysql://hostname:port/databasename
-    
     private static String url = "jdbc:mysql://localhost/jobcenter";
     //public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
     public static String userdb = "vangfc";//Username of database  
@@ -126,7 +125,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
     //public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
     //public static String userdb = "videoPipe";//Username of database  
     //public static String passdb = "Vps1566!!";//Password of database
-    
     public static String scrollingTxt = "";
     String emailList;
     String[] emailTo;
@@ -270,8 +268,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             @Override
             public void handle(TableColumn.CellEditEvent<employee, String> t) {
                 ((employee) t.getTableView().getItems().get(t.getTablePosition().getRow())).setFirstName(t.getNewValue());
-                System.out.println("onStart");
-                System.out.println(t.getTableView().getItems().get(t.getTablePosition().getRow()).getFirstName());
+                //system.out.println("onStart");
+                //system.out.println(t.getTableView().getItems().get(t.getTablePosition().getRow()).getFirstName());
             }
         });
 
@@ -279,15 +277,15 @@ public class JobCenterMainController implements Initializable, ScreenController 
             @Override
             public void handle(TableColumn.CellEditEvent<employee, String> t) {
                 ((employee) t.getTableView().getItems().get(t.getTablePosition().getRow())).setFirstName(t.getNewValue());
-                System.out.println("onCancel");
-                System.out.println(t.getTableView().getItems().get(t.getTablePosition().getRow()).getFirstName());
+                //system.out.println("onCancel");
+                //system.out.println(t.getTableView().getItems().get(t.getTablePosition().getRow()).getFirstName());
             }
         });
         emp_fname.setOnEditCommit(new EventHandler() {
 
             @Override
             public void handle(Event t) {
-                System.out.println("Commit");
+                //system.out.println("Commit");
             }
         });
 
@@ -295,7 +293,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
          new EventHandler<TableColumn.CellEditEvent<employee,String>> (){
          @Override
          public void handle(CellEditEvent<employee, String> t) {
-         System.out.println("Changed!");
+         //system.out.println("Changed!");
          }
          }
         
@@ -303,7 +301,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
          new EventHandler<CellEditEvent<employee, String>>() {
          @Override
          public void handle(CellEditEvent<employee, String> t) {
-         System.out.println("Changed!");
+         //system.out.println("Changed!");
          }
          }
          );*/
@@ -418,7 +416,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         while (theItems.lastIndexOf("/") >= 0) {
             theItems = theItems.substring(theItems.indexOf("/") + 1, theItems.length());
-            System.out.println(theItems);
+            //system.out.println(theItems);
             counter55++;
         }
         //add that last item
@@ -452,7 +450,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         while (theItems.lastIndexOf("/") >= 0) {
             theItems = theItems.substring(theItems.indexOf("/") + 1, theItems.length());
-            System.out.println(theItems);
+            //system.out.println(theItems);
             counter55++;
         }
         //add that last item
@@ -517,10 +515,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
             }
 
             for (int i = 0; i < jobsNequip_parsed.size(); i++) {
-                System.out.println(jobsNequip_parsed.get(i));
+                //system.out.println(jobsNequip_parsed.get(i));
             }
 
-            System.out.println("DONE");
+            //system.out.println("DONE");
 
             String theItem = "";
             //RESET THE ENTIRE LIST
@@ -544,7 +542,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             for (int i = 0; i < jobsNequip_parsed.size(); i++) {
                 theItem = jobsNequip_parsed.get(i).toString();
                 String querySetVeh = "update vehicles set VehicleStatus = 'ASSIGNED' where VehicleName = '" + theItem + "'";
-                //System.out.println(queryDelete);
+                ////system.out.println(queryDelete);
 
                 //insert into database
                 Statement updateDb = null;
@@ -577,7 +575,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             st = conn.createStatement();
             rs = st.executeQuery("select fname,lname from employees order by fname;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 empListSel.add(rs.getString(1) + " " + rs.getString(2));
             }
 
@@ -595,12 +593,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     private void refreshVeh() {
         try {
-            vehListSelected  = new ArrayList<String>();
+            vehListSelected = new ArrayList<String>();
 
             st = conn.createStatement();
             rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 vehListSelected.add(rs.getString(1));
             }
 
@@ -640,16 +638,172 @@ public class JobCenterMainController implements Initializable, ScreenController 
             subMenuStatus.getItems().add(addMenuItem8);
             subMenuStatus.getItems().add(addMenuItem9);
 
-            addMenu.getItems().add(addMenuItem);
+            //addMenu.getItems().add(addMenuItem);
             addMenu.getItems().add(subMenuStatus);
-
-            addMenuItem.setOnAction(new EventHandler() {
+            
+            
+            
+            addMenuItem3.setOnAction(new EventHandler() {
+                 public void handle(Event t) {
+                    try {                                            
+                        
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+                        //should be three fields: employee/equipment/status
+                        updateToJob("IN PROGRESS", "status", getTreeItem().getParent().getValue().toString());
+                            
+                        refreshList();       
+                        
+                        //need to expand the updated list
+                        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            });
+            
+            addMenuItem4.setOnAction(new EventHandler() {
+                 public void handle(Event t) {
+                    try {                                            
+                        
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+                        //should be three fields: employee/equipment/status
+                        updateToJob("COMPLETE", "status", getTreeItem().getParent().getValue().toString());
+                            
+                        refreshList();       
+                        
+                        //need to expand the updated list
+                        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            });
+            
+            addMenuItem5.setOnAction(new EventHandler() {
+                 public void handle(Event t) {
+                    try {                                            
+                        
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+                        //should be three fields: employee/equipment/status
+                        updateToJob("HOLD-CUSTOMER", "status", getTreeItem().getParent().getValue().toString());
+                            
+                        refreshList();       
+                        
+                        //need to expand the updated list
+                        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            });
+            
+            addMenuItem6.setOnAction(new EventHandler() {
+                 public void handle(Event t) {
+                    try {                                            
+                        
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+                        //should be three fields: employee/equipment/status
+                        updateToJob("HOLD-WEATHER", "status", getTreeItem().getParent().getValue().toString());
+                            
+                        refreshList();       
+                        
+                        //need to expand the updated list
+                        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            });
+            
+            addMenuItem7.setOnAction(new EventHandler() {
+                 public void handle(Event t) {
+                    try {                                            
+                        
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+                        //should be three fields: employee/equipment/status
+                        updateToJob("HOLD-OTHER", "status", getTreeItem().getParent().getValue().toString());
+                            
+                        refreshList();       
+                        
+                        //need to expand the updated list
+                        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            });
+            
+            addMenuItem8.setOnAction(new EventHandler() {
+                 public void handle(Event t) {
+                    try {                                            
+                        
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+                        //should be three fields: employee/equipment/status
+                        updateToJob("PROJECTED", "status", getTreeItem().getParent().getValue().toString());
+                            
+                        refreshList();       
+                        
+                        //need to expand the updated list
+                        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            });
+            
+            addMenuItem9.setOnAction(new EventHandler() {
+                 public void handle(Event t) {
+                    try {                                            
+                        
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+                        //should be three fields: employee/equipment/status
+                        updateToJob("CANCELLED", "status", getTreeItem().getParent().getValue().toString());
+                            
+                        refreshList();       
+                        
+                        //need to expand the updated list
+                        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            }
+            });
+            
+            /*addMenuItem.setOnAction(new EventHandler() {
 
                 public void handle(Event t) {
-                    System.out.println(getTreeItem().toString());
-                    System.out.println(getTreeItem().getParent().toString());
+                    try {
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+                        int indexNode = 0;
+                        indexNode = currentJobsDisplay.getSelectionModel().getSelectedIndex();
+                        
+                        //should be three fields: employee/equipment/status
+                        updateToJob(getTreeItem().getValue().toString(), "employee", getTreeItem().getParent().getValue().toString());
+                                                
+                        currentJobsDisplay.getTreeItem(indexNode).setExpanded(true);
+                        
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
                 }
-            });
+            });*/
         }
 
         @Override
@@ -722,14 +876,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String strManip = listofEmp;
 
         listofEmp.lastIndexOf("/");
-        System.out.println(listofEmp);
+        //system.out.println(listofEmp);
 
         while (strManip.lastIndexOf("/") > 0) {
             strManip = strManip.substring(0, strManip.lastIndexOf("/"));
             count++;
-            System.out.println(strManip);
+            //system.out.println(strManip);
         }
-        System.out.println("Employee count: " + count);
+        //system.out.println("Employee count: " + count);
         return count;
     }
 
@@ -738,14 +892,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String strManip = listofVeh;
 
         strManip.lastIndexOf("/");
-        System.out.println(strManip);
+        //system.out.println(strManip);
 
         while (strManip.lastIndexOf("/") > 0) {
             strManip = strManip.substring(0, strManip.lastIndexOf("/"));
             count++;
-            System.out.println(strManip);
+            //system.out.println(strManip);
         }
-        System.out.println("Veh count: " + count);
+        //system.out.println("Veh count: " + count);
         return count;
     }
 
@@ -779,7 +933,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         List<String> listAssigned = new ArrayList<String>();
         String queryEmployeesAssigned = "select JobEmployees from currentJobs where status = 'IN PROGRESS';";
 
-        System.out.println(queryEmployeesAssigned);
+        //system.out.println(queryEmployeesAssigned);
 
         //insert into database
         Statement updateDb = null;
@@ -791,7 +945,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             while (rs.next()) {
 
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 listAssigned.add(rs.getString(1));
             }
 
@@ -829,6 +983,25 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
         }
         return txtReturn;
+    }
+
+    void updateToJob(String itemStr, String whichField, String jobNameWorkIt) throws SQLException {
+        String qry3 = "";
+        if (whichField.equals("employee")) {
+            qry3 = "";
+        }
+        if (whichField.equals("status")) {
+            qry3 = "update currentjobs set status = '"+itemStr+"' where JobTitle = '"+jobNameWorkIt+"'";
+            
+            Statement updateDb = null;
+            updateDb = conn.createStatement();
+            int executeUpdate = updateDb.executeUpdate(qry3);            
+        }
+        if (whichField.equals("equipment")) {
+            qry3 = "";
+        }
+
+        
     }
 
     void delScrollTxt() throws SQLException {
@@ -904,11 +1077,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             while (rs.next()) {
 
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
+                //system.out.println(rs.getString(1));
+                //system.out.println(rs.getString(2));
+                //system.out.println(rs.getString(3));
+                //system.out.println(rs.getString(4));
+                //system.out.println(rs.getString(5));
 
                 useridInfor.setText(idEmpStr);
                 nameInfor.setText(rs.getString(1) + " " + rs.getString(2));
@@ -1105,10 +1278,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             while (rs.next()) {
                 tester55.add(new users(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4)));
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
+                //system.out.println(rs.getString(1));
+                //system.out.println(rs.getString(2));
+                //system.out.println(rs.getString(3));
+                //system.out.println(rs.getString(4));
 
             }
 
@@ -1116,8 +1289,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        System.out.println(tester55.get(0).getPwd());
-        System.out.println(tester55.get(0).getUsername());
+        //system.out.println(tester55.get(0).getPwd());
+        //system.out.println(tester55.get(0).getUsername());
 
         return tester55;
     }
@@ -1133,11 +1306,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             while (rs.next()) {
                 tester55.add(new manager(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5)));
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
+                //system.out.println(rs.getString(1));
+                //system.out.println(rs.getString(2));
+                //system.out.println(rs.getString(3));
+                //system.out.println(rs.getString(4));
+                //system.out.println(rs.getString(5));
 
             }
 
@@ -1159,11 +1332,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
             while (rs.next()) {
                 tester66.add(new editHistClass(rs.getString(1), rs.getString(2), rs.getString(3), rs.getString(4),
                         rs.getString(5)));
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
+                //system.out.println(rs.getString(1));
+                //system.out.println(rs.getString(2));
+                //system.out.println(rs.getString(3));
+                //system.out.println(rs.getString(4));
+                //system.out.println(rs.getString(5));
 
             }
 
@@ -1184,11 +1357,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
             rs = st.executeQuery("select adminPriv from administrators where employees_uid = " + getEmpId() + ";");
 
             while (rs.next()) {
-                System.out.println(rs.getString(1));
+                //system.out.println(rs.getString(1));
                 ans = rs.getString(1);
-                System.out.println(ans);
-                //System.out.println(rs.getString(2));
-                //System.out.println(rs.getString(3));
+                //system.out.println(ans);
+                ////system.out.println(rs.getString(2));
+                ////system.out.println(rs.getString(3));
 
             }
 
@@ -1215,9 +1388,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             while (rs.next()) {
                 tester2.add(new equipment(rs.getString(1), rs.getString(2), rs.getString(3)));
-                //System.out.println(rs.getString(1));
-                //System.out.println(rs.getString(2));
-                //System.out.println(rs.getString(3));
+                ////system.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(2));
+                ////system.out.println(rs.getString(3));
 
             }
 
@@ -1238,11 +1411,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             while (rs.next()) {
                 tester2.add(new employee(rs.getString(1), rs.getString(2), rs.getString(4), rs.getString(3), rs.getString(5)));
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
+                //system.out.println(rs.getString(1));
+                //system.out.println(rs.getString(2));
+                //system.out.println(rs.getString(3));
+                //system.out.println(rs.getString(4));
+                //system.out.println(rs.getString(5));
             }
 
         } catch (SQLException ex) {
@@ -1345,7 +1518,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             st = conn.createStatement();
             rs = st.executeQuery("select emailSend from emaillist;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 empEmailList.add(rs.getString(1));
             }
         } catch (Exception e) {
@@ -1366,15 +1539,15 @@ public class JobCenterMainController implements Initializable, ScreenController 
             st = conn.createStatement();
             rs = st.executeQuery("select employees_uid from administrators;");
             while (rs.next()) {
-                System.out.println(rs.getString(1));
+                //system.out.println(rs.getString(1));
                 listAdmin.add(rs.getString(1));
             }
 
             for (int k = 0; k < listAdmin.size(); k++) {
                 rs = st.executeQuery("select fname, lname from employees where uid = " + listAdmin.get(k) + ";");
                 while (rs.next()) {
-                    System.out.println(rs.getString(1));
-                    System.out.println(rs.getString(2));
+                    //system.out.println(rs.getString(1));
+                    //system.out.println(rs.getString(2));
                     adminNameBox.add(rs.getString(2) + ", " + rs.getString(1) + ":" + listAdmin.get(k));
                 }
             }
@@ -1416,7 +1589,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             st = conn.createStatement();
             rs = st.executeQuery("select aid from administrators where employees_uid = " + theUserID + ";");
             while (rs.next()) {
-                System.out.println(rs.getString(1));
+                //system.out.println(rs.getString(1));
                 test = rs.getString(1);
             }
 
@@ -1447,23 +1620,23 @@ public class JobCenterMainController implements Initializable, ScreenController 
             st = conn.createStatement();
             rs = st.executeQuery("select fname,lname from employees order by fname;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 empList.add(rs.getString(1) + " " + rs.getString(2));
             }
             rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 vehList.add(rs.getString(1));
             }
             rs = st.executeQuery("select CompanyName from customer order by CompanyName;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 custList.add(rs.getString(1));
             }
             // rs = st.executeQuery("select usrLname,usrFname,JobName,DateEdited,description from edithistory;");
             rs = st.executeQuery("select description from edithistory;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 editH.add(rs.getString(1));
             }
 
@@ -1518,9 +1691,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                                         String uidToDel = "";
 
                                         st = conn.createStatement();
-                                        rs = st.executeQuery("select fname, lname, email from employees order by fname;"); 
+                                        rs = st.executeQuery("select fname, lname, email from employees order by fname;");
                                         while (rs.next()) {
-                                            //System.out.println(rs.getString(1));
+                                            ////system.out.println(rs.getString(1));
                                             empNameBox.add(rs.getString(1) + " " + rs.getString(2) + ": " + rs.getString(3));
                                         }
 
@@ -1531,12 +1704,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
                                         st = conn.createStatement();
                                         rs = st.executeQuery("select employees_uid from administrators;");
                                         while (rs.next()) {
-                                            System.out.println(rs.getString(1));
+                                            //system.out.println(rs.getString(1));
                                             uidToDel = rs.getString(1);
                                             rs = st.executeQuery("select fname, lname from employees where uid = " + rs.getString(1) + ";");
                                             while (rs.next()) {
-                                                System.out.println(rs.getString(1));
-                                                System.out.println(rs.getString(2));
+                                                //system.out.println(rs.getString(1));
+                                                //system.out.println(rs.getString(2));
                                                 adminNameBox.add(rs.getString(2) + ", " + rs.getString(1) + ":" + uidToDel);
                                             }
                                         }
@@ -1546,7 +1719,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                                     } catch (SQLException ex) {
                                         Logger.getLogger(JobCenterController.class.getName()).log(Level.SEVERE, null, ex);
-                                    } 
+                                    }
 
                                 }
                                 if (new_val == "Create/Delete a JobCenter User") {
@@ -1557,7 +1730,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                                         st = conn.createStatement();
                                         rs = st.executeQuery("select fname, lname, uid from employees;");
                                         while (rs.next()) {
-                                            //System.out.println(rs.getString(1));
+                                            ////system.out.println(rs.getString(1));
                                             empNameBox.add(rs.getString(2) + ", " + rs.getString(1) + ", " + rs.getString(3));
                                         }
 
@@ -1589,7 +1762,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                         if (new_val == "Create new job") {
                             createJobToolbar.setVisible(true);
-                            editJobToolbar.setVisible(false);                            
+                            editJobToolbar.setVisible(false);
 
                             taskListBox = FXCollections.observableList(new ArrayList<String>());
 
@@ -1598,7 +1771,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                                 st = conn.createStatement();
                                 rs = st.executeQuery("select jobName from jobtype;");
                                 while (rs.next()) {
-                                    //System.out.println(rs.getString(1));
+                                    ////system.out.println(rs.getString(1));
                                     taskListBox.add(rs.getString(1));
                                 }
 
@@ -1625,7 +1798,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             //refresh equip/veh
                             refreshVeh();
 
-                            refreshEmp();                              
+                            refreshEmp();
                         }
                         if (new_val == "Display jobs") {
 
@@ -1665,12 +1838,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @FXML
     private void printSummary(ActionEvent event) throws SQLException {
-        System.out.println("tester");
+        //system.out.println("tester");
         //Node node = new GridPane();
 
         st = conn.createStatement();
         String qry = "select * from currentjobs where status ='IN PROGRESS';";
-        //System.out.println("qry: " + qry);
+        ////system.out.println("qry: " + qry);
         String jobTxtStr = "", jobTypeStr = "", jobDateTxtStr = "", jobStatusStr = "", empListStr = "", equipListStr = "";
         int countAmt = 1, area1 = 3, area2 = 4, area3 = 5, area4 = 6;
         Group root = new Group();
@@ -1689,8 +1862,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             empListStr = rs.getString(10);
             equipListStr = rs.getString(11);
 
-            //System.out.println(jobTxtStr);
-            //System.out.println("Count: " + Integer.toString(countAmt));
+            ////system.out.println(jobTxtStr);
+            ////system.out.println("Count: " + Integer.toString(countAmt));
             ToolBar addme = new ToolBar();
             Button test = new Button("Print");
 
@@ -1759,8 +1932,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             grid.add(jobDateTxt, countAmt, area3);
             grid.add(jobStatusBox, countAmt, area4);
 
-            //System.out.println("Index: " + empListStr.indexOf("/"));
-            //System.out.println("at row: " + countAmt);
+            ////system.out.println("Index: " + empListStr.indexOf("/"));
+            ////system.out.println("at row: " + countAmt);
             String nameOfPerson;
             int counterArea = area4 + 1;
 
@@ -1775,9 +1948,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     //sort out employees for display
                     empListStr = empListStr.substring(0, empListStr.length());
 
-                    //System.out.println("Unprocessed string: " + empListStr);
-                    //System.out.println("Before: " + empListStr);
-                    //System.out.println(empListStr.indexOf("/"));
+                    ////system.out.println("Unprocessed string: " + empListStr);
+                    ////system.out.println("Before: " + empListStr);
+                    ////system.out.println(empListStr.indexOf("/"));
                     if (empListStr.indexOf("/") == 0) {
                         empListStr = empListStr.substring(1, empListStr.length());
 
@@ -1789,8 +1962,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         }
 
                         //empListStr = empListStr.substring(empListStr.indexOf("/") + 1, empListStr.length());
-                        //System.out.println("After: " + empListStr);
-                        //System.out.println("Adding: " + nameOfPerson);
+                        ////system.out.println("After: " + empListStr);
+                        ////system.out.println("Adding: " + nameOfPerson);
                         TextField nameTxt = new TextField();
                         nameTxt.setMaxWidth(100);
                         nameTxt.setStyle("-fx-background-color: lightgreen;"
@@ -1802,12 +1975,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         nameTxt.setAlignment(Pos.CENTER);
 
                         grid.add(nameTxt, countAmt, counterArea);
-                        //System.out.println("at row: " + countAmt);
+                        ////system.out.println("at row: " + countAmt);
                         counterArea++;
 
                     }
                 } else {
-                    //System.out.println("Adding2: " + empListStr);
+                    ////system.out.println("Adding2: " + empListStr);
                     nameOfPerson = empListStr;
                     TextField nameTxt = new TextField();
                     nameTxt.setStyle("-fx-background-color: green;"
@@ -1818,7 +1991,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     nameTxt.setAlignment(Pos.CENTER);
 
                     grid.add(nameTxt, countAmt, counterArea);
-                    //System.out.println("at row2: " + countAmt);
+                    ////system.out.println("at row2: " + countAmt);
                     empListStr = "";
                     counterArea++;
 
@@ -1832,16 +2005,16 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 if (equipListStr.indexOf("/") >= 0) {
                     //sort out employees for display
                     equipListStr = equipListStr.substring(1, equipListStr.length() - 1);
-                    //System.out.println("\n\nUnprocessed string: " + equipListStr);
+                    ////system.out.println("\n\nUnprocessed string: " + equipListStr);
                     equipNameStr = "";
-                    //System.out.println("Before: " + equipListStr);
-                    //System.out.println(equipListStr.indexOf("/"));
+                    ////system.out.println("Before: " + equipListStr);
+                    ////system.out.println(equipListStr.indexOf("/"));
                     if (equipListStr.indexOf("/") > 0) {
                         equipNameStr = equipListStr.substring(0, equipListStr.indexOf("/"));
                         equipListStr = equipListStr.substring(equipListStr.indexOf("/"), equipListStr.length());
-                        //System.out.println("After: " + equipListStr);
+                        ////system.out.println("After: " + equipListStr);
 
-                        //System.out.println("Adding: " + equipNameStr);
+                        ////system.out.println("Adding: " + equipNameStr);
                         TextField nameTxt = new TextField();
 
                         nameTxt.setStyle("-fx-background-color: yellow;"
@@ -1853,12 +2026,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         nameTxt.setAlignment(Pos.CENTER);
 
                         grid.add(nameTxt, countAmt, counterArea);
-                        //System.out.println("at row: " + countAmt);
+                        ////system.out.println("at row: " + countAmt);
                         counterArea++;
 
                     }
                 } else {
-                    //System.out.println("Adding2: " + equipListStr);
+                    ////system.out.println("Adding2: " + equipListStr);
                     equipNameStr = equipListStr;
                     TextField nameTxt = new TextField();
 
@@ -1870,7 +2043,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     nameTxt.setAlignment(Pos.CENTER);
 
                     grid.add(nameTxt, countAmt, counterArea);
-                    //System.out.println("at row2: " + countAmt);
+                    ////system.out.println("at row2: " + countAmt);
                     empListStr = "";
                     counterArea++;
 
@@ -1987,10 +2160,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //get veh/equip name selected
         String vehStrConv = vehAddJobView.getSelectionModel().selectedItemProperty().getValue().toString();
 
-        System.out.println("Root: " + currentJobsDisplay.getSelectionModel().selectedItemProperty().getBean());
-        System.out.println("Index: " + currentJobsDisplay.getSelectionModel().getSelectedIndex());
-        //System.out.println("RootStr: " + currentJobsDisplay.getChildrenUnmodifiable().get(currentJobsDisplay.getSelectionModel().getSelectedIndex()));
-        System.out.println("Adding: " + vehStrConv + " to job: " + getJobTitle);
+        //system.out.println("Root: " + currentJobsDisplay.getSelectionModel().selectedItemProperty().getBean());
+        //system.out.println("Index: " + currentJobsDisplay.getSelectionModel().getSelectedIndex());
+        ////system.out.println("RootStr: " + currentJobsDisplay.getChildrenUnmodifiable().get(currentJobsDisplay.getSelectionModel().getSelectedIndex()));
+        //system.out.println("Adding: " + vehStrConv + " to job: " + getJobTitle);
 
         indexNode = currentJobsDisplay.getSelectionModel().getSelectedIndex();
 
@@ -2005,11 +2178,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
             if (rs.next()) {
                 String idMod = rs.getString(1);
                 String vehList = rs.getString(2);
-                System.out.println("JobID: " + idMod);
-                System.out.println("employess: " + vehList);
+                //system.out.println("JobID: " + idMod);
+                //system.out.println("employess: " + vehList);
 
                 if (empExist(vehList, vehStrConv)) {
-                    System.out.println("Name Exists!!");
+                    //system.out.println("Name Exists!!");
                     //popup explain to user that this selection is invalid
                     //show the complete box dialog
                     Label label2;
@@ -2046,7 +2219,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         return;
                     }
 
-                    //System.out.println("Name not found, adding to job!!");
+                    ////system.out.println("Name not found, adding to job!!");
                     vehList += "/" + vehStrConv;
 
                     String addEmpStrQry = "update currentjobs set "
@@ -2126,10 +2299,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //get employee name selected
         String empStrConv = empAddJobView.getSelectionModel().selectedItemProperty().getValue().toString();
 
-        System.out.println("Root: " + currentJobsDisplay.getSelectionModel().selectedItemProperty().getBean());
-        System.out.println("Index: " + currentJobsDisplay.getSelectionModel().getSelectedIndex());
-        //System.out.println("RootStr: " + currentJobsDisplay.getChildrenUnmodifiable().get(currentJobsDisplay.getSelectionModel().getSelectedIndex()));
-        System.out.println("Adding: " + empStrConv + " to job: " + getJobTitle);
+       // //system.out.println("Root: " + currentJobsDisplay.getSelectionModel().selectedItemProperty().getBean());
+        ////system.out.println("Index: " + currentJobsDisplay.getSelectionModel().getSelectedIndex());
+        ////system.out.println("RootStr: " + currentJobsDisplay.getChildrenUnmodifiable().get(currentJobsDisplay.getSelectionModel().getSelectedIndex()));
+       // //system.out.println("Adding: " + empStrConv + " to job: " + getJobTitle);
 
         //check make sure job exists
         //make the connection
@@ -2144,11 +2317,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
             if (rs.next()) {
                 String idMod = rs.getString(1);
                 String empList = rs.getString(2);
-                System.out.println("JobID: " + idMod);
-                System.out.println("employess: " + empList);
+               // //system.out.println("JobID: " + idMod);
+               // //system.out.println("employess: " + empList);
 
                 if (empExist(empList, empStrConv)) {
-                    System.out.println("Name Exists!!");
+                  //  //system.out.println("Name Exists!!");
                     //popup explain to user that this selection is invalid
                     //show the complete box dialog
                     Label label2;
@@ -2185,7 +2358,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         return;
                     }
 
-                    // System.out.println("Name not found, adding to job!!");
+                    // //system.out.println("Name not found, adding to job!!");
                     empList += "/" + empStrConv;
 
                     String addEmpStrQry = "update currentjobs set "
@@ -2250,6 +2423,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @FXML
     private void previewJobAction(ActionEvent event) throws SQLException {
+
+        if (howManyRowsPrinter() <= 0) {
+            displayMsg("Nothing to display.");
+            return;
+
+        }
 
         final Group root = new Group();
         Button printScreen = new Button("Print");
@@ -2426,21 +2605,21 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 counter = 10;
                 strManip = equipListStr;
                 while (strManip.lastIndexOf("/") >= 0) {
-                    System.out.println(strManip);
+                    //system.out.println(strManip);
                     add = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
                     add.setStyle("-fx-font-size: 10;");
                     gridpane.add(add, columnLoc, counter);
                     counter++;
 
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-                    System.out.println(strManip);
+                    //system.out.println(strManip);
 
                 }
 
             } else {
 
                 counter = 15;
-                System.out.println("TIME TO PRINT ANOTHER TABLE");
+                //system.out.println("TIME TO PRINT ANOTHER TABLE");
 
                 for (int i = 0; i < 14; i++) {
                     RowConstraints row = new RowConstraints(20);
@@ -2549,20 +2728,20 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
 
                 }
-/*
-                counter = 25;
-                strManip = equipListStr;
-                while (strManip.lastIndexOf("/") >= 0) {
-                    System.out.println(strManip);
-                    add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
-                    add2.setStyle("-fx-font-size: 10;");
-                    gridpane.add(add2, columnLoc2, counter);
-                    counter++;
+                /*
+                 counter = 25;
+                 strManip = equipListStr;
+                 while (strManip.lastIndexOf("/") >= 0) {
+                 //system.out.println(strManip);
+                 add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
+                 add2.setStyle("-fx-font-size: 10;");
+                 gridpane.add(add2, columnLoc2, counter);
+                 counter++;
 
-                    strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-                    System.out.println(strManip);
+                 strManip = strManip.substring(0, strManip.lastIndexOf("/"));
+                 //system.out.println(strManip);
 
-                }*/
+                 }*/
                 columnLoc2++;
             }
             columnLoc++;
@@ -2600,15 +2779,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                 //double scaleX = pageLayout.getPrintableWidth() / 1524;
                 //double scaleY = pageLayout.getPrintableHeight() / 682;
-
                 //root.getTransforms().add(new Scale(scaleX, scaleY));
-                    
                 //this is the landscape printing that needs to be fixed..... printer function adjustment
                 //figure out how many rows 1 or 2
                 // if more than 9 then 2 rows
                 // if 9 or less then just 1 row
-                
-                
                 if (howManyRowsPrinter() == 1) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2617,7 +2792,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setRotate(90);
                     root.setLayoutY(385);
                     root.setLayoutX(-228);
-                }  
+                }
                 if (howManyRowsPrinter() == 2) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2626,7 +2801,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setRotate(90);
                     root.setLayoutY(385);
                     root.setLayoutX(-228);
-                }  
+                }
                 if (howManyRowsPrinter() == 3) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2635,8 +2810,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setRotate(90);
                     root.setLayoutY(385);
                     root.setLayoutX(-228);
-                }  
-                
+                }
+
                 if (howManyRowsPrinter() == 4) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2645,8 +2820,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setRotate(90);
                     root.setLayoutY(385);
                     root.setLayoutX(-228);
-                }  
-                
+                }
+
                 if (howManyRowsPrinter() == 5) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2655,8 +2830,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setRotate(90);
                     root.setLayoutY(385);
                     root.setLayoutX(-228);
-                }  
-                
+                }
+
                 if (howManyRowsPrinter() == 6) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2664,9 +2839,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
                     root.setLayoutY(385);
-                    root.setLayoutX(-228);
-                }  
-                
+                    root.setLayoutX(-252);
+                }
+
                 if (howManyRowsPrinter() == 7) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2674,9 +2849,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
                     root.setLayoutY(385);
-                    root.setLayoutX(-228);
-                }  
-                
+                    root.setLayoutX(-252);
+                }
+
                 if (howManyRowsPrinter() == 8) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2684,12 +2859,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
                     root.setLayoutY(385);
-                    root.setLayoutX(-228);
-                }  
-                
-                
-                
-                
+                    root.setLayoutX(-252);
+                }
+
                 if (howManyRowsPrinter() == 9) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2698,39 +2870,38 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setRotate(90);
                     root.setLayoutY(385);
                     root.setLayoutX(-252);
-                }  
+                }
                 if (howManyRowsPrinter() == 10) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
-                    root.setLayoutY(-335);
+                    root.setLayoutY(145);
                     //root.setLayoutX(-924);
-                    root.setLayoutX(-963);
-                }  
+                    root.setLayoutX(-483);
+                }
                 if (howManyRowsPrinter() == 11) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
-                    root.setLayoutY(-335);
+                    root.setLayoutY(-96);
                     //root.setLayoutX(-924);
-                    root.setLayoutX(-963);
-                }  
-                if (howManyRowsPrinter() == 12)
-                {
+                    root.setLayoutX(-724);
+                }
+                if (howManyRowsPrinter() == 12) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
-                    
+
                     root.setLayoutY(-335);
                     //root.setLayoutX(-924);
                     root.setLayoutX(-963);
-                    
+
                     //root.setLayoutY(200);
                     //root.setLayoutX(-124);
                     //root.setLayoutY(-100);
@@ -2745,7 +2916,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setLayoutY(-577);
                     //root.setLayoutX(-924);
                     root.setLayoutX(-1207);
-                }  
+                }
                 if (howManyRowsPrinter() == 14) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2755,7 +2926,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setLayoutY(-815);
                     //root.setLayoutX(-924);
                     root.setLayoutX(-1443);
-                }  
+                }
                 if (howManyRowsPrinter() == 15) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2765,7 +2936,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setLayoutY(-1058);
                     //root.setLayoutX(-924);
                     root.setLayoutX(-1682);
-                }  
+                }
                 if (howManyRowsPrinter() == 16) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
@@ -2775,28 +2946,28 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     root.setLayoutY(-1297);
                     //root.setLayoutX(-924);
                     root.setLayoutX(-1923);
-                }  
+                }
                 if (howManyRowsPrinter() == 17) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
-                    root.setLayoutY(-1535);
+                    root.setLayoutY(-1538);
                     //root.setLayoutX(-924);
-                    root.setLayoutX(-2159);
-                }  
+                    root.setLayoutX(-2164);
+                }
                 if (howManyRowsPrinter() == 18) {
                     double scaleX = pageLayout.getPrintableWidth() / 1524;
                     double scaleY = pageLayout.getPrintableHeight() / 682;
 
                     root.getTransforms().add(new Scale(scaleX, scaleY));
                     root.setRotate(90);
-                    root.setLayoutY(-1774);
+                    root.setLayoutY(-1776);
                     //root.setLayoutX(-924);
-                    root.setLayoutX(-2400);
-                }  
-/*
+                    root.setLayoutX(-2403);
+                }
+
                 PrinterJob job = PrinterJob.createPrinterJob();
 
                 if (job != null) {
@@ -2809,10 +2980,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         stageJob.close();
                     }
                 }
-*/
+
             }
-                
-                
+
         });
 
         stageJob.show();
@@ -2824,7 +2994,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //Parent root = FXMLLoader.load(getClass().getResource("DisplayJobBoard.fxml")); 
         st = conn.createStatement();
         String qry = "select * from currentjobs where status ='IN PROGRESS';";
-        //System.out.println("qry: " + qry);
+        ////system.out.println("qry: " + qry);
         String jobTxtStr = "", jobTypeStr = "", jobDateTxtStr = "", jobStatusStr = "", empListStr = "", equipListStr = "";
         int countAmt = 1, area1 = 3, area2 = 4, area3 = 5, area4 = 6;
         Group root = new Group();
@@ -2843,8 +3013,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             empListStr = rs.getString(10);
             equipListStr = rs.getString(11);
 
-            //System.out.println(jobTxtStr);
-            //System.out.println("Count: " + Integer.toString(countAmt));
+            ////system.out.println(jobTxtStr);
+            ////system.out.println("Count: " + Integer.toString(countAmt));
             ToolBar addme = new ToolBar();
             Button test = new Button("Print");
 
@@ -2913,8 +3083,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             grid.add(jobDateTxt, countAmt, area3);
             grid.add(jobStatusBox, countAmt, area4);
 
-            //System.out.println("Index: " + empListStr.indexOf("/"));
-            //System.out.println("at row: " + countAmt);
+            ////system.out.println("Index: " + empListStr.indexOf("/"));
+            ////system.out.println("at row: " + countAmt);
             String nameOfPerson;
             int counterArea = area4 + 1;
 
@@ -2929,9 +3099,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     //sort out employees for display
                     empListStr = empListStr.substring(0, empListStr.length());
 
-                    //System.out.println("Unprocessed string: " + empListStr);
-                    //System.out.println("Before: " + empListStr);
-                    //System.out.println(empListStr.indexOf("/"));
+                    ////system.out.println("Unprocessed string: " + empListStr);
+                    ////system.out.println("Before: " + empListStr);
+                    ////system.out.println(empListStr.indexOf("/"));
                     if (empListStr.indexOf("/") == 0) {
                         empListStr = empListStr.substring(1, empListStr.length());
 
@@ -2943,8 +3113,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         }
 
                         //empListStr = empListStr.substring(empListStr.indexOf("/") + 1, empListStr.length());
-                        //System.out.println("After: " + empListStr);
-                        //System.out.println("Adding: " + nameOfPerson);
+                        ////system.out.println("After: " + empListStr);
+                        ////system.out.println("Adding: " + nameOfPerson);
                         TextField nameTxt = new TextField();
                         nameTxt.setMaxWidth(150);
                         nameTxt.setStyle("-fx-background-color: lightgreen;"
@@ -2956,12 +3126,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         nameTxt.setAlignment(Pos.CENTER);
 
                         grid.add(nameTxt, countAmt, counterArea);
-                        //System.out.println("at row: " + countAmt);
+                        ////system.out.println("at row: " + countAmt);
                         counterArea++;
 
                     }
                 } else {
-                    //System.out.println("Adding2: " + empListStr);
+                    ////system.out.println("Adding2: " + empListStr);
                     nameOfPerson = empListStr;
                     TextField nameTxt = new TextField();
                     nameTxt.setStyle("-fx-background-color: green;"
@@ -2972,7 +3142,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     nameTxt.setAlignment(Pos.CENTER);
 
                     grid.add(nameTxt, countAmt, counterArea);
-                    //System.out.println("at row2: " + countAmt);
+                    ////system.out.println("at row2: " + countAmt);
                     empListStr = "";
                     counterArea++;
 
@@ -2988,16 +3158,16 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     int strLenTester = equipListStr.length();
 
                     equipListStr = equipListStr.substring(1, strLenTester);
-                    System.out.println("\n\nUnprocessed string: " + equipListStr);
+                    //system.out.println("\n\nUnprocessed string: " + equipListStr);
                     equipNameStr = "";
-                    //System.out.println("Before: " + equipListStr);
-                    //System.out.println(equipListStr.indexOf("/"));
+                    ////system.out.println("Before: " + equipListStr);
+                    ////system.out.println(equipListStr.indexOf("/"));
                     if (equipListStr.indexOf("/") > 0) {
                         equipNameStr = equipListStr.substring(0, equipListStr.indexOf("/"));
                         equipListStr = equipListStr.substring(equipListStr.indexOf("/"), equipListStr.length());
-                        //System.out.println("After: " + equipListStr);
+                        ////system.out.println("After: " + equipListStr);
 
-                        //System.out.println("Adding: " + equipNameStr);
+                        ////system.out.println("Adding: " + equipNameStr);
                         TextField nameTxt = new TextField();
 
                         nameTxt.setStyle("-fx-background-color: yellow;"
@@ -3009,12 +3179,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         nameTxt.setAlignment(Pos.CENTER);
 
                         grid.add(nameTxt, countAmt, counterArea);
-                        //System.out.println("at row: " + countAmt);
+                        ////system.out.println("at row: " + countAmt);
                         counterArea++;
 
                     }
                 } else {
-                    //System.out.println("Adding2: " + equipListStr);
+                    ////system.out.println("Adding2: " + equipListStr);
                     equipNameStr = equipListStr;
                     TextField nameTxt = new TextField();
 
@@ -3026,7 +3196,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     nameTxt.setAlignment(Pos.CENTER);
 
                     grid.add(nameTxt, countAmt, counterArea);
-                    //System.out.println("at row2: " + countAmt);
+                    ////system.out.println("at row2: " + countAmt);
                     empListStr = "";
                     counterArea++;
 
@@ -3094,7 +3264,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void deleteEquipAction(ActionEvent event) throws IOException, SQLException {
         String vnamestr = equipmentTable.getSelectionModel().selectedItemProperty().getValue().getVeh();
         String queryDelete = "DELETE FROM vehicles WHERE VehicleName = '" + vnamestr + "'";
-        //System.out.println(queryDelete);
+        ////system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -3124,7 +3294,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //insert into database
         Statement updateDb = null;
-        //System.out.println("Add EQUIP: " + queryRunNow);
+        ////system.out.println("Add EQUIP: " + queryRunNow);
 
         //make the connection
         try {
@@ -3179,7 +3349,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         itemChosen += "," + diamStr.getText() + ",";
         itemChosen += feetStr.getText();
 
-        //System.out.println(itemChosen);
+        ////system.out.println(itemChosen);
         taskTypeListStr.add(itemChosen);
         taskTypeList.setItems(taskTypeListStr);
         jobName.setText(taskComboBox.getValue().toString());
@@ -3189,7 +3359,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     @FXML
     private void addEmpJob(ActionEvent event) throws SQLException {
         String val = employeeSelect.getSelectionModel().selectedItemProperty().getValue().toString();
-        //System.out.println(val);        
+        ////system.out.println(val);        
 
         if (empListSelected.size() < 5) {
             if (!empListSelected.contains(val)) {
@@ -3208,7 +3378,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void deleteEmp(ActionEvent event) throws SQLException {
         try {
             String del = employeeSelected.getSelectionModel().selectedItemProperty().getValue().toString();
-            //System.out.println("delete: " + del);
+            ////system.out.println("delete: " + del);
             for (int i = 0; i < empListSelected.size(); i++) {
                 if (empListSelected.get(i).toString().equals(del)) {
                     empListSelected.remove(i);
@@ -3224,7 +3394,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     private void updateVehStatus(String changeStatus, String VehName) {
         String queryDelete = "update vehicles set VehicleStatus = '" + changeStatus + "' where VehicleName = '" + VehName + "'";
-        //System.out.println(queryDelete);
+        ////system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -3248,7 +3418,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     @FXML
     private void addVehEquip(ActionEvent event) throws SQLException {
         String val = vehicleEquipSelect.getSelectionModel().selectedItemProperty().getValue().toString();
-        //System.out.println(val);
+        ////system.out.println(val);
 
         if (vehList.size() < 5) {
             if (!vehList.contains(val)) {
@@ -3274,7 +3444,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void deleteVeh(ActionEvent event) throws SQLException {
         try {
             String del = vehicleEquipSelected.getSelectionModel().selectedItemProperty().getValue().toString();
-            //System.out.println("delete: " + del);
+            ////system.out.println("delete: " + del);
             for (int i = 0; i < vehList.size(); i++) {
                 if (vehList.get(i).toString().equals(del)) {
                     vehList.remove(i);
@@ -3303,7 +3473,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         st = conn.createStatement();
         String qry = "select * from customer where CompanyName ='" + custAdd.trim() + "';";
-        //System.out.println("qry: " + qry);
+        ////system.out.println("qry: " + qry);
 
         rs = st.executeQuery(qry);
         while (rs.next()) {
@@ -3335,7 +3505,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void delTaskList(ActionEvent event
     ) {
         String del = taskTypeList.getSelectionModel().selectedItemProperty().getValue().toString();
-        //System.out.println("delete: " + del);
+        ////system.out.println("delete: " + del);
         for (int i = 0; i < taskTypeListStr.size(); i++) {
             if (taskTypeListStr.get(i).toString().equals(del)) {
                 taskTypeListStr.remove(i);
@@ -3464,34 +3634,34 @@ public class JobCenterMainController implements Initializable, ScreenController 
             } else if (cid.equals("")) {
                 displayMsg("Customer not selected.");
             } else {
-                //System.out.println("CID: " + cid);
-                //System.out.println("Job name: " + jobNameStr);
-                //System.out.println("Cust job #: " + custJobNumStr);
-                //System.out.println("Cust job name: " + custJobNameStr);
-                //System.out.println("start date: " + startDateStr);
-                //System.out.println("start time: " + startTimeStr);
-                //System.out.println("street: " + streetAddr.getText());
-                //System.out.println("city: " + city.getText());
-                //System.out.println("state: " + state.getText());
-                //System.out.println("zip: " + zip.getText());
-            /*  System.out.println("job type");
+                ////system.out.println("CID: " + cid);
+                ////system.out.println("Job name: " + jobNameStr);
+                ////system.out.println("Cust job #: " + custJobNumStr);
+                ////system.out.println("Cust job name: " + custJobNameStr);
+                ////system.out.println("start date: " + startDateStr);
+                ////system.out.println("start time: " + startTimeStr);
+                ////system.out.println("street: " + streetAddr.getText());
+                ////system.out.println("city: " + city.getText());
+                ////system.out.println("state: " + state.getText());
+                ////system.out.println("zip: " + zip.getText());
+            /*  //system.out.println("job type");
                  for (int i = 0; i < jobTypePicked.size(); i++) {
                  System.out.print(jobTypePicked.get(i));
                  System.out.print(",");
                  }
 
-                 System.out.println("equipment");
+                 //system.out.println("equipment");
                  for (int i = 0; i < vehList.size(); i++) {
                  System.out.print(vehList.get(i));
                  System.out.print(",");
                  }
 
-                 System.out.println("employees");
+                 //system.out.println("employees");
                  for (int i = 0; i < empListSel.size(); i++) {
-                 System.out.println(empListSel.get(i));
+                 //system.out.println(empListSel.get(i));
                  System.out.print(",");
                  }
-                 System.out.println("CID: " + cid);
+                 //system.out.println("CID: " + cid);
                  */
 
                 if (status.equals("IN PROGRESS") && empCompiled.equals("")) {
@@ -3510,7 +3680,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         + ", '" + tI + "', '" + wI + "', '" + billing + "','" + status + "','" + streetAddr.getText() + "','"
                         + city.getText() + "','" + state.getText() + "','" + zip.getText() + "'," + empID + ");";
 
-                System.out.println("qry: " + qry);
+                //system.out.println("qry: " + qry);
 
                 //delete all entries associated with IP before exiting to the login screen
                 Statement updateDb = null;
@@ -3520,7 +3690,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 int executeUpdate = updateDb.executeUpdate(qry);
 
                 if (executeUpdate > 0) {
-                    System.out.println("Database updated...");
+                    //system.out.println("Database updated...");
                     //show the complete box dialog
                     Label label2;
                     label2 = new Label("Job Successfully Added.");
@@ -3569,7 +3739,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String getJobTitle = currentJobsDisplay.getSelectionModel().selectedItemProperty().getValue().toString();
         getJobTitle = getJobTitle.substring(getJobTitle.indexOf(":") + 1, getJobTitle.indexOf("]"));
         getJobTitle = getJobTitle.trim();
-        
+
         empListSelected = new ArrayList<String>();
 
         //refresh veh/equip
@@ -3631,13 +3801,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 st = conn.createStatement();
                 rs = st.executeQuery("select jobName from jobType;");
                 while (rs.next()) {
-                    //System.out.println(rs.getString(1));
+                    ////system.out.println(rs.getString(1));
                     getJobTypes.add(rs.getString(1));
 
                 }
                 rs = st.executeQuery("select jobName from jobtype;");
                 while (rs.next()) {
-                    //System.out.println(rs.getString(1));
+                    ////system.out.println(rs.getString(1));
                     taskListBox.add(rs.getString(1));
 
                 }
@@ -3649,8 +3819,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             String tmpStr = "", holder = "", tmpStr2 = "", tmpStr3;
             tmpStr = listOfTasks.substring(1, listOfTasks.length());
 
-            System.out.println("EMP SIZE: " + empLister.length());
-            System.out.println("VEH SIZE: " + vehLister.length());
+            //system.out.println("EMP SIZE: " + empLister.length());
+            //system.out.println("VEH SIZE: " + vehLister.length());
 
             //take out that initial '/'
             if (empLister.length() > 0) {
@@ -3779,26 +3949,26 @@ public class JobCenterMainController implements Initializable, ScreenController 
             jobStatus.setValue(status);
 
             /*
-             System.out.println(rs.getString(1));
-             System.out.println(rs.getString(2));
-             System.out.println(rs.getString(3));
-             System.out.println(rs.getString(4));
-             System.out.println(rs.getString(5));
-             System.out.println(rs.getString(6));
-             System.out.println(rs.getString(7));
-             System.out.println(rs.getString(8));
-             System.out.println(rs.getString(9));
-             System.out.println(rs.getString(10));
-             System.out.println(rs.getString(11));
-             System.out.println(rs.getString(12));
-             System.out.println(rs.getString(13));
-             System.out.println(rs.getString(14));
-             System.out.println(rs.getString(15));
-             System.out.println(rs.getString(16));
-             System.out.println(rs.getString(17));*/
+             //system.out.println(rs.getString(1));
+             //system.out.println(rs.getString(2));
+             //system.out.println(rs.getString(3));
+             //system.out.println(rs.getString(4));
+             //system.out.println(rs.getString(5));
+             //system.out.println(rs.getString(6));
+             //system.out.println(rs.getString(7));
+             //system.out.println(rs.getString(8));
+             //system.out.println(rs.getString(9));
+             //system.out.println(rs.getString(10));
+             //system.out.println(rs.getString(11));
+             //system.out.println(rs.getString(12));
+             //system.out.println(rs.getString(13));
+             //system.out.println(rs.getString(14));
+             //system.out.println(rs.getString(15));
+             //system.out.println(rs.getString(16));
+             //system.out.println(rs.getString(17));*/
         }
         String qry = "select * from customer where CID ='" + cid + "';";
-        //System.out.println("qry: " + qry);
+        ////system.out.println("qry: " + qry);
 
         rs = st.executeQuery(qry);
         while (rs.next()) {
@@ -3831,17 +4001,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
             st = conn.createStatement();
             rs = st.executeQuery("select fname,lname from employees order by fname;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 empList.add(rs.getString(1) + " " + rs.getString(2));
             }
             rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 vehList.add(rs.getString(1));
             }
             rs = st.executeQuery("select CompanyName from customer;");
             while (rs.next()) {
-                //System.out.println(rs.getString(1));
+                ////system.out.println(rs.getString(1));
                 custList.add(rs.getString(1));
             }
 
@@ -3867,8 +4037,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         taskList.getSelectionModel().select(0);
         createJobToolbar.setVisible(false);
         editJobToolbar.setVisible(true);
-        
-                
+
         vehicleEquipSelect.getSelectionModel().selectNext();
         employeeSelect.getSelectionModel().selectNext();
 
@@ -3925,8 +4094,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         for (int i = 0; i < taskTypeListStr.size(); i++) {
             jobtypecompiled += "/" + taskTypeListStr.get(i);
         }
- 
-        
+
         //compile employees  
         for (int j = 0; j < employeeSelected.getItems().size(); j++) {
             empCompiled += "/" + employeeSelected.getItems().get(j);
@@ -3937,16 +4105,16 @@ public class JobCenterMainController implements Initializable, ScreenController 
             equipCompiled += "/" + vehList.get(k);
         }
 
-        //System.out.println("CID: " + cid);
-        //System.out.println("Job name: " + jobNameStr);
-        //System.out.println("Cust job #: " + custJobNumStr);
-        //System.out.println("Cust job name: " + custJobNameStr);
-        //System.out.println("start date: " + startDateStr);
-        //System.out.println("start time: " + startTimeStr);
-        //System.out.println("street: " + streetAddr.getText());
-        //System.out.println("city: " + city.getText());
-        //System.out.println("state: " + state.getText());
-        //System.out.println("zip: " + zip.getText());
+        ////system.out.println("CID: " + cid);
+        ////system.out.println("Job name: " + jobNameStr);
+        ////system.out.println("Cust job #: " + custJobNumStr);
+        ////system.out.println("Cust job name: " + custJobNameStr);
+        ////system.out.println("start date: " + startDateStr);
+        ////system.out.println("start time: " + startTimeStr);
+        ////system.out.println("street: " + streetAddr.getText());
+        ////system.out.println("city: " + city.getText());
+        ////system.out.println("state: " + state.getText());
+        ////system.out.println("zip: " + zip.getText());
         if (prodChk.isSelected()) {
             billing = "Production Payment";
         }
@@ -3965,25 +4133,24 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stateStr = state.getText();
         zipStr = zip.getText();
 
-        System.out.println("job type");
+        //system.out.println("job type");
         for (int i = 0; i < jobTypePicked.size(); i++) {
             System.out.print(jobTypePicked.get(i));
             System.out.print(",");
         }
 
-        System.out.println("equipment");
+        //system.out.println("equipment");
         for (int i = 0; i < vehList.size(); i++) {
             System.out.print(vehList.get(i));
             System.out.print(",");
         }
 
-        /*System.out.println("employees");
-        for (int i = 0; i < empSelected.size(); i++) {
-            System.out.println(empSelected.get(i));
-            System.out.print(",");
-        }*/
-        //System.out.println("CID: " + cid);
-
+        /*//system.out.println("employees");
+         for (int i = 0; i < empSelected.size(); i++) {
+         //system.out.println(empSelected.get(i));
+         System.out.print(",");
+         }*/
+        ////system.out.println("CID: " + cid);
         if (status.equals("IN PROGRESS") && empCompiled.equals("")) {
             displayMsg("You must have employees assigned\nto an 'IN PROGRESS' job.");
             return;
@@ -4044,7 +4211,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //refresh the veh/equip view
         refreshVeh();
-        
+
         refreshEmp();
 
         closeWindow.setOnAction(new EventHandler<ActionEvent>() {
@@ -4076,7 +4243,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             } else if (newUsrStr.length() <= 0) {
                 System.out.print("err usr");
             } else {
-                System.out.println(uidSelected + "\n" + newPwdStr + "\n" + newUsrStr);
+                //system.out.println(uidSelected + "\n" + newPwdStr + "\n" + newUsrStr);
                 newPwdStr = getMD5(newPwdStr);
 
                 String queryRunNow = "insert into users (userName, password,employees_uid) "
@@ -4093,7 +4260,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                     rs = st.executeQuery(qry);
                     while (rs.next()) {
-                        //System.out.println(rs.getString(1));
+                        ////system.out.println(rs.getString(1));
                         tmpList.add(rs.getString(1));
                     }
 
@@ -4107,7 +4274,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     }
 
                     for (int i = 0; i < tmpList.size(); i++) {
-                        //System.out.println(tmpList.get(i));
+                        ////system.out.println(tmpList.get(i));
                         if (tmpList.get(i).equals(newUsrStr.trim())) {
                             nameExists = true;
                         }
@@ -4153,7 +4320,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //insert into database
         Statement updateDb = null;
-        //System.out.println(queryRun);
+        ////system.out.println(queryRun);
 
         //make the connection
         try {
@@ -4222,7 +4389,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 + " and fname = '" + fnameToDel + "'"
                 + " and lname = '" + lnametoDel + "'";
 
-        //System.out.println(queryDelete);
+        ////system.out.println(queryDelete);
         //insert into database
         updateDbThis = null;
 
@@ -4287,7 +4454,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //insert into database
         Statement updateDb = null;
-        //System.out.println(queryRun);
+        ////system.out.println(queryRun);
 
         //make the connection
         try {
@@ -4346,7 +4513,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void deleteManagerAction(ActionEvent event) throws IOException, SQLException {
         String emailToDelete = managerView.getSelectionModel().selectedItemProperty().getValue().getEmail();
         String queryDelete = "DELETE FROM manager WHERE email = '" + emailToDelete + "'";
-        //System.out.println(queryDelete);
+        ////system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -4371,7 +4538,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void usrDeleteAction(ActionEvent event) {
         String usrToDelete = usersTable.getSelectionModel().selectedItemProperty().getValue().getUsername();
         String queryDelete = "DELETE FROM users WHERE userName = '" + usrToDelete + "'";
-        //System.out.println(queryDelete);
+        ////system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -4508,18 +4675,18 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         rs = st.executeQuery("select userName from users;");
 
                         while (rs.next()) {
-                            System.out.println(rs.getString(1));
+                            //system.out.println(rs.getString(1));
                             //check to see if username matches
                             if (rs.getString(1).equals(user)) {
                                 String qry = "select password from users where userName = '" + user + "';";
-                                //System.out.println(qry);
+                                ////system.out.println(qry);
                                 rs = st.executeQuery(qry);
 
                                 while (rs.next()) {
 
                                     //check to see if password matches
                                     if (rs.getString(1).equals(oldPwHash)) {
-                                        //System.out.println("matched!" + rs.getString(1));
+                                        ////system.out.println("matched!" + rs.getString(1));
                                         authorized = true;
                                     }
                                 }
@@ -4529,7 +4696,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         if (authorized == true) {
                             String qry3 = "update users set password = '" + newPwHash
                                     + "' where userName = '" + user + "';";
-                            //System.out.println(qry3);
+                            ////system.out.println(qry3);
                             Statement updateDb = null;
                             updateDb = conn.createStatement();
                             int executeUpdate = updateDb.executeUpdate(qry3);
@@ -4731,7 +4898,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         cal.set(year, month, date);
         int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
-        System.out.println("Number of Days: " + days);
+        //system.out.println("Number of Days: " + days);
         start = 1;
 
         //days of week 1-7 starting with monday-sunday
@@ -4739,7 +4906,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         int monthCorrection = month + 1;
         curDateStr = monthCorrection + "/" + start + "/" + year;
-        System.out.println(startingDay);
+        //system.out.println(startingDay);
 
         //set location and build of grid pane...
         gridCal.setLayoutY(70);
@@ -4843,7 +5010,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                                 jobDateStr = rs.getString(1);
 
                                 if (jobDateStr.equals(curDateStr)) {
-                                    //System.out.println(start);
+                                    ////system.out.println(start);
                                     qryRun = "select JobTitle from currentjobs where JobWorkDate = '" + curDateStr + "';";
 
                                     rs = st.executeQuery(qryRun);
@@ -4994,8 +5161,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
     @FXML
     private void emailJobBoardAction(ActionEvent event) throws MessagingException, SQLException {
         // here we make image from vbox and add it to scene, can be repeated :) 
- 
-  final Group root = new Group();
+
+        final Group root = new Group();
         Button printScreen = new Button("Print");
 
         Rectangle r = new Rectangle(0, 0, 1120, 40);
@@ -5170,21 +5337,21 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 counter = 10;
                 strManip = equipListStr;
                 while (strManip.lastIndexOf("/") >= 0) {
-                    System.out.println(strManip);
+                    //system.out.println(strManip);
                     add = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
                     add.setStyle("-fx-font-size: 10;");
                     gridpane.add(add, columnLoc, counter);
                     counter++;
 
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-                    System.out.println(strManip);
+                    //system.out.println(strManip);
 
                 }
 
             } else {
 
                 counter = 15;
-                System.out.println("TIME TO PRINT ANOTHER TABLE");
+                //system.out.println("TIME TO PRINT ANOTHER TABLE");
 
                 for (int i = 0; i < 14; i++) {
                     RowConstraints row = new RowConstraints(20);
@@ -5293,21 +5460,21 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
 
                 }
-/*
-                counter = 25;
-                strManip = equipListStr;
-                while (strManip.lastIndexOf("/") >= 0) {
-                    System.out.println(strManip);
-                    add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
-                    add2.setStyle("-fx-font-size: 10;");
-                    gridpane.add(add2, columnLoc2, counter);
-                    counter++;
+                /*
+                 counter = 25;
+                 strManip = equipListStr;
+                 while (strManip.lastIndexOf("/") >= 0) {
+                 //system.out.println(strManip);
+                 add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
+                 add2.setStyle("-fx-font-size: 10;");
+                 gridpane.add(add2, columnLoc2, counter);
+                 counter++;
 
-                    strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-                    System.out.println(strManip);
+                 strManip = strManip.substring(0, strManip.lastIndexOf("/"));
+                 //system.out.println(strManip);
 
-                }
-                */
+                 }
+                 */
                 columnLoc2++;
             }
             columnLoc++;
@@ -5322,9 +5489,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         root.getChildren().add(labelComp);
 
         root.getChildren().add(gridpane);
-        
-        
-        
+
         WritableImage snapshot = root.snapshot(new SnapshotParameters(), null);
         root.getChildren().add(new ImageView(snapshot));
         saveImage(snapshot);
@@ -5410,9 +5575,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             break;
                         }
 
-                        System.out.println("sending: " + emailTo[k]);
-                        System.out.println(usrNameField.getText().toString());
-                        System.out.println(pazz.getText().toString());
+                        //system.out.println("sending: " + emailTo[k]);
+                        //system.out.println(usrNameField.getText().toString());
+                        //system.out.println(pazz.getText().toString());
 
                         //sendMail.Send("fucheevang", "tanehtmf10", emailTo[k], "", "Job Board Daily Mail", "Job board email.");
                         sendMail.Send(usrNameField.getText().toString(), pazz.getText().toString(), emailTo[k], "", "Job Board Daily Mail", "Job board email.");
@@ -5437,7 +5602,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void deleteJobAction(ActionEvent event) throws SQLException {
         String jobToDelete = (currentJobsDisplay.getTreeItem(currentJobsDisplay.getSelectionModel().getSelectedIndex()).getValue());
         final String queryDelete12345 = "DELETE FROM currentJobs WHERE JobTitle = '" + jobToDelete + "'";
-        //System.out.println(queryDelete);
+        ////system.out.println(queryDelete);
 
         //show the complete box dialog
         Label label2;
@@ -5658,7 +5823,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                             rs = st.executeQuery("select CompanyName from customer order by CompanyName;");
                             while (rs.next()) {
-                                //System.out.println(rs.getString(1));
+                                ////system.out.println(rs.getString(1));
                                 custList.add(rs.getString(1));
                             }
                             ObservableList<String> custListingObs66 = FXCollections.observableArrayList(custList);
@@ -5726,7 +5891,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                         rs = st.executeQuery("select CompanyName from customer order by CompanyName;");
                         while (rs.next()) {
-                            //System.out.println(rs.getString(1));
+                            ////system.out.println(rs.getString(1));
                             custList.add(rs.getString(1));
                         }
                         ObservableList<String> custListingObs66 = FXCollections.observableArrayList(custList);
@@ -5837,13 +6002,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             while (rs.next()) {
 
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-                System.out.println(rs.getString(4));
-                System.out.println(rs.getString(5));
-                System.out.println(rs.getString(6));
-                System.out.println(rs.getString(7));
+                //system.out.println(rs.getString(1));
+                //system.out.println(rs.getString(2));
+                //system.out.println(rs.getString(3));
+                //system.out.println(rs.getString(4));
+                //system.out.println(rs.getString(5));
+                //system.out.println(rs.getString(6));
+                //system.out.println(rs.getString(7));
 
                 custNameBlock.setText(rs.getString(1));
                 custCityBlock.setText(rs.getString(2));
@@ -5952,7 +6117,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                             rs = st.executeQuery("select CompanyName from customer order by CompanyName;");
                             while (rs.next()) {
-                                //System.out.println(rs.getString(1));
+                                ////system.out.println(rs.getString(1));
                                 custList.add(rs.getString(1));
                             }
                             ObservableList<String> custListingObs66 = FXCollections.observableArrayList(custList);
@@ -6025,7 +6190,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         empToAdd = empToAdd.substring(empToAdd.indexOf(":") + 2, empToAdd.length());
 
         String queryDelete = "insert into emaillist (emailSend) values('" + empToAdd + "');";
-        //System.out.println(queryDelete);
+        ////system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -6057,7 +6222,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     private void deleteEmpEmailAction(ActionEvent event) throws SQLException {
         String EmailStr = empEmailListView.getSelectionModel().selectedItemProperty().getValue().toString();
         String queryDelete = "DELETE FROM emaillist WHERE emailSend = '" + EmailStr + "'";
-        //System.out.println(queryDelete);
+        ////system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -6086,7 +6251,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         getEmail = getEmail.substring(getEmail.indexOf(":") + 2, getEmail.length());
 
         String queryAdmin = "", empidtoadd = "";
-        System.out.println(queryAdmin);
+        //system.out.println(queryAdmin);
 
         //make the connection
         try {
@@ -6127,7 +6292,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         uidToDelNow = uidToDelNow.substring(uidToDelNow.indexOf(":") + 1, uidToDelNow.length());
 
         String queryDelete = "DELETE FROM administrators WHERE employees_uid = '" + uidToDelNow + "'";
-        System.out.println(queryDelete);
+        //system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -6182,7 +6347,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         String queryDelete = "insert into employeetracking (action, date, description,employees_uid) values('" + theOption + "','"
                 + theDate + "','" + theNotes + "'," + uidRet + ")";
-        System.out.println(queryDelete);
+        //system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -6360,7 +6525,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 + "' and date = '" + dateToDel
                 + "' and description = '" + descToDel + "'";
 
-        System.out.println(queryDelete);
+        //system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -6416,7 +6581,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 employeesParsed = new ArrayList<String>();
         String theStr = "", tmpStr = "";
 
-        System.out.println(queryDelete);
+        //system.out.println(queryDelete);
 
         //insert into database
         Statement updateDb = null;
@@ -6425,7 +6590,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         employeesAssn = listEmpAssigned();
 
         for (int i = 0; i < employeesAssn.size(); i++) {
-            System.out.println(employeesAssn.get(i));
+            //system.out.println(employeesAssn.get(i));
             theStr = employeesAssn.get(i);
             theStr = theStr.substring(1, theStr.length());
 
@@ -6464,7 +6629,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         + " where fname = '" + employeesParsed.get(i).substring(0, employeesParsed.get(i).indexOf(" "))
                         + "' and lname = '" + employeesParsed.get(i).substring(employeesParsed.get(i).indexOf(" ") + 1, employeesParsed.get(i).length()) + "';";
 
-                System.out.println(addEmpStatus);
+                //system.out.println(addEmpStatus);
                 executeUpdate = updateDb5.executeUpdate(addEmpStatus);
             }
 
@@ -6708,21 +6873,21 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 counter = 10;
                 strManip = equipListStr;
                 while (strManip.lastIndexOf("/") >= 0) {
-                    System.out.println(strManip);
+                    //system.out.println(strManip);
                     add = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
                     add.setStyle("-fx-font-size: 10;");
                     gridpane.add(add, columnLoc, counter);
                     counter++;
 
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-                    System.out.println(strManip);
+                    //system.out.println(strManip);
 
                 }
 
             } else {
 
                 counter = 15;
-                System.out.println("TIME TO PRINT ANOTHER TABLE");
+                //system.out.println("TIME TO PRINT ANOTHER TABLE");
 
                 for (int i = 0; i < 14; i++) {
                     RowConstraints row = new RowConstraints(20);
@@ -6835,14 +7000,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 counter = 25;
                 strManip = equipListStr;
                 while (strManip.lastIndexOf("/") >= 0) {
-                    System.out.println(strManip);
+                    //system.out.println(strManip);
                     add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
                     add2.setStyle("-fx-font-size: 10;");
                     gridpane.add(add2, columnLoc2, counter);
                     counter++;
 
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-                    System.out.println(strManip);
+                    //system.out.println(strManip);
 
                 }
                 columnLoc2++;
