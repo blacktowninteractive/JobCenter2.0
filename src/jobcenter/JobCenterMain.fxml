@@ -234,7 +234,7 @@
             </AnchorPane>
           </content>
         </TitledPane>
-        <TitledPane animated="false" blendMode="SRC_OVER" layoutX="535.0" layoutY="51.0" prefWidth="399.0" text="Add employee">
+        <TitledPane animated="false" blendMode="SRC_OVER" collapsible="false" layoutX="535.0" layoutY="51.0" prefWidth="399.0" text="Add employee">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
@@ -248,7 +248,7 @@
             </AnchorPane>
           </content>
         </TitledPane>
-        <TitledPane animated="false" blendMode="SRC_OVER" layoutX="535.0" layoutY="265.0" prefWidth="399.0" text="Add vehicle/equipment">
+        <TitledPane animated="false" blendMode="SRC_OVER" collapsible="false" layoutX="535.0" layoutY="265.0" prefWidth="399.0" text="Add vehicle/equipment">
           <content>
             <AnchorPane id="Content" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
               <children>
@@ -274,7 +274,7 @@
         </ToolBar>
       </children>
     </Pane>
-    <Pane fx:id="employeePane" blendMode="DIFFERENCE" layoutX="200.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="true">
+    <Pane fx:id="employeePane" blendMode="DIFFERENCE" layoutX="200.0" layoutY="54.0" prefHeight="608.0" prefWidth="1054.0" visible="false">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="635.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
         <TitledPane animated="false" blendMode="SRC_OVER" collapsible="false" font="$x5" layoutX="14.0" layoutY="14.0" minWidth="568.0" prefHeight="501.0" prefWidth="637.0" text="Employees">
@@ -564,7 +564,7 @@
         </Accordion>
       </children>
     </Pane>
-    <Pane fx:id="proposalsPane" blendMode="DIFFERENCE" layoutX="200.0" layoutY="54.0" prefHeight="607.0" prefWidth="1065.0" visible="false">
+    <Pane fx:id="proposalsPane" blendMode="DIFFERENCE" layoutX="200.0" layoutY="54.0" prefHeight="607.0" prefWidth="1065.0" visible="true">
       <children>
         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="$x3" height="640.0" layoutX="-1.0" layoutY="0.0" stroke="BLACK" strokeType="INSIDE" width="1163.0" />
       </children>
