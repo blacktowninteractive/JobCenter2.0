@@ -80,6 +80,7 @@ import javafx.scene.control.TreeView;
 import javafx.scene.control.cell.ComboBoxTreeCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCode;
@@ -519,7 +520,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
             }
 
             //system.out.println("DONE");
-
             String theItem = "";
             //RESET THE ENTIRE LIST
             String querySetVehRESET = "update vehicles set VehicleStatus = 'AVAILABLE';";
@@ -640,170 +640,154 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             //addMenu.getItems().add(addMenuItem);
             addMenu.getItems().add(subMenuStatus);
-            
-            
-            
-            addMenuItem3.setOnAction(new EventHandler() {
-                 public void handle(Event t) {
-                    try {                                            
-                        
-                        //system.out.println(getTreeItem().getValue().toString());
-                        //system.out.println(getTreeItem().getParent().getValue().toString());
-                        
-                        //should be three fields: employee/equipment/status
-                        updateToJob("IN PROGRESS", "status", getTreeItem().getParent().getValue().toString());
-                            
-                        refreshList();       
-                        
-                        //need to expand the updated list
-                        
-                    } catch (SQLException ex) {
-                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-            }
-            });
-            
-            addMenuItem4.setOnAction(new EventHandler() {
-                 public void handle(Event t) {
-                    try {                                            
-                        
-                        //system.out.println(getTreeItem().getValue().toString());
-                        //system.out.println(getTreeItem().getParent().getValue().toString());
-                        
-                        //should be three fields: employee/equipment/status
-                        updateToJob("COMPLETE", "status", getTreeItem().getParent().getValue().toString());
-                            
-                        refreshList();       
-                        
-                        //need to expand the updated list
-                        
-                    } catch (SQLException ex) {
-                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-            }
-            });
-            
-            addMenuItem5.setOnAction(new EventHandler() {
-                 public void handle(Event t) {
-                    try {                                            
-                        
-                        //system.out.println(getTreeItem().getValue().toString());
-                        //system.out.println(getTreeItem().getParent().getValue().toString());
-                        
-                        //should be three fields: employee/equipment/status
-                        updateToJob("HOLD-CUSTOMER", "status", getTreeItem().getParent().getValue().toString());
-                            
-                        refreshList();       
-                        
-                        //need to expand the updated list
-                        
-                    } catch (SQLException ex) {
-                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-            }
-            });
-            
-            addMenuItem6.setOnAction(new EventHandler() {
-                 public void handle(Event t) {
-                    try {                                            
-                        
-                        //system.out.println(getTreeItem().getValue().toString());
-                        //system.out.println(getTreeItem().getParent().getValue().toString());
-                        
-                        //should be three fields: employee/equipment/status
-                        updateToJob("HOLD-WEATHER", "status", getTreeItem().getParent().getValue().toString());
-                            
-                        refreshList();       
-                        
-                        //need to expand the updated list
-                        
-                    } catch (SQLException ex) {
-                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-            }
-            });
-            
-            addMenuItem7.setOnAction(new EventHandler() {
-                 public void handle(Event t) {
-                    try {                                            
-                        
-                        //system.out.println(getTreeItem().getValue().toString());
-                        //system.out.println(getTreeItem().getParent().getValue().toString());
-                        
-                        //should be three fields: employee/equipment/status
-                        updateToJob("HOLD-OTHER", "status", getTreeItem().getParent().getValue().toString());
-                            
-                        refreshList();       
-                        
-                        //need to expand the updated list
-                        
-                    } catch (SQLException ex) {
-                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-            }
-            });
-            
-            addMenuItem8.setOnAction(new EventHandler() {
-                 public void handle(Event t) {
-                    try {                                            
-                        
-                        //system.out.println(getTreeItem().getValue().toString());
-                        //system.out.println(getTreeItem().getParent().getValue().toString());
-                        
-                        //should be three fields: employee/equipment/status
-                        updateToJob("PROJECTED", "status", getTreeItem().getParent().getValue().toString());
-                            
-                        refreshList();       
-                        
-                        //need to expand the updated list
-                        
-                    } catch (SQLException ex) {
-                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-            }
-            });
-            
-            addMenuItem9.setOnAction(new EventHandler() {
-                 public void handle(Event t) {
-                    try {                                            
-                        
-                        //system.out.println(getTreeItem().getValue().toString());
-                        //system.out.println(getTreeItem().getParent().getValue().toString());
-                        
-                        //should be three fields: employee/equipment/status
-                        updateToJob("CANCELLED", "status", getTreeItem().getParent().getValue().toString());
-                            
-                        refreshList();       
-                        
-                        //need to expand the updated list
-                        
-                    } catch (SQLException ex) {
-                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-            }
-            });
-            
-            /*addMenuItem.setOnAction(new EventHandler() {
 
+            addMenuItem3.setOnAction(new EventHandler() {
                 public void handle(Event t) {
                     try {
+
                         //system.out.println(getTreeItem().getValue().toString());
                         //system.out.println(getTreeItem().getParent().getValue().toString());
-                        
-                        int indexNode = 0;
-                        indexNode = currentJobsDisplay.getSelectionModel().getSelectedIndex();
-                        
                         //should be three fields: employee/equipment/status
-                        updateToJob(getTreeItem().getValue().toString(), "employee", getTreeItem().getParent().getValue().toString());
-                                                
-                        currentJobsDisplay.getTreeItem(indexNode).setExpanded(true);
-                        
+                        updateToJob("IN PROGRESS", "status", getTreeItem().getParent().getValue().toString());
+
+                        refreshList();
+
+                        //need to expand the updated list
                     } catch (SQLException ex) {
                         Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
                     }
-
                 }
-            });*/
+            });
+
+            addMenuItem4.setOnAction(new EventHandler() {
+                public void handle(Event t) {
+                    try {
+
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        //should be three fields: employee/equipment/status
+                        updateToJob("COMPLETE", "status", getTreeItem().getParent().getValue().toString());
+
+                        refreshList();
+
+                        //need to expand the updated list
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+
+            addMenuItem5.setOnAction(new EventHandler() {
+                public void handle(Event t) {
+                    try {
+
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        //should be three fields: employee/equipment/status
+                        updateToJob("HOLD-CUSTOMER", "status", getTreeItem().getParent().getValue().toString());
+
+                        refreshList();
+
+                        //need to expand the updated list
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+
+            addMenuItem6.setOnAction(new EventHandler() {
+                public void handle(Event t) {
+                    try {
+
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        //should be three fields: employee/equipment/status
+                        updateToJob("HOLD-WEATHER", "status", getTreeItem().getParent().getValue().toString());
+
+                        refreshList();
+
+                        //need to expand the updated list
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+
+            addMenuItem7.setOnAction(new EventHandler() {
+                public void handle(Event t) {
+                    try {
+
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        //should be three fields: employee/equipment/status
+                        updateToJob("HOLD-OTHER", "status", getTreeItem().getParent().getValue().toString());
+
+                        refreshList();
+
+                        //need to expand the updated list
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+
+            addMenuItem8.setOnAction(new EventHandler() {
+                public void handle(Event t) {
+                    try {
+
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        //should be three fields: employee/equipment/status
+                        updateToJob("PROJECTED", "status", getTreeItem().getParent().getValue().toString());
+
+                        refreshList();
+
+                        //need to expand the updated list
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+
+            addMenuItem9.setOnAction(new EventHandler() {
+                public void handle(Event t) {
+                    try {
+
+                        //system.out.println(getTreeItem().getValue().toString());
+                        //system.out.println(getTreeItem().getParent().getValue().toString());
+                        //should be three fields: employee/equipment/status
+                        updateToJob("CANCELLED", "status", getTreeItem().getParent().getValue().toString());
+
+                        refreshList();
+
+                        //need to expand the updated list
+                    } catch (SQLException ex) {
+                        Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            });
+
+            /*addMenuItem.setOnAction(new EventHandler() {
+
+             public void handle(Event t) {
+             try {
+             //system.out.println(getTreeItem().getValue().toString());
+             //system.out.println(getTreeItem().getParent().getValue().toString());
+                        
+             int indexNode = 0;
+             indexNode = currentJobsDisplay.getSelectionModel().getSelectedIndex();
+                        
+             //should be three fields: employee/equipment/status
+             updateToJob(getTreeItem().getValue().toString(), "employee", getTreeItem().getParent().getValue().toString());
+                                                
+             currentJobsDisplay.getTreeItem(indexNode).setExpanded(true);
+                        
+             } catch (SQLException ex) {
+             Logger.getLogger(JobCenterMainController.class.getName()).log(Level.SEVERE, null, ex);
+             }
+
+             }
+             });*/
         }
 
         @Override
@@ -934,7 +918,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String queryEmployeesAssigned = "select JobEmployees from currentJobs where status = 'IN PROGRESS';";
 
         //system.out.println(queryEmployeesAssigned);
-
         //insert into database
         Statement updateDb = null;
 
@@ -991,17 +974,16 @@ public class JobCenterMainController implements Initializable, ScreenController 
             qry3 = "";
         }
         if (whichField.equals("status")) {
-            qry3 = "update currentjobs set status = '"+itemStr+"' where JobTitle = '"+jobNameWorkIt+"'";
-            
+            qry3 = "update currentjobs set status = '" + itemStr + "' where JobTitle = '" + jobNameWorkIt + "'";
+
             Statement updateDb = null;
             updateDb = conn.createStatement();
-            int executeUpdate = updateDb.executeUpdate(qry3);            
+            int executeUpdate = updateDb.executeUpdate(qry3);
         }
         if (whichField.equals("equipment")) {
             qry3 = "";
         }
 
-        
     }
 
     void delScrollTxt() throws SQLException {
@@ -1082,7 +1064,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 //system.out.println(rs.getString(3));
                 //system.out.println(rs.getString(4));
                 //system.out.println(rs.getString(5));
-
                 useridInfor.setText(idEmpStr);
                 nameInfor.setText(rs.getString(1) + " " + rs.getString(2));
                 emailInfor.setText(rs.getString(3));
@@ -1220,7 +1201,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         for (int i = 0; i < jobList.size(); i++) {
 
-            //adds each job child node to the treeview
+            //adds each job child node to the treevie
             TreeItem<String> depNode = new TreeItem<String>(jobList.get(i));
 
             //once job added, grab all cust data needed and add info to that child node
@@ -1242,8 +1223,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             }
 
                             TreeItem<String> var = new TreeItem<String>(empNameStr);
-                            depNode.getChildren().add(var);
 
+                            depNode.getChildren().add(var);
                         }
 
                     } else {
@@ -1259,7 +1240,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
         }
 
         currentJobsDisplay.setRoot(root559);
+
         root559.setExpanded(true);
+
         currentJobsDisplay.setCellFactory(new Callback<TreeView<String>, TreeCell<String>>() {
             @Override
             public TreeCell<String> call(TreeView<String> p) {
@@ -1291,7 +1274,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         //system.out.println(tester55.get(0).getPwd());
         //system.out.println(tester55.get(0).getUsername());
-
         return tester55;
     }
 
@@ -2164,7 +2146,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //system.out.println("Index: " + currentJobsDisplay.getSelectionModel().getSelectedIndex());
         ////system.out.println("RootStr: " + currentJobsDisplay.getChildrenUnmodifiable().get(currentJobsDisplay.getSelectionModel().getSelectedIndex()));
         //system.out.println("Adding: " + vehStrConv + " to job: " + getJobTitle);
-
         indexNode = currentJobsDisplay.getSelectionModel().getSelectedIndex();
 
         //check make sure job exists
@@ -2299,11 +2280,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //get employee name selected
         String empStrConv = empAddJobView.getSelectionModel().selectedItemProperty().getValue().toString();
 
-       // //system.out.println("Root: " + currentJobsDisplay.getSelectionModel().selectedItemProperty().getBean());
+        // //system.out.println("Root: " + currentJobsDisplay.getSelectionModel().selectedItemProperty().getBean());
         ////system.out.println("Index: " + currentJobsDisplay.getSelectionModel().getSelectedIndex());
         ////system.out.println("RootStr: " + currentJobsDisplay.getChildrenUnmodifiable().get(currentJobsDisplay.getSelectionModel().getSelectedIndex()));
-       // //system.out.println("Adding: " + empStrConv + " to job: " + getJobTitle);
-
+        // //system.out.println("Adding: " + empStrConv + " to job: " + getJobTitle);
         //check make sure job exists
         //make the connection
         try {
@@ -2317,11 +2297,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
             if (rs.next()) {
                 String idMod = rs.getString(1);
                 String empList = rs.getString(2);
-               // //system.out.println("JobID: " + idMod);
-               // //system.out.println("employess: " + empList);
+                // //system.out.println("JobID: " + idMod);
+                // //system.out.println("employess: " + empList);
 
                 if (empExist(empList, empStrConv)) {
-                  //  //system.out.println("Name Exists!!");
+                    //  //system.out.println("Name Exists!!");
                     //popup explain to user that this selection is invalid
                     //show the complete box dialog
                     Label label2;
@@ -2719,29 +2699,26 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 String strManip = empListStr;
 
                 while (strManip.lastIndexOf("/") >= 0) {
-
                     add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
                     add2.setStyle("-fx-font-size: 10;");
                     gridpane.add(add2, columnLoc2, counter);
                     counter++;
 
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-
                 }
-                /*
-                 counter = 25;
-                 strManip = equipListStr;
-                 while (strManip.lastIndexOf("/") >= 0) {
-                 //system.out.println(strManip);
-                 add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
-                 add2.setStyle("-fx-font-size: 10;");
-                 gridpane.add(add2, columnLoc2, counter);
-                 counter++;
+                //prints the second level trucks/equipment/
+                counter = 25;
+                strManip = equipListStr;
+                while (strManip.lastIndexOf("/") >= 0) {
+                    //system.out.println(strManip);
+                    add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
+                    add2.setStyle("-fx-font-size: 10;");
+                    gridpane.add(add2, columnLoc2, counter);
+                    counter++;
 
-                 strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-                 //system.out.println(strManip);
-
-                 }*/
+                    strManip = strManip.substring(0, strManip.lastIndexOf("/"));
+                    //system.out.println(strManip);
+                }
                 columnLoc2++;
             }
             columnLoc++;
@@ -3681,7 +3658,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         + city.getText() + "','" + state.getText() + "','" + zip.getText() + "'," + empID + ");";
 
                 //system.out.println("qry: " + qry);
-
                 //delete all entries associated with IP before exiting to the login screen
                 Statement updateDb = null;
                 updateDb = conn.createStatement();
@@ -3821,7 +3797,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
             //system.out.println("EMP SIZE: " + empLister.length());
             //system.out.println("VEH SIZE: " + vehLister.length());
-
             //take out that initial '/'
             if (empLister.length() > 0) {
                 tmpStr2 = empLister.substring(1, empLister.length());
@@ -5578,7 +5553,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         //system.out.println("sending: " + emailTo[k]);
                         //system.out.println(usrNameField.getText().toString());
                         //system.out.println(pazz.getText().toString());
-
                         //sendMail.Send("fucheevang", "tanehtmf10", emailTo[k], "", "Job Board Daily Mail", "Job board email.");
                         sendMail.Send(usrNameField.getText().toString(), pazz.getText().toString(), emailTo[k], "", "Job Board Daily Mail", "Job board email.");
                     }
@@ -6009,7 +5983,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 //system.out.println(rs.getString(5));
                 //system.out.println(rs.getString(6));
                 //system.out.println(rs.getString(7));
-
                 custNameBlock.setText(rs.getString(1));
                 custCityBlock.setText(rs.getString(2));
                 custStBlock.setText(rs.getString(3));
@@ -6526,7 +6499,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 + "' and description = '" + descToDel + "'";
 
         //system.out.println(queryDelete);
-
         //insert into database
         Statement updateDb = null;
 
@@ -6582,7 +6554,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
         String theStr = "", tmpStr = "";
 
         //system.out.println(queryDelete);
-
         //insert into database
         Statement updateDb = null;
 
@@ -7056,134 +7027,436 @@ public class JobCenterMainController implements Initializable, ScreenController 
     }
 
     @FXML
-    private void printJobInfo(ActionEvent event) {
+    private void printJobInfo(ActionEvent event) throws SQLException {
+
         final Group root = new Group();
-        String curDateStr = "";
-
-        Rectangle r = new Rectangle(0, 0, 1120, 40);
-        r.setFill(Color.LIGHTGREY);
-        r.strokeProperty().set(Color.GRAY);
-
-        Rectangle r2 = new Rectangle(0, 42, 1120, 18);
-        r2.setFill(Color.YELLOW);
-        r2.strokeProperty().set(Color.YELLOW);
-
-        Rectangle r3 = new Rectangle(0, 342, 1120, 18);
-        r3.setFill(Color.YELLOW);
-        r3.strokeProperty().set(Color.YELLOW);
+        Image image1 = new Image(getClass().getResourceAsStream("print_icon.png"));
+        Button printScreen = new Button("Print");
+        printScreen.setLayoutX(325);
+        printScreen.setLayoutY(10);
 
         GridPane gridpane = new GridPane(),
-                gridpane2 = new GridPane(),
-                gridpane3 = new GridPane();
+                gp2 = new GridPane(),
+                gp3 = new GridPane(),
+                gp4 = new GridPane(),
+                gp5 = new GridPane(),
+                gp6 = new GridPane(),
+                gp7 = new GridPane(),
+                gp8 = new GridPane(),
+                gp9 = new GridPane(),
+                gp10 = new GridPane(),
+                gpJob = new GridPane();
 
-        DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-        Calendar cal = Calendar.getInstance();
+        //build the skeleton
+        //left/right, up/down, width, height -- top banner: video pipe services
+        Rectangle r = new Rectangle(0, 0, 1120, 90);
+        r.setFill(Color.WHITE);
+        r.strokeProperty().set(Color.BLACK);
 
-        String dateToday = (dateFormat.format(cal.getTime()));
-        dateToday = "Date: " + dateToday;
+        //left/right, up/down, width, height -- right hand side block
+        Rectangle r2 = new Rectangle(630, 90, 490, 570);
+        r2.setFill(Color.WHITE);
+        r2.strokeProperty().set(Color.BLACK);
 
-        Text printText1 = new Text("Video Pipe Services, LLC"),
-                printText2 = new Text("Beltsville, MD"),
-                printText3 = new Text("Job Information Sheet"),
-                printText4 = new Text(dateToday),
-                printText5 = new Text("Customer"),
-                printText6 = new Text("Company name:\t\t" + setCustName.getText()),
-                printText7 = new Text("Street Address:\t\t" + setCustAddr.getText()),
-                printText8 = new Text("City:\t\t\t\t\t" + setCustCity.getText()),
-                printText9 = new Text("Point of contact:\t\t" + setCustPOC.getText()),
-                printText10 = new Text("Phone:\t\t\t\t" + setCustPhone.getText()),
-                printText11 = new Text("State:\t\t\t\t" + setCustState.getText()),
-                printText12 = new Text("Zip:\t\t\t\t\t" + setCustZip.getText()),
-                printText13 = new Text("Job Number:\t\t\t" + jobTitle.getText()),
-                printText14 = new Text("Job Name:\t\t\t" + jobName.getText()),
-                printText15 = new Text("Cust Job Number:\t\t" + custJobNum.getText()),
-                printText16 = new Text("Job Start Date:\t\t\t" + startDate.getText()),
-                printText17 = new Text("Special Instructions:\t\t\t\t" + sInstr.getText()),
-                printText18 = new Text("Instructions (disposal):\t\t\t" + dInstr.getText()),
-                printText19 = new Text("Instructions (traffic control):\t\t" + tInstr.getText()),
-                printText20 = new Text("Instructions (water source):\t\t" + wInstr.getText());
+        //left/right, up/down, width, height -- top left block: Job Information
+        Rectangle r3 = new Rectangle(0, 90, 630, 125);
+        r3.setFill(Color.WHITE);
+        r3.strokeProperty().set(Color.BLACK);
+
+        //left/right, up/down, width, height -- top mid block: Customer Information
+        Rectangle r4 = new Rectangle(0, 215, 630, 115);
+        r4.setFill(Color.WHITE);
+        r4.strokeProperty().set(Color.BLACK);
+
+        //left/right, up/down, width, height -- lower block: Job Site Information
+        Rectangle r5 = new Rectangle(0, 330, 630, 106);
+        r5.setFill(Color.WHITE);
+        r5.strokeProperty().set(Color.BLACK);
+
+        //left/right, up/down, width, height -- lower box
+        Rectangle r6 = new Rectangle(0, 436, 630, 224);
+        r6.setFill(Color.WHITE);
+        r6.strokeProperty().set(Color.BLACK);
+
+        //left/right, up/down, width, height -- lower special instructions block
+        Rectangle r7 = new Rectangle(10, 525, 610, 125);
+        r7.setFill(Color.WHITE);
+        r7.strokeProperty().set(Color.RED);
+
+        //left/right, up/down, width, height -- equip and vehicles on right pane
+        Rectangle r8 = new Rectangle(640, 270, 469, 135);
+        r8.setFill(Color.WHITE);
+        r8.strokeProperty().set(Color.RED);
+
+        //left/right, up/down, width, height -- disposal instructions
+        Rectangle r9 = new Rectangle(640, 441, 469, 55);
+        r9.setFill(Color.WHITE);
+        r9.strokeProperty().set(Color.RED);
+
+        //left/right, up/down, width, height -- water source  instructions
+        Rectangle r10 = new Rectangle(640, 521, 469, 55);
+        r10.setFill(Color.WHITE);
+        r10.strokeProperty().set(Color.RED);
+
+        //left/right, up/down, width, height -- water source  instructions
+        Rectangle r11 = new Rectangle(640, 602, 469, 55);
+        r11.setFill(Color.WHITE);
+        r11.strokeProperty().set(Color.RED);
+
+        //build the static text
+        Text printText1 = new Text("VIDEO PIPE SERVICES, INC."),
+                printText2 = new Text("11420 Old Baltimore Pike"),
+                printText3 = new Text("Beltsville, MD 20705"),
+                printText35 = new Text("Tel: 301-931-0707 Fax: 301-931-0990"),
+                printText4 = new Text("Job Information"),
+                printText5 = new Text("Customer Information"),
+                printText6 = new Text("Job Site Information"),
+                printText7 = new Text("Other Information"),
+                printText8 = new Text("Special Instructions"),
+                printText9 = new Text("Task"),
+                printText91 = new Text("Diameter(inches)"),
+                printText92 = new Text("Qty(feet)"),
+                printText10 = new Text("Equipment and Vehicles"),
+                printText11 = new Text("Disposal Instructions"),
+                printText12 = new Text("Water Source Instructions"),
+                printText13 = new Text("Traffic Control Instructions"),
+                printText14 = new Text("Job Sheet for: ");
+
+        printText1.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
+        printText2.setStyle("-fx-font-size: 12;");
+        printText3.setStyle("-fx-font-size: 12;");
+        printText35.setStyle("-fx-font-size: 12;");
+        printText4.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+        printText5.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+        printText6.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+        printText7.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+        printText8.setStyle("-fx-font-size: 16;");
+        printText9.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+        printText91.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+        printText92.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+        printText10.setStyle("-fx-font-size: 12;");
+        printText11.setStyle("-fx-font-size: 12;");
+        printText12.setStyle("-fx-font-size: 12;");
+        printText13.setStyle("-fx-font-size: 12;");
+        printText14.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
 
         gridpane.setLayoutY(10);
-
+        gridpane.setLayoutX(74);
         //gridlines for edit customer info
         gridpane.setGridLinesVisible(false);
 
+        //the top text portion
         gridpane.add(printText1, 1, 1);
         gridpane.add(printText2, 1, 2);
         gridpane.add(printText3, 1, 3);
-        gridpane.add(printText4, 1, 4);
+        gridpane.add(printText35, 1, 4);
 
-        gridpane2.setLayoutY(90);
+        ImageView iv2 = new ImageView();
+        iv2.setImage(image1);
+        iv2.setFitWidth(50);
+        iv2.setPreserveRatio(true);
+        iv2.setLayoutX(13);
+        iv2.setLayoutY(14);
 
-        //gridlines for edit customer info
-        gridpane2.setGridLinesVisible(false);
+        //jobsheet info
+        gpJob.setLayoutY(10);
+        gpJob.setLayoutX(850);
+        gpJob.add(printText14, 1, 1);
 
-        gridpane2.add(printText5, 1, 5);
-        gridpane2.add(printText6, 1, 6);
-        gridpane2.add(printText7, 1, 7);
-        gridpane2.add(printText8, 1, 8);
-        gridpane2.add(printText9, 1, 9);
-        gridpane2.add(printText10, 1, 10);
-        gridpane2.add(printText11, 1, 11);
-        gridpane2.add(printText12, 1, 12);
-        gridpane2.add(printText13, 1, 13);
-        gridpane2.add(printText14, 1, 14);
-        gridpane2.add(printText15, 1, 15);
-        gridpane2.add(printText16, 1, 16);
+        //job info
+        gp2.setLayoutY(90);
+        gp2.setLayoutX(10);
+        gp2.setGridLinesVisible(true);
+        //the top text portion
+        gp2.add(printText4, 1, 1);
+        gp2.add(new Text("Video Pipe Job Number:"), 1, 2);
+        gp2.add(new Text("Video Pipe Job Name:"), 1, 3);
+        gp2.add(new Text("Customer Project Name:"), 1, 4);
+        gp2.add(new Text("Customer Project Number:"), 1, 5);
+        gp2.add(new Text("Start Date:"), 1, 6);
+        gp2.add(new Text("Start Time:"), 1, 7);
 
-        gridpane3.setLayoutY(300);
+        //cust info
+        gp3.setLayoutY(217);
+        gp3.setLayoutX(10);
+        gp3.setGridLinesVisible(true);
+        //the top text portion
+        gp3.add(printText5, 1, 1);
+        gp3.add(new Text("Name:"), 1, 2);
+        gp3.add(new Text("Street Address:"), 1, 3);
+        gp3.add(new Text("City, State, Zip:"), 1, 4);
+        gp3.add(new Text("Office Contact:"), 1, 5);
+        gp3.add(new Text("Office Phone:"), 1, 6);
 
-        //gridlines for edit customer info
-        gridpane3.setGridLinesVisible(false);
+        //job site in
+        gp4.setLayoutY(330);
+        gp4.setLayoutX(10);
+        gp4.setGridLinesVisible(true);
+        //the top text portion
+        gp4.add(printText6, 1, 1);
+        gp4.add(new Text("Street Address:"), 1, 2);
+        gp4.add(new Text("City, State, Zip:"), 1, 3);
+        gp4.add(new Text("County:"), 1, 4);
 
-        gridpane3.add(printText17, 1, 17);
-        gridpane3.add(printText18, 1, 18);
-        gridpane3.add(printText19, 1, 19);
-        gridpane3.add(printText20, 1, 20);
+        //job site in
+        gp5.setLayoutY(437);
+        gp5.setLayoutX(10);
+        gp5.setGridLinesVisible(true);
+        //the top text portion
+        gp5.add(printText7, 1, 1);
+        gp5.add(new Text("Billing:"), 1, 2);
+        gp5.add(new Text(""), 1, 3);
+        gp5.add(new Text(""), 1, 4);
+        gp5.add(new Text("Special Instructions:"), 1, 5);
 
+        gp6.setLayoutY(90);
+        gp6.setLayoutX(640);
+        gp6.setGridLinesVisible(true);
+        gp6.add(printText9, 1, 1);
+        gp6.add(new Text("\t\t\t"), 2, 1);
+        gp6.add(printText91, 3, 1);
+        gp6.add(new Text("\t\t"), 4, 1);
+        gp6.add(printText92, 5, 1);
+
+        //eqip/veh : 270
+        gp7.setLayoutY(252);
+        gp7.setLayoutX(640);
+        gp7.setGridLinesVisible(true);
+        //the top text portion
+        gp7.add(printText10, 1, 1);
+
+        //disposal : 441
+        gp8.setLayoutY(421);
+        gp8.setLayoutX(640);
+        gp8.setGridLinesVisible(true);
+        //the top text portion
+        gp8.add(printText11, 1, 1);
+
+        //water : 521
+        gp9.setLayoutY(501);
+        gp9.setLayoutX(640);
+        gp9.setGridLinesVisible(true);
+        //the top text portion
+        gp9.add(printText12, 1, 1);
+
+        //traffic : 602
+        gp10.setLayoutY(581);
+        gp10.setLayoutX(640);
+        gp10.setGridLinesVisible(true);
+        //the top text portion
+        gp10.add(printText13, 1, 1);
+
+        //set the skeleton
+        root.getChildren().add(r);
+        root.getChildren().add(r2);
+        root.getChildren().add(r3);
+        root.getChildren().add(r4);
+        root.getChildren().add(r5);
+        root.getChildren().add(r6);
+        root.getChildren().add(r7);
+        root.getChildren().add(r8);
+        root.getChildren().add(r9);
+        root.getChildren().add(r10);
+        root.getChildren().add(r11);
+
+        //set the static text 
+        root.getChildren().add(iv2);
+        root.getChildren().add(gpJob);
         root.getChildren().add(gridpane);
-        root.getChildren().add(gridpane2);
-        root.getChildren().add(gridpane3);
+        root.getChildren().add(gp2);
+        root.getChildren().add(gp3);
+        root.getChildren().add(gp4);
+        root.getChildren().add(gp5);
+        root.getChildren().add(gp6);
+        root.getChildren().add(gp7);
+        root.getChildren().add(gp8);
+        root.getChildren().add(gp9);
+        root.getChildren().add(gp10);
+        root.getChildren().add(printScreen);
 
         Scene scene2 = new Scene(root);
-
         stageJob = new Stage();
-      //  stageJob.setX(Screen.getScreens().get(1).getVisualBounds().getMinX());
-        // stageJob.setY(Screen.getScreens().get(1).getVisualBounds().getMinY());
-        //stageJob.setResizable(false);    
-        //stageJob.setFullScreen(true);
-        //set the dimesions to the screen size:
-        //stageJob.setWidth(Screen.getScreens().get(1).getVisualBounds().getWidth());
-        // stageJob.setHeight(Screen.getScreens().get(1).getVisualBounds().getHeight());
+        stageJob.setHeight(700);
+        stageJob.setWidth(1224);
+        stageJob.setResizable(false);
 
-        //stageJob.initStyle(StageStyle.UNDECORATED);
         stageJob.setScene(scene2);
-        stageJob.setHeight(600);
-        stageJob.setWidth(700);
-        stageJob.show();
+        stageJob.setResizable(false);
 
-        //Print the root node
-        Printer printer = Printer.getDefaultPrinter();
-        PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+        // which screen to display the popup on ....
+        javafx.geometry.Rectangle2D primaryScreenBounds = Screen.getScreens().get(0).getVisualBounds();
+        stageJob.setX(primaryScreenBounds.getMinX());
+        stageJob.setY(primaryScreenBounds.getMinY());
 
-        double scaleX = pageLayout.getPrintableWidth() / 1524;
-        double scaleY = pageLayout.getPrintableHeight() / 662;
+        printScreen.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                Printer printer = Printer.getDefaultPrinter();
+                PageLayout pageLayout = printer.createPageLayout(Paper.LEGAL, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
 
-        root.getTransforms().add(new Scale(scaleX, scaleY));
+                double scaleX = pageLayout.getPrintableWidth() / 1524;
+                double scaleY = pageLayout.getPrintableHeight() / 682;
 
-        PrinterJob job = PrinterJob.createPrinterJob();
+                root.getTransforms().add(new Scale(scaleX, scaleY));
 
-        if (job != null) {
+                root.getTransforms().add(new Scale(scaleX, scaleY));
+                root.setRotate(90);
+                root.setLayoutY(385);
+                root.setLayoutX(-228);
+                
+         
+                 PrinterJob job = PrinterJob.createPrinterJob();
 
-            boolean success = job.printPage(root);
+                 if (job != null) {
 
-            if (success) {
+                 boolean success = job.printPage(root);
 
-                job.endJob();
-                stageJob.close();
+                 if (success) {
+
+                 job.endJob();
+                 stageJob.close();
+                 }
+                 }
+                 
             }
 
-        }
+        });
+
+        stageJob.show();
+
+        /* final Group root = new Group();
+         String curDateStr = "";
+
+         Rectangle r = new Rectangle(0, 0, 1120, 40); 
+         r.strokeProperty().set(Color.GRAY);
+
+         Rectangle r2 = new Rectangle(0, 42, 1120, 18); 
+         r2.strokeProperty().set(Color.);
+
+         Rectangle r3 = new Rectangle(0, 342, 1120, 18); 
+         r3.strokeProperty().set(Color.BLACK);
+
+         GridPane gridpane = new GridPane(),
+         gridpane2 = new GridPane(),
+         gridpane3 = new GridPane();
+
+         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+         Calendar cal = Calendar.getInstance();
+
+         String dateToday = (dateFormat.format(cal.getTime()));
+         dateToday = "Date: " + dateToday;
+
+         Text printText1 = new Text("Video Pipe Services, LLC"),
+         printText2 = new Text("Beltsville, MD"),
+         printText3 = new Text("Job Information Sheet"),
+         printText4 = new Text(dateToday),
+         printText5 = new Text("Customer"),
+         printText6 = new Text("Company name:\t\t" + setCustName.getText()),
+         printText7 = new Text("Street Address:\t\t" + setCustAddr.getText()),
+         printText8 = new Text("City:\t\t\t\t\t" + setCustCity.getText()),
+         printText9 = new Text("Point of contact:\t\t" + setCustPOC.getText()),
+         printText10 = new Text("Phone:\t\t\t\t" + setCustPhone.getText()),
+         printText11 = new Text("State:\t\t\t\t" + setCustState.getText()),
+         printText12 = new Text("Zip:\t\t\t\t\t" + setCustZip.getText()),
+         printText13 = new Text("Job Number:\t\t\t" + jobTitle.getText()),
+         printText14 = new Text("Job Name:\t\t\t" + jobName.getText()),
+         printText15 = new Text("Cust Job Number:\t\t" + custJobNum.getText()),
+         printText16 = new Text("Job Start Date:\t\t\t" + startDate.getText()),
+         printText17 = new Text("Special Instructions:\t\t\t\t" + sInstr.getText()),
+         printText18 = new Text("Instructions (disposal):\t\t\t" + dInstr.getText()),
+         printText19 = new Text("Instructions (traffic control):\t\t" + tInstr.getText()),
+         printText20 = new Text("Instructions (water source):\t\t" + wInstr.getText());
+ 
+         printText1.setStyle("-fx-font-size: 16;");
+                    
+         gridpane.setLayoutY(10);
+
+         //gridlines for edit customer info
+         gridpane.setGridLinesVisible(false);
+
+         gridpane.add(printText1, 1, 1);
+         gridpane.add(printText2, 1, 2);
+         gridpane.add(printText3, 1, 3);
+         gridpane.add(printText4, 1, 4);
+
+         gridpane2.setLayoutY(90);
+
+         //gridlines for edit customer info
+         gridpane2.setGridLinesVisible(false);
+
+         gridpane2.add(printText5, 1, 5);
+         gridpane2.add(printText6, 1, 6);
+         gridpane2.add(printText7, 1, 7);
+         gridpane2.add(printText8, 1, 8);
+         gridpane2.add(printText9, 1, 9);
+         gridpane2.add(printText10, 1, 10);
+         gridpane2.add(printText11, 1, 11);
+         gridpane2.add(printText12, 1, 12);
+         gridpane2.add(printText13, 1, 13);
+         gridpane2.add(printText14, 1, 14);
+         gridpane2.add(printText15, 1, 15);
+         gridpane2.add(printText16, 1, 16);
+
+         gridpane3.setLayoutY(300);
+
+         //gridlines for edit customer info
+         gridpane3.setGridLinesVisible(false);
+
+         gridpane3.add(printText17, 1, 17);
+         gridpane3.add(printText18, 1, 18);
+         gridpane3.add(printText19, 1, 19);
+         gridpane3.add(printText20, 1, 20);
+
+         //root.getChildren().add(gridpane);
+         //root.getChildren().add(gridpane2);
+         //root.getChildren().add(gridpane3);
+
+         root.getChildren().add(r);
+         root.getChildren().add(r2);
+         root.getChildren().add(r3);
+                
+         Scene scene2 = new Scene(root);
+
+         stageJob = new Stage();
+         //  stageJob.setX(Screen.getScreens().get(1).getVisualBounds().getMinX());
+         // stageJob.setY(Screen.getScreens().get(1).getVisualBounds().getMinY());
+         //stageJob.setResizable(false);    
+         //stageJob.setFullScreen(true);
+         //set the dimesions to the screen size:
+         //stageJob.setWidth(Screen.getScreens().get(1).getVisualBounds().getWidth());
+         // stageJob.setHeight(Screen.getScreens().get(1).getVisualBounds().getHeight());
+
+         //stageJob.initStyle(StageStyle.UNDECORATED);
+         
+        
+         stageJob.setResizable(false); 
+         stageJob.setScene(scene2);
+         stageJob.setHeight(700);
+         stageJob.setWidth(1224);
+         stageJob.show();
+
+         //Print the root node
+         Printer printer = Printer.getDefaultPrinter();
+         PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
+
+         double scaleX = pageLayout.getPrintableWidth() / 1524;
+         double scaleY = pageLayout.getPrintableHeight() / 662;
+
+         root.getTransforms().add(new Scale(scaleX, scaleY));
+         /*
+         PrinterJob job = PrinterJob.createPrinterJob();
+
+         if (job != null) {
+
+         boolean success = job.printPage(root);
+
+         if (success) {
+
+         job.endJob();
+         stageJob.close();
+         }
+
+         }*/
     }
 
 }
