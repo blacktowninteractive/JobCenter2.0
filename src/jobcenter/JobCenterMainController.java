@@ -119,12 +119,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
     //database connection info -- 192.168.1.112 customer ip
     //my ip 192.168.1.108
     //jdbc:mysql://hostname:port/databasename
-   // private static String url = "jdbc:mysql://localhost/jobcenter";
-    //public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
+    // private static String url = "jdbc:mysql://localhost/jobcenter";
+   //public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
     //public static String userdb = "vangfc";//Username of database  
     //public static String passdb = "password";//Password of database
-
-    public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
+    public static String url = "jdbc:mysql://192.168.1.112/jobcenter";
     public static String userdb = "videoPipe";//Username of database  
     public static String passdb = "Vps1566!!";//Password of database
     public static String scrollingTxt = "";
@@ -134,8 +133,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
     Statement st = null;
     ResultSet rs = null;
 
-    Button printScreen; 
-    
+    Button printScreen;
+
     public static Connection conn;
     public ScreenPane myScreenPane;
     public ToolBar editJobToolbar, createJobToolbar;
@@ -1450,7 +1449,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         //make the connection
         try {
             st = conn.createStatement();
-            rs = st.executeQuery("select JobTitle from currentjobs;");
+            rs = st.executeQuery("select JobTitle from currentjobs order by JobTitle;");
             while (rs.next()) {
                 jobList.add(rs.getString(1));
             }
@@ -1749,7 +1748,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                         if (new_val == "Create new job") {
                             createJobToolbar.setVisible(true);
-                            editJobToolbar.setVisible(false);                            
+                            editJobToolbar.setVisible(false);
 
                             taskListBox = FXCollections.observableList(new ArrayList<String>());
 
@@ -1781,7 +1780,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             taskComboBox.setItems(taskListBox);
                             CreateJobBox.setVisible(true);
                             jobStatus.setItems(jStatus);
-                            
+
                             //refresh equip/veh
                             //refreshVeh();
                             refreshEmp();
@@ -2087,7 +2086,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @FXML
     private void clearJobEntries(ActionEvent event) throws SQLException {
-        
+
         vehList.clear();
         vehList11 = FXCollections.observableArrayList(vehList);
         vehicleEquipSelected.setItems(vehList11);
@@ -2128,7 +2127,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         dInstr.setText("");
         tInstr.setText("");
         wInstr.setText("");
- 
+
         taskTypeListStr.clear();
         taskTypeList.setItems(taskTypeListStr);
 
@@ -3777,7 +3776,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
             wInstr.setText(rs.getString(15));
 
             //System.out.println(rs.getString(16));
-
             if (rs.getString(16).equals("Hourly")) {
                 hourChk.setSelected(true);
             } else if (rs.getString(16).equals("Production")) {
@@ -5146,7 +5144,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         BufferedImage bufferedImage = new BufferedImage(550, 400, BufferedImage.TYPE_INT_ARGB);
         BufferedImage image;
         //for Production -- administrator
-        //File file = new File("C:/Users/vangfc/Documents/job_board.jpg");
+       // File file = new File("C:/Users/vangfc/Documents/job_board.jpg");
         File file = new File("C:/Users/administrator/Documents/job_board.jpg");
         image = javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, bufferedImage);
         try {
@@ -5462,21 +5460,21 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
 
                 }
-                /*
-                 counter = 25;
-                 strManip = equipListStr;
-                 while (strManip.lastIndexOf("/") >= 0) {
-                 //system.out.println(strManip);
-                 add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
-                 add2.setStyle("-fx-font-size: 10;");
-                 gridpane.add(add2, columnLoc2, counter);
-                 counter++;
 
-                 strManip = strManip.substring(0, strManip.lastIndexOf("/"));
-                 //system.out.println(strManip);
+                counter = 25;
+                strManip = equipListStr;
+                while (strManip.lastIndexOf("/") >= 0) {
+                    //system.out.println(strManip);
+                    add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
+                    add2.setStyle("-fx-font-size: 10;");
+                    gridpane.add(add2, columnLoc2, counter);
+                    counter++;
 
-                 }
-                 */
+                    strManip = strManip.substring(0, strManip.lastIndexOf("/"));
+                    //system.out.println(strManip);
+
+                }
+
                 columnLoc2++;
             }
             columnLoc++;
@@ -5491,8 +5489,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
         root.getChildren().add(labelComp);
 
         root.getChildren().add(gridpane);
-
-        WritableImage snapshot = root.snapshot(new SnapshotParameters(), null);
+        
+        Scene sceneToSnap = new Scene(root,1120,680);    
+        
+        //WritableImage snapshot = root.snapshot(new SnapshotParameters(), null);
+        
+        WritableImage snapshot = sceneToSnap.snapshot(null);
+        
         root.getChildren().add(new ImageView(snapshot));
         saveImage(snapshot);
 
@@ -5522,12 +5525,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
         HBox hb2 = new HBox();
         Group root123 = new Group();
 
+        //email list of people
         final TextArea text = new TextArea(emailList);
         final TextField usrNameField = new TextField();
         final PasswordField pazz = new PasswordField();
         usrNameField.setPromptText("Gmail Username");
         pazz.setPromptText("Password");
-        text.setEditable(false);
+        text.setEditable(true);
         text.setWrapText(true);
         Button closeWindow = new Button("Send");
 
@@ -5585,7 +5589,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     }
 
                     //sendMail.Send(usrNameField.getText().toString(), pazz.getText().toString(), "bellis@videopipeservices.com", "", "Job Board Daily Mail", "Job board email.");
-                    //File file = new File("C:/Users/vangfc/Documents/job_board.jpg");
+                   // File file = new File("C:/Users/vangfc/Documents/job_board.jpg");
                     File file = new File("C:/Users/administrator/Documents/job_board.jpg");
                     file.delete();
 
@@ -5602,7 +5606,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
     @FXML
     private void deleteJobAction(ActionEvent event) throws SQLException {
         String jobToDelete = (currentJobsDisplay.getTreeItem(currentJobsDisplay.getSelectionModel().getSelectedIndex()).getValue());
-        final String queryDelete12345 = "DELETE FROM currentJobs WHERE JobTitle = '" + jobToDelete + "'";
+        final String queryDelete12345 = "DELETE FROM currentJobs WHERE JobTitle = '" + jobToDelete + "' order by JobTitle";
         ////system.out.println(queryDelete);
 
         //show the complete box dialog
@@ -6699,31 +6703,39 @@ public class JobCenterMainController implements Initializable, ScreenController 
         final Group root = new Group();
         Button printScreen = new Button("Print");
 
+
         Rectangle r = new Rectangle(0, 0, 1120, 40);
         r.setFill(Color.LIGHTGREY);
         r.strokeProperty().set(Color.GRAY);
+
 
         Rectangle r2 = new Rectangle(0, 42, 1120, 18);
         r2.setFill(Color.YELLOW);
         r2.strokeProperty().set(Color.YELLOW);
 
+
         Rectangle r3 = new Rectangle(0, 342, 1120, 18);
         r3.setFill(Color.YELLOW);
         r3.strokeProperty().set(Color.YELLOW);
 
+
         GridPane gridpane = new GridPane();
 
+
         String qry = "select * from currentjobs where status ='IN PROGRESS';";
+
 
         List<String> empListSort = new ArrayList<String>();
         List<String> equipListSort = new ArrayList<String>();
         String jobTxtStr = "", jobTypeStr = "", jobDateTxtStr = "", jobStatusStr = "",
                 empListStr = "", equipListStr = "", jobNameStr = "";
 
+
         //set location and build of grid pane...
         gridpane.setLayoutY(40);
         int startAnew = 9, empNumber = 0, vehNumber = 0, numLocation = 0, columnLoc = 0,
                 columnLoc2 = 1;
+
 
         //set location and build of grid pane...
         gridpane.setLayoutY(40);
@@ -6731,7 +6743,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
             RowConstraints row = new RowConstraints(20);
             row.setValignment(VPos.CENTER);
 
+
             gridpane.getRowConstraints().add(row);
+
 
         }
         for (int i = 0; i < 10; i++) {
@@ -6739,6 +6753,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             column.setHalignment(HPos.CENTER);
             gridpane.getColumnConstraints().add(column);
         }
+
 
         // or convenience methods set more than one constraint at once...
         Text label = new Text("Job Number"),
@@ -6751,14 +6766,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         Calendar cal = Calendar.getInstance();
 
+
         String dateToday = (dateFormat.format(cal.getTime()));
         Text labelDate = labelDate = new Text(dateToday);
+
 
         label.setStyle("-fx-font-size: 10;");
         label1.setStyle("-fx-font-size: 10;");
         label2.setStyle("-fx-font-size: 10;");
         label3.setStyle("-fx-font-size: 10;");
         label4.setStyle("-fx-font-size: 10;");
+
 
         labelTitle.setStyle("-fx-font-size: 16;");
         labelTitle.setY(25);
@@ -6772,6 +6790,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         printScreen.setLayoutX(265);
         printScreen.setLayoutY(7);
 
+
         gridpane.add(label, 0, 0); // column=2 row=1        
         gridpane.add(label1, 0, 1);  // column=3 row=1
         gridpane.add(label2, 0, 2); // column=1 row=1
@@ -6780,7 +6799,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
         numLocation = 5;
         columnLoc = 1;
 
+
         gridpane.setGridLinesVisible(true);
+
 
         for (int i = 1; i <= 5; i++) {
             RowConstraints row = new RowConstraints(20);
@@ -6789,11 +6810,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Text tmpTxt = new Text(nameLabel);
             tmpTxt.setStyle("-fx-font-size: 10;");
 
+
             gridpane.getRowConstraints().add(row);
             gridpane.add(tmpTxt, 0, numLocation);
 
+
             //increment to track which column we are at.
             numLocation++;
+
 
         }
         for (int i = 1; i <= 5; i++) {
@@ -6803,19 +6827,26 @@ public class JobCenterMainController implements Initializable, ScreenController 
             Text tmpTxt = new Text(nameLabel);
             tmpTxt.setStyle("-fx-font-size: 10;");
 
+
             gridpane.getRowConstraints().add(row);
             gridpane.add(tmpTxt, 0, numLocation);
+
 
             //increment to track which column we are at.
             numLocation++;
 
+
         }
+
 
         rs = st.executeQuery(qry);
 
+
         while (rs.next()) {
 
+
             int counter = 0;
+
 
             jobTxtStr = rs.getString(5);
             jobTypeStr = rs.getString(9);
@@ -6825,13 +6856,16 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 jobTypeStr = jobTypeStr.substring(1, jobTypeStr.length());
             }
 
+
             jobDateTxtStr = rs.getString(7);
             jobStatusStr = rs.getString(17);
             jobNameStr = rs.getString(6);
             empListStr = rs.getString(10);
             equipListStr = rs.getString(11);
 
+
             Text add;
+
 
             if (columnLoc <= startAnew) {
                 add = new Text(jobTxtStr);
@@ -6855,18 +6889,24 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 gridpane.add(add, columnLoc, counter);
                 counter++;
 
+
                 String strManip = empListStr;
 
+
                 while (strManip.lastIndexOf("/") >= 0) {
+
 
                     add = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
                     add.setStyle("-fx-font-size: 10;");
                     gridpane.add(add, columnLoc, counter);
                     counter++;
 
+
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
 
+
                 }
+
 
                 counter = 10;
                 strManip = equipListStr;
@@ -6877,23 +6917,31 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     gridpane.add(add, columnLoc, counter);
                     counter++;
 
+
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
                     //system.out.println(strManip);
 
+
                 }
+
 
             } else {
 
+
                 counter = 15;
                 //system.out.println("TIME TO PRINT ANOTHER TABLE");
+
 
                 for (int i = 0; i < 14; i++) {
                     RowConstraints row = new RowConstraints(20);
                     row.setValignment(VPos.CENTER);
 
+
                     gridpane.getRowConstraints().add(row);
 
+
                 }
+
 
                 // or convenience methods set more than one constraint at once...
                 Text label00 = new Text("Job Number"),
@@ -6902,11 +6950,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
                         label33 = new Text("Work Type"),
                         label44 = new Text("Work Date");
 
+
                 label00.setStyle("-fx-font-size: 10;");
                 label11.setStyle("-fx-font-size: 10;");
                 label22.setStyle("-fx-font-size: 10;");
                 label33.setStyle("-fx-font-size: 10;");
                 label44.setStyle("-fx-font-size: 10;");
+
 
                 gridpane.add(label00, 0, 15); // column=2 row=1        
                 gridpane.add(label11, 0, 16);  // column=3 row=1
@@ -6915,6 +6965,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 gridpane.add(label44, 0, 19); // column=2 row=1
                 numLocation = 20;
 
+
                 for (int i = 1; i <= 5; i++) {
                     RowConstraints row = new RowConstraints(20);
                     row.setValignment(VPos.CENTER);
@@ -6922,13 +6973,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     Text tmpTxt = new Text(nameLabel);
                     tmpTxt.setStyle("-fx-font-size: 10;");
 
+
                     gridpane.getRowConstraints().add(row);
                     gridpane.add(tmpTxt, 0, numLocation);
+
 
                     //increment to track which column we are at.
                     numLocation++;
 
+
                 }
+
 
                 for (int i = 1; i <= 5; i++) {
                     RowConstraints row = new RowConstraints(20);
@@ -6937,13 +6992,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     Text tmpTxt = new Text(nameLabel);
                     tmpTxt.setStyle("-fx-font-size: 10;");
 
+
                     gridpane.getRowConstraints().add(row);
                     gridpane.add(tmpTxt, 0, numLocation);
+
 
                     //increment to track which column we are at.
                     numLocation++;
 
+
                 }
+
 
                 jobTxtStr = rs.getString(5);
                 jobTypeStr = rs.getString(9);
@@ -6953,13 +7012,16 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     jobTypeStr = jobTypeStr.substring(1, jobTypeStr.length());
                 }
 
+
                 jobDateTxtStr = rs.getString(7);
                 jobStatusStr = rs.getString(17);
                 jobNameStr = rs.getString(6);
                 empListStr = rs.getString(10);
                 equipListStr = rs.getString(11);
 
+
                 Text add2;
+
 
                 add2 = new Text(jobTxtStr);
                 add2.setStyle("-fx-font-size: 10;");
@@ -6982,18 +7044,24 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 gridpane.add(add2, columnLoc2, counter);
                 counter++;
 
+
                 String strManip = empListStr;
 
+
                 while (strManip.lastIndexOf("/") >= 0) {
+
 
                     add2 = new Text(strManip.substring(strManip.lastIndexOf("/") + 1, strManip.length()));
                     add2.setStyle("-fx-font-size: 10;");
                     gridpane.add(add2, columnLoc2, counter);
                     counter++;
 
+
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
 
+
                 }
+
 
                 counter = 25;
                 strManip = equipListStr;
@@ -7004,14 +7072,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     gridpane.add(add2, columnLoc2, counter);
                     counter++;
 
+
                     strManip = strManip.substring(0, strManip.lastIndexOf("/"));
                     //system.out.println(strManip);
+
 
                 }
                 columnLoc2++;
             }
             columnLoc++;
         }
+
 
         root.getChildren().add(r);
         root.getChildren().add(r2);
@@ -7023,7 +7094,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         root.getChildren().add(gridpane);
 
-        WritableImage snapshot = root.snapshot(new SnapshotParameters(), null);
+        
+        Scene sceneToSnap2 = new Scene(root,1120,680);    
+        
+        //WritableImage snapshot = root.snapshot(new SnapshotParameters(), null);
+        
+        WritableImage snapshot = sceneToSnap2.snapshot(null);
+        
+        //WritableImage snapshot = root.snapshot(new SnapshotParameters(),null);
         root.getChildren().add(new ImageView(snapshot));
 
         BufferedImage bufferedImage = new BufferedImage(550, 400, BufferedImage.TYPE_INT_ARGB);
@@ -7039,6 +7117,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         File file = new File(fileNameSaver);
 
+
         image = javafx.embed.swing.SwingFXUtils.fromFXImage(snapshot, bufferedImage);
         try {
             Graphics2D gd = (Graphics2D) image.getGraphics();
@@ -7046,10 +7125,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
             ImageIO.write(image, "png", file);
             displayMsg("Job board archived.");
 
+
         } catch (IOException ex) {
             displayMsg("Job board archive error.");
             System.err.print(ex);
         };
+
 
     }
 
@@ -7091,7 +7172,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 s21 = new Text(state.getText().toString()),
                 s22 = new Text(zip.getText().toString());
         Text s23;
-                
+
         //text area boxes
         equipTxt.wrapTextProperty().set(true);
         equipTxt.setEditable(false);
@@ -7101,7 +7182,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         equipTxt.setPrefHeight(135);
         equipTxt.setPrefWidth(469);
         equipTxt.setStyle("-fx-border-color: black; ");
-         
+
         //text area boxes
         sInstructs.wrapTextProperty().set(true);
         sInstructs.setEditable(false);
@@ -7111,7 +7192,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         sInstructs.setPrefHeight(120);
         sInstructs.setPrefWidth(608);
         sInstructs.setStyle("-fx-border-color: black; ");
-        
+
         dispTxt.wrapTextProperty().set(true);
         dispTxt.setEditable(false);
         dispTxt.setText(dInstr.getText().toString());
@@ -7120,7 +7201,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         dispTxt.setPrefHeight(55);
         dispTxt.setPrefWidth(469);
         dispTxt.setStyle("-fx-border-color: black; ");
-        
+
         waterTxt.wrapTextProperty().set(true);
         waterTxt.setEditable(false);
         waterTxt.setText(wInstr.getText().toString());
@@ -7129,7 +7210,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         waterTxt.setPrefHeight(55);
         waterTxt.setPrefWidth(469);
         waterTxt.setStyle("-fx-border-color: black; ");
-        
+
         trafficTxt.wrapTextProperty().set(true);
         trafficTxt.setEditable(false);
         trafficTxt.setText(tInstr.getText().toString());
@@ -7363,25 +7444,22 @@ public class JobCenterMainController implements Initializable, ScreenController 
         gp6.add(printText91, 3, 1);
         gp6.add(new Text("\t\t"), 4, 1);
         gp6.add(printText92, 5, 1);
-        
+
         int taskCounter = 2,
                 itemCounter = 0;
-        String theItem122= "";
-          
+        String theItem122 = "";
+
         //add the job tasks
-        for(int i=0; i<taskTypeListStr.size();i++)
-        {
+        for (int i = 0; i < taskTypeListStr.size(); i++) {
             //System.out.println(taskTypeListStr.get(i));
             theItem122 = taskTypeListStr.get(i);
-            
-            gp6.add(new Text(theItem122.substring(0, theItem122.indexOf(",")-1)), 1, taskCounter);
-            gp6.add(new Text(theItem122.substring(theItem122.indexOf(",")+1, theItem122.lastIndexOf(","))), 3, taskCounter);
-            gp6.add(new Text(theItem122.substring(theItem122.lastIndexOf(",")+1, theItem122.length())), 5, taskCounter);
-            
+
+            gp6.add(new Text(theItem122.substring(0, theItem122.indexOf(",") - 1)), 1, taskCounter);
+            gp6.add(new Text(theItem122.substring(theItem122.indexOf(",") + 1, theItem122.lastIndexOf(","))), 3, taskCounter);
+            gp6.add(new Text(theItem122.substring(theItem122.lastIndexOf(",") + 1, theItem122.length())), 5, taskCounter);
+
             taskCounter++;
         }
-        
-        
 
         //eqip/veh : 270
         gp7.setLayoutY(252);
@@ -7428,7 +7506,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         root.getChildren().add(trafficTxt);
         root.getChildren().add(waterTxt);
         root.getChildren().add(equipTxt);
-         
+
         //set the static text 
         root.getChildren().add(iv2);
         root.getChildren().add(gpJob);
@@ -7463,7 +7541,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
             @Override
             public void handle(ActionEvent t) {
                 printScreen.setVisible(false);
-                
+
                 Printer printer = Printer.getDefaultPrinter();
                 PrinterJob job = PrinterJob.createPrinterJob();
                 PageLayout pageLayout = printer.createPageLayout(Paper.LEGAL, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
@@ -7485,7 +7563,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         });
 
         stageJob.show();
- 
+
     }
 
 }

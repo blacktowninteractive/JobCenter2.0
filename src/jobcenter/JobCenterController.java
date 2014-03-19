@@ -44,9 +44,9 @@ public class JobCenterController implements Initializable, ScreenController {
     private static Connection conn;
     //private static String url = "jdbc:mysql://localhost/jobcenter";
     //allows access to external database connection
-    //public static String url = "jdbc:mysql://192.168.1.104/jobcenter"; 
-    //public static String userdb = "vangfc";//Username of database  
-    //public static String passdb = "password";//Password of database
+   // public static String url = "jdbc:mysql://192.168.1.104/jobcenter"; 
+  //  public static String userdb = "vangfc";//Username of database  
+   // public static String passdb = "password";//Password of database
     
     private static String url = "jdbc:mysql://192.168.1.112/jobcenter";
     private static String userdb = "videoPipe";//Username of database  
