@@ -6,6 +6,7 @@ package jobcenter;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.awt.print.PageFormat;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -118,14 +119,14 @@ public class JobCenterMainController implements Initializable, ScreenController 
     //database connection info -- 192.168.1.112 customer ip
     //my ip 192.168.1.108
     //jdbc:mysql://hostname:port/databasename
-    private static String url = "jdbc:mysql://localhost/jobcenter";
+   // private static String url = "jdbc:mysql://localhost/jobcenter";
     //public static String url = "jdbc:mysql://192.168.1.104/jobcenter";
-    public static String userdb = "vangfc";//Username of database  
-    public static String passdb = "password";//Password of database
+    //public static String userdb = "vangfc";//Username of database  
+    //public static String passdb = "password";//Password of database
 
-    //public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
-    //public static String userdb = "videoPipe";//Username of database  
-    //public static String passdb = "Vps1566!!";//Password of database
+    public static String url = "jdbc:mysql://192.168.1.112/jobcenter"; 
+    public static String userdb = "videoPipe";//Username of database  
+    public static String passdb = "Vps1566!!";//Password of database
     public static String scrollingTxt = "";
     String emailList;
     String[] emailTo;
@@ -133,6 +134,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
     Statement st = null;
     ResultSet rs = null;
 
+    Button printScreen; 
+    
     public static Connection conn;
     public ScreenPane myScreenPane;
     public ToolBar editJobToolbar, createJobToolbar;
@@ -1084,8 +1087,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
         vehicleEquipSelected.setItems(vehList11);
 
         empListSel.clear();
-        empSelect = FXCollections.observableArrayList(empListSel);
-        employeeSelected.setItems(empSelect);
+        empSelected = FXCollections.observableArrayList(empListSel);
+        employeeSelected.setItems(empSelected);
 
         jobTitle.setText("");
         jobName.setText("");
@@ -1605,7 +1608,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 ////system.out.println(rs.getString(1));
                 empList.add(rs.getString(1) + " " + rs.getString(2));
             }
-            rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
+            // rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
+            rs = st.executeQuery("select VehicleName from vehicles order by VehicleName;");
+
             while (rs.next()) {
                 ////system.out.println(rs.getString(1));
                 vehList.add(rs.getString(1));
@@ -1744,7 +1749,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
                         if (new_val == "Create new job") {
                             createJobToolbar.setVisible(true);
-                            editJobToolbar.setVisible(false);
+                            editJobToolbar.setVisible(false);                            
 
                             taskListBox = FXCollections.observableList(new ArrayList<String>());
 
@@ -1776,10 +1781,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             taskComboBox.setItems(taskListBox);
                             CreateJobBox.setVisible(true);
                             jobStatus.setItems(jStatus);
-
+                            
                             //refresh equip/veh
-                            refreshVeh();
-
+                            //refreshVeh();
                             refreshEmp();
                         }
                         if (new_val == "Display jobs") {
@@ -1793,14 +1797,12 @@ public class JobCenterMainController implements Initializable, ScreenController 
                             vehAddJobView.setItems(vehEquip2);
 
                             //refresh the available/assigned things 
-                            checkAssignedEquip();
-
+                            //checkAssignedEquip();
                             //adds the treeview here!
                             refreshList();
 
                             //refresh the veh/equip view
-                            refreshVeh();
-
+                            //refreshVeh();
                             refreshEmp();
 
                         }
@@ -2085,13 +2087,15 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
     @FXML
     private void clearJobEntries(ActionEvent event) throws SQLException {
+        
         vehList.clear();
         vehList11 = FXCollections.observableArrayList(vehList);
         vehicleEquipSelected.setItems(vehList11);
 
-        empListSel.clear();
-        empSelect = FXCollections.observableArrayList(empListSel);
-        employeeSelected.setItems(empSelect);
+        empSelected.clear();
+        empListSelected.clear();
+        empSelected = FXCollections.observableArrayList(empListSelected);
+        employeeSelected.setItems(empSelected);
 
         jobTitle.setText("");
         jobName.setText("");
@@ -2124,7 +2128,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         dInstr.setText("");
         tInstr.setText("");
         wInstr.setText("");
-
+ 
         taskTypeListStr.clear();
         taskTypeList.setItems(taskTypeListStr);
 
@@ -2213,11 +2217,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
                     updateDb = conn.createStatement();
 
                     //mark the vehicle/equip as unavailable
-                    updateVehStatus("ASSIGNED", vehStrConv);
-
+                    //updateVehStatus("ASSIGNED", vehStrConv);
                     //refresh the veh/equip views
-                    refreshVeh();
-
+                    //refreshVeh();
                     //execute the query
                     int executeUpdate = updateDb.executeUpdate(addEmpStrQry);
 
@@ -2411,7 +2413,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         }
 
         final Group root = new Group();
-        Button printScreen = new Button("Print");
+        printScreen = new Button("Print");
 
         Rectangle r = new Rectangle(0, 0, 1120, 40);
         r.setFill(Color.LIGHTGREY);
@@ -2479,11 +2481,11 @@ public class JobCenterMainController implements Initializable, ScreenController 
         labelTitle.setX(10);
         labelDate.setStyle("-fx-font-size: 15;");
         labelDate.setY(25);
-        labelDate.setX(175);
+        labelDate.setX(195);
         labelComp.setStyle("-fx-font-size: 16;");
         labelComp.setY(25);
         labelComp.setX(965);
-        printScreen.setLayoutX(265);
+        printScreen.setLayoutX(277);
         printScreen.setLayoutY(7);
 
         gridpane.add(label, 0, 0); // column=2 row=1        
@@ -2751,213 +2753,230 @@ public class JobCenterMainController implements Initializable, ScreenController 
         printScreen.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
+                printScreen.setVisible(false);
                 Printer printer = Printer.getDefaultPrinter();
+                PrinterJob job = PrinterJob.createPrinterJob();
                 PageLayout pageLayout = printer.createPageLayout(Paper.LEGAL, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
 
-                //double scaleX = pageLayout.getPrintableWidth() / 1524;
-                //double scaleY = pageLayout.getPrintableHeight() / 682;
-                //root.getTransforms().add(new Scale(scaleX, scaleY));
-                //this is the landscape printing that needs to be fixed..... printer function adjustment
-                //figure out how many rows 1 or 2
-                // if more than 9 then 2 rows
-                // if 9 or less then just 1 row
-                if (howManyRowsPrinter() == 1) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                double scaleX = pageLayout.getPrintableWidth() / 1490;
+                double scaleY = pageLayout.getPrintableHeight() / 680;
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-228);
-                }
-                if (howManyRowsPrinter() == 2) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                root.getTransforms().add(new Scale(scaleX, scaleY));
+                job.printerProperty().set(printer);
+                boolean success = job.printPage(pageLayout, root);
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-228);
-                }
-                if (howManyRowsPrinter() == 3) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
-
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-228);
+                if (success) {
+                    job.endJob();
+                    stageJob.close();
                 }
 
-                if (howManyRowsPrinter() == 4) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                /*Printer printer = Printer.getDefaultPrinter();
+                 PageLayout pageLayout = printer.createPageLayout(Paper.LEGAL, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-228);
-                }
+                 //double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 //double scaleY = pageLayout.getPrintableHeight() / 682;
+                 //root.getTransforms().add(new Scale(scaleX, scaleY));
+                 //this is the landscape printing that needs to be fixed..... printer function adjustment
+                 //figure out how many rows 1 or 2
+                 // if more than 9 then 2 rows
+                 // if 9 or less then just 1 row
+                 if (howManyRowsPrinter() == 1) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                if (howManyRowsPrinter() == 5) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-228);
+                 }
+                 if (howManyRowsPrinter() == 2) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-228);
-                }
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-228);
+                 }
+                 if (howManyRowsPrinter() == 3) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                if (howManyRowsPrinter() == 6) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-228);
+                 }
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-252);
-                }
+                 if (howManyRowsPrinter() == 4) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                if (howManyRowsPrinter() == 7) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-228);
+                 }
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-252);
-                }
+                 if (howManyRowsPrinter() == 5) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                if (howManyRowsPrinter() == 8) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-228);
+                 }
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-252);
-                }
+                 if (howManyRowsPrinter() == 6) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                if (howManyRowsPrinter() == 9) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-252);
+                 }
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(385);
-                    root.setLayoutX(-252);
-                }
-                if (howManyRowsPrinter() == 10) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 if (howManyRowsPrinter() == 7) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(145);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-483);
-                }
-                if (howManyRowsPrinter() == 11) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-252);
+                 }
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(-96);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-724);
-                }
-                if (howManyRowsPrinter() == 12) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 if (howManyRowsPrinter() == 8) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-252);
+                 }
 
-                    root.setLayoutY(-335);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-963);
+                 if (howManyRowsPrinter() == 9) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    //root.setLayoutY(200);
-                    //root.setLayoutX(-124);
-                    //root.setLayoutY(-100);
-                    //root.setLayoutX(-724);
-                }
-                if (howManyRowsPrinter() == 13) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(385);
+                 root.setLayoutX(-252);
+                 }
+                 if (howManyRowsPrinter() == 10) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(-577);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-1207);
-                }
-                if (howManyRowsPrinter() == 14) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(145);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-483);
+                 }
+                 if (howManyRowsPrinter() == 11) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(-815);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-1443);
-                }
-                if (howManyRowsPrinter() == 15) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(-96);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-724);
+                 }
+                 if (howManyRowsPrinter() == 12) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(-1058);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-1682);
-                }
-                if (howManyRowsPrinter() == 16) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(-1297);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-1923);
-                }
-                if (howManyRowsPrinter() == 17) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 root.setLayoutY(-335);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-963);
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(-1538);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-2164);
-                }
-                if (howManyRowsPrinter() == 18) {
-                    double scaleX = pageLayout.getPrintableWidth() / 1524;
-                    double scaleY = pageLayout.getPrintableHeight() / 682;
+                 //root.setLayoutY(200);
+                 //root.setLayoutX(-124);
+                 //root.setLayoutY(-100);
+                 //root.setLayoutX(-724);
+                 }
+                 if (howManyRowsPrinter() == 13) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    root.getTransforms().add(new Scale(scaleX, scaleY));
-                    root.setRotate(90);
-                    root.setLayoutY(-1776);
-                    //root.setLayoutX(-924);
-                    root.setLayoutX(-2403);
-                }
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(-577);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-1207);
+                 }
+                 if (howManyRowsPrinter() == 14) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                PrinterJob job = PrinterJob.createPrinterJob();
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(-815);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-1443);
+                 }
+                 if (howManyRowsPrinter() == 15) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                if (job != null) {
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(-1058);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-1682);
+                 }
+                 if (howManyRowsPrinter() == 16) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    boolean success = job.printPage(root);
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(-1297);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-1923);
+                 }
+                 if (howManyRowsPrinter() == 17) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                    if (success) {
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(-1538);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-2164);
+                 }
+                 if (howManyRowsPrinter() == 18) {
+                 double scaleX = pageLayout.getPrintableWidth() / 1524;
+                 double scaleY = pageLayout.getPrintableHeight() / 682;
 
-                        job.endJob();
-                        stageJob.close();
-                    }
-                }
+                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                 root.setRotate(90);
+                 root.setLayoutY(-1776);
+                 //root.setLayoutX(-924);
+                 root.setLayoutX(-2403);
+                 }
 
+                 PrinterJob job = PrinterJob.createPrinterJob();
+
+                 if (job != null) {
+
+                 boolean success = job.printPage(root);
+
+                 if (success) {
+
+                 job.endJob();
+                 stageJob.close();
+                 }
+                 }
+                 */
             }
 
         });
@@ -3347,8 +3366,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
             return;
         }
 
-        empSelect = FXCollections.observableArrayList(empListSelected);
-        employeeSelected.setItems(empSelect);
+        empSelected = FXCollections.observableArrayList(empListSelected);
+        employeeSelected.setItems(empSelected);
     }
 
     @FXML
@@ -3409,10 +3428,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
         vehicleEquipSelected.setItems(vehList11);
 
         //mark the vehicle/equip as available
-        updateVehStatus("ASSIGNED", val);
-
-        refreshVeh();
-
+        //updateVehStatus("ASSIGNED", val);
+        //refreshVeh();
         vehicleEquipSelect.getSelectionModel().selectNext();
 
     }
@@ -3431,11 +3448,9 @@ public class JobCenterMainController implements Initializable, ScreenController 
             vehicleEquipSelected.setItems(vehList11);
 
             //mark the vehicle/equip as available
-            updateVehStatus("AVAILABLE", del);
-
+            //updateVehStatus("AVAILABLE", del);
             //refresh the lists of vehicle/equip
-            refreshVeh();
-
+            //refreshVeh();
             vehicleEquipSelected.getSelectionModel().selectNext();
             vehicleEquipSelect.getSelectionModel().selectNext();
 
@@ -3706,7 +3721,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
             }
         }
 
-        refreshVeh();
+        //refreshVeh();
+        clearJobEntriesNow();
+        empSelected.clear();
+        empListSelected.clear();
 
     }
 
@@ -3719,8 +3737,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         empListSelected = new ArrayList<String>();
 
         //refresh veh/equip
-        refreshVeh();
-
+        //refreshVeh();
         //clear the entries on job form first
         clearJobEntriesNow();
 
@@ -3749,12 +3766,6 @@ public class JobCenterMainController implements Initializable, ScreenController 
             tI = rs.getString(14);
             wI = rs.getString(15);
 
-            if (rs.getString(15) == "Production Payment") {
-                prodChk.setSelected(true);
-            } else {
-                hourChk.setSelected(true);
-            }
-
             streetAddr.setText(rs.getString(18));
             city.setText(rs.getString(19));
             state.setText(rs.getString(20));
@@ -3764,6 +3775,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
             dInstr.setText(rs.getString(13));
             tInstr.setText(rs.getString(14));
             wInstr.setText(rs.getString(15));
+
+            //System.out.println(rs.getString(16));
+
+            if (rs.getString(16).equals("Hourly")) {
+                hourChk.setSelected(true);
+            } else if (rs.getString(16).equals("Production")) {
+                prodChk.setSelected(true);
+            } else {
+                hourChk.setSelected(false);
+                prodChk.setSelected(false);
+            }
 
             empLister = rs.getString(10);
             vehLister = rs.getString(11);
@@ -3964,7 +3986,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         setCustName.setText(custName);
         setCustCity.setText(cityStr);
         setCustState.setText(stateStr);
-        setCustPOC.setText(pocPhone);
+        setCustPOC.setText(pocName);
         setCustCompPhone.setText(phone);
         setCustFax.setText(fax);
         setCustAddr.setText(streetAddrStr);
@@ -3979,7 +4001,8 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 ////system.out.println(rs.getString(1));
                 empList.add(rs.getString(1) + " " + rs.getString(2));
             }
-            rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
+            //rs = st.executeQuery("select VehicleName from vehicles where VehicleStatus = 'AVAILABLE' order by VehicleName;");
+            rs = st.executeQuery("select VehicleName from vehicles order by VehicleName;");
             while (rs.next()) {
                 ////system.out.println(rs.getString(1));
                 vehList.add(rs.getString(1));
@@ -4091,10 +4114,10 @@ public class JobCenterMainController implements Initializable, ScreenController 
         ////system.out.println("state: " + state.getText());
         ////system.out.println("zip: " + zip.getText());
         if (prodChk.isSelected()) {
-            billing = "Production Payment";
+            billing = "Production";
         }
         if (hourChk.isSelected()) {
-            billing = "Hourly Payment";
+            billing = "Hourly";
         }
 
         sI = sInstr.getText();
@@ -4185,9 +4208,13 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stage2.show();
 
         //refresh the veh/equip view
-        refreshVeh();
-
+        //refreshVeh();
         refreshEmp();
+
+        //clear the list for next job entry
+        clearJobEntriesNow();
+        empSelected.clear();
+        empListSelected.clear();
 
         closeWindow.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -7031,9 +7058,94 @@ public class JobCenterMainController implements Initializable, ScreenController 
 
         final Group root = new Group();
         Image image1 = new Image(getClass().getResourceAsStream("print_icon.png"));
-        Button printScreen = new Button("Print");
+        printScreen = new Button("Print");
         printScreen.setLayoutX(325);
         printScreen.setLayoutY(10);
+
+        TextArea sInstructs = new TextArea(),
+                equipTxt = new TextArea(),
+                dispTxt = new TextArea(),
+                waterTxt = new TextArea(),
+                trafficTxt = new TextArea();
+
+        Text s1 = new Text(setCustName.getText().toString()),
+                s2 = new Text(setCustAddr.getText().toString()),
+                s3 = new Text(setCustCity.getText().toString()),
+                s4 = new Text(setCustPOC.getText().toString()),
+                s5 = new Text(setCustPhone.getText().toString()),
+                s6 = new Text(setCustState.getText().toString()),
+                s7 = new Text(setCustZip.getText().toString()),
+                s8 = new Text(jobTitle.getText().toString()),
+                s9 = new Text(jobName.getText().toString()),
+                s10 = new Text(custJobNum.getText().toString()),
+                s11 = new Text(startDate.getText().toString()),
+                s12 = new Text(sInstr.getText().toString()),
+                s13 = new Text(dInstr.getText().toString()),
+                s14 = new Text(tInstr.getText().toString()),
+                s15 = new Text(wInstr.getText().toString()),
+                s16 = new Text(startTime.getText().toString()),
+                s17 = new Text(custJobName.getText().toString()),
+                s18 = new Text(jobTitle.getText().toString()),
+                s19 = new Text(streetAddr.getText().toString()),
+                s20 = new Text(city.getText().toString()),
+                s21 = new Text(state.getText().toString()),
+                s22 = new Text(zip.getText().toString());
+        Text s23;
+                
+        //text area boxes
+        equipTxt.wrapTextProperty().set(true);
+        equipTxt.setEditable(false);
+        equipTxt.setText(sInstr.getText().toString());
+        equipTxt.setLayoutX(640);
+        equipTxt.setLayoutY(270);
+        equipTxt.setPrefHeight(135);
+        equipTxt.setPrefWidth(469);
+        equipTxt.setStyle("-fx-border-color: black; ");
+         
+        //text area boxes
+        sInstructs.wrapTextProperty().set(true);
+        sInstructs.setEditable(false);
+        sInstructs.setText(sInstr.getText().toString());
+        sInstructs.setLayoutX(10);
+        sInstructs.setLayoutY(530);
+        sInstructs.setPrefHeight(120);
+        sInstructs.setPrefWidth(608);
+        sInstructs.setStyle("-fx-border-color: black; ");
+        
+        dispTxt.wrapTextProperty().set(true);
+        dispTxt.setEditable(false);
+        dispTxt.setText(dInstr.getText().toString());
+        dispTxt.setLayoutX(640);
+        dispTxt.setLayoutY(441);
+        dispTxt.setPrefHeight(55);
+        dispTxt.setPrefWidth(469);
+        dispTxt.setStyle("-fx-border-color: black; ");
+        
+        waterTxt.wrapTextProperty().set(true);
+        waterTxt.setEditable(false);
+        waterTxt.setText(wInstr.getText().toString());
+        waterTxt.setLayoutX(640);
+        waterTxt.setLayoutY(521);
+        waterTxt.setPrefHeight(55);
+        waterTxt.setPrefWidth(469);
+        waterTxt.setStyle("-fx-border-color: black; ");
+        
+        trafficTxt.wrapTextProperty().set(true);
+        trafficTxt.setEditable(false);
+        trafficTxt.setText(tInstr.getText().toString());
+        trafficTxt.setLayoutX(640);
+        trafficTxt.setLayoutY(602);
+        trafficTxt.setPrefHeight(48);
+        trafficTxt.setPrefWidth(469);
+        trafficTxt.setStyle("-fx-border-color: black; ");
+
+        if (hourChk.isSelected()) {
+            s23 = new Text("Hourly");
+        } else if (prodChk.isSelected()) {
+            s23 = new Text("Production");
+        } else {
+            s23 = new Text("N/A");
+        }
 
         GridPane gridpane = new GridPane(),
                 gp2 = new GridPane(),
@@ -7120,7 +7232,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
                 printText11 = new Text("Disposal Instructions"),
                 printText12 = new Text("Water Source Instructions"),
                 printText13 = new Text("Traffic Control Instructions"),
-                printText14 = new Text("Job Sheet for: ");
+                printText14 = new Text("Job Sheet for ");
 
         printText1.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
         printText2.setStyle("-fx-font-size: 12;");
@@ -7139,6 +7251,7 @@ public class JobCenterMainController implements Initializable, ScreenController 
         printText12.setStyle("-fx-font-size: 12;");
         printText13.setStyle("-fx-font-size: 12;");
         printText14.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
+        s18.setStyle("-fx-font-size: 16; -fx-font-weight: bold;");
 
         gridpane.setLayoutY(10);
         gridpane.setLayoutX(74);
@@ -7162,24 +7275,41 @@ public class JobCenterMainController implements Initializable, ScreenController 
         gpJob.setLayoutY(10);
         gpJob.setLayoutX(850);
         gpJob.add(printText14, 1, 1);
+        gpJob.add(s18, 2, 1);
 
         //job info
         gp2.setLayoutY(90);
         gp2.setLayoutX(10);
-        gp2.setGridLinesVisible(true);
+        gp2.setGridLinesVisible(false);
         //the top text portion
         gp2.add(printText4, 1, 1);
         gp2.add(new Text("Video Pipe Job Number:"), 1, 2);
         gp2.add(new Text("Video Pipe Job Name:"), 1, 3);
-        gp2.add(new Text("Customer Project Name:"), 1, 4);
-        gp2.add(new Text("Customer Project Number:"), 1, 5);
+        gp2.add(new Text("Customer Project Number:"), 1, 4);
+        gp2.add(new Text("Customer Project Name:"), 1, 5);
         gp2.add(new Text("Start Date:"), 1, 6);
         gp2.add(new Text("Start Time:"), 1, 7);
+
+        gp2.add(new Text("\t"), 2, 1);
+        gp2.add(new Text("\t"), 2, 2);
+        gp2.add(new Text("\t"), 2, 3);
+        gp2.add(new Text("\t"), 2, 4);
+        gp2.add(new Text("\t"), 2, 5);
+        gp2.add(new Text("\t"), 2, 6);
+        gp2.add(new Text("\t"), 2, 7);
+
+        gp2.add(new Text("\t"), 3, 1);
+        gp2.add(s8, 3, 2);
+        gp2.add(s9, 3, 3);
+        gp2.add(s10, 3, 4);
+        gp2.add(s17, 3, 5);
+        gp2.add(s11, 3, 6);
+        gp2.add(s16, 3, 7);
 
         //cust info
         gp3.setLayoutY(217);
         gp3.setLayoutX(10);
-        gp3.setGridLinesVisible(true);
+        gp3.setGridLinesVisible(false);
         //the top text portion
         gp3.add(printText5, 1, 1);
         gp3.add(new Text("Name:"), 1, 2);
@@ -7188,20 +7318,34 @@ public class JobCenterMainController implements Initializable, ScreenController 
         gp3.add(new Text("Office Contact:"), 1, 5);
         gp3.add(new Text("Office Phone:"), 1, 6);
 
+        gp3.add(new Text("\t"), 2, 1);
+        gp3.add(s1, 2, 2);
+        gp3.add(s2, 2, 3);
+        Text comboAddr = new Text(s3.getText() + ", " + s6.getText() + ", " + s7.getText());
+        gp3.add(comboAddr, 2, 4);
+        gp3.add(s4, 2, 5);
+        gp3.add(s5, 2, 6);
+
         //job site in
         gp4.setLayoutY(330);
         gp4.setLayoutX(10);
-        gp4.setGridLinesVisible(true);
+        gp4.setGridLinesVisible(false);
+
         //the top text portion
         gp4.add(printText6, 1, 1);
         gp4.add(new Text("Street Address:"), 1, 2);
         gp4.add(new Text("City, State, Zip:"), 1, 3);
-        gp4.add(new Text("County:"), 1, 4);
+
+        gp4.add(new Text("\t"), 2, 1);
+        gp4.add(s19, 2, 2);
+        Text comboAddr2 = new Text(s20.getText() + ", " + s21.getText() + ", " + s22.getText());
+        gp4.add(comboAddr2, 2, 3);
 
         //job site in
         gp5.setLayoutY(437);
         gp5.setLayoutX(10);
-        gp5.setGridLinesVisible(true);
+        gp5.setGridLinesVisible(false);
+
         //the top text portion
         gp5.add(printText7, 1, 1);
         gp5.add(new Text("Billing:"), 1, 2);
@@ -7209,40 +7353,61 @@ public class JobCenterMainController implements Initializable, ScreenController 
         gp5.add(new Text(""), 1, 4);
         gp5.add(new Text("Special Instructions:"), 1, 5);
 
+        gp5.add(s23, 2, 2);
+
         gp6.setLayoutY(90);
         gp6.setLayoutX(640);
-        gp6.setGridLinesVisible(true);
+        gp6.setGridLinesVisible(false);
         gp6.add(printText9, 1, 1);
         gp6.add(new Text("\t\t\t"), 2, 1);
         gp6.add(printText91, 3, 1);
         gp6.add(new Text("\t\t"), 4, 1);
         gp6.add(printText92, 5, 1);
+        
+        int taskCounter = 2,
+                itemCounter = 0;
+        String theItem122= "";
+          
+        //add the job tasks
+        for(int i=0; i<taskTypeListStr.size();i++)
+        {
+            //System.out.println(taskTypeListStr.get(i));
+            theItem122 = taskTypeListStr.get(i);
+            
+            gp6.add(new Text(theItem122.substring(0, theItem122.indexOf(",")-1)), 1, taskCounter);
+            gp6.add(new Text(theItem122.substring(theItem122.indexOf(",")+1, theItem122.lastIndexOf(","))), 3, taskCounter);
+            gp6.add(new Text(theItem122.substring(theItem122.lastIndexOf(",")+1, theItem122.length())), 5, taskCounter);
+            
+            taskCounter++;
+        }
+        
+        
 
         //eqip/veh : 270
         gp7.setLayoutY(252);
         gp7.setLayoutX(640);
-        gp7.setGridLinesVisible(true);
+        gp7.setGridLinesVisible(false);
         //the top text portion
         gp7.add(printText10, 1, 1);
 
         //disposal : 441
         gp8.setLayoutY(421);
         gp8.setLayoutX(640);
-        gp8.setGridLinesVisible(true);
+        gp8.setGridLinesVisible(false);
         //the top text portion
         gp8.add(printText11, 1, 1);
 
         //water : 521
         gp9.setLayoutY(501);
         gp9.setLayoutX(640);
-        gp9.setGridLinesVisible(true);
+        gp9.setGridLinesVisible(false);
         //the top text portion
         gp9.add(printText12, 1, 1);
 
         //traffic : 602
         gp10.setLayoutY(581);
         gp10.setLayoutX(640);
-        gp10.setGridLinesVisible(true);
+        gp10.setGridLinesVisible(false);
         //the top text portion
         gp10.add(printText13, 1, 1);
 
@@ -7253,12 +7418,17 @@ public class JobCenterMainController implements Initializable, ScreenController 
         root.getChildren().add(r4);
         root.getChildren().add(r5);
         root.getChildren().add(r6);
-        root.getChildren().add(r7);
-        root.getChildren().add(r8);
-        root.getChildren().add(r9);
-        root.getChildren().add(r10);
-        root.getChildren().add(r11);
-
+        //root.getChildren().add(r7);
+        //root.getChildren().add(r8);
+        //root.getChildren().add(r9);
+        //root.getChildren().add(r10);
+        //root.getChildren().add(r11);
+        root.getChildren().add(sInstructs);
+        root.getChildren().add(dispTxt);
+        root.getChildren().add(trafficTxt);
+        root.getChildren().add(waterTxt);
+        root.getChildren().add(equipTxt);
+         
         //set the static text 
         root.getChildren().add(iv2);
         root.getChildren().add(gpJob);
@@ -7288,175 +7458,34 @@ public class JobCenterMainController implements Initializable, ScreenController 
         stageJob.setX(primaryScreenBounds.getMinX());
         stageJob.setY(primaryScreenBounds.getMinY());
 
+        //printer job
         printScreen.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent t) {
+                printScreen.setVisible(false);
+                
                 Printer printer = Printer.getDefaultPrinter();
+                PrinterJob job = PrinterJob.createPrinterJob();
                 PageLayout pageLayout = printer.createPageLayout(Paper.LEGAL, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
 
-                double scaleX = pageLayout.getPrintableWidth() / 1524;
-                double scaleY = pageLayout.getPrintableHeight() / 682;
+                double scaleX = pageLayout.getPrintableWidth() / 1490;
+                double scaleY = pageLayout.getPrintableHeight() / 680;
 
                 root.getTransforms().add(new Scale(scaleX, scaleY));
+                job.printerProperty().set(printer);
+                boolean success = job.printPage(pageLayout, root);
 
-                root.getTransforms().add(new Scale(scaleX, scaleY));
-                root.setRotate(90);
-                root.setLayoutY(385);
-                root.setLayoutX(-228);
-                
-         
-                 PrinterJob job = PrinterJob.createPrinterJob();
+                if (success) {
+                    job.endJob();
+                    stageJob.close();
+                }
 
-                 if (job != null) {
-
-                 boolean success = job.printPage(root);
-
-                 if (success) {
-
-                 job.endJob();
-                 stageJob.close();
-                 }
-                 }
-                 
             }
 
         });
 
         stageJob.show();
-
-        /* final Group root = new Group();
-         String curDateStr = "";
-
-         Rectangle r = new Rectangle(0, 0, 1120, 40); 
-         r.strokeProperty().set(Color.GRAY);
-
-         Rectangle r2 = new Rectangle(0, 42, 1120, 18); 
-         r2.strokeProperty().set(Color.);
-
-         Rectangle r3 = new Rectangle(0, 342, 1120, 18); 
-         r3.strokeProperty().set(Color.BLACK);
-
-         GridPane gridpane = new GridPane(),
-         gridpane2 = new GridPane(),
-         gridpane3 = new GridPane();
-
-         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
-         Calendar cal = Calendar.getInstance();
-
-         String dateToday = (dateFormat.format(cal.getTime()));
-         dateToday = "Date: " + dateToday;
-
-         Text printText1 = new Text("Video Pipe Services, LLC"),
-         printText2 = new Text("Beltsville, MD"),
-         printText3 = new Text("Job Information Sheet"),
-         printText4 = new Text(dateToday),
-         printText5 = new Text("Customer"),
-         printText6 = new Text("Company name:\t\t" + setCustName.getText()),
-         printText7 = new Text("Street Address:\t\t" + setCustAddr.getText()),
-         printText8 = new Text("City:\t\t\t\t\t" + setCustCity.getText()),
-         printText9 = new Text("Point of contact:\t\t" + setCustPOC.getText()),
-         printText10 = new Text("Phone:\t\t\t\t" + setCustPhone.getText()),
-         printText11 = new Text("State:\t\t\t\t" + setCustState.getText()),
-         printText12 = new Text("Zip:\t\t\t\t\t" + setCustZip.getText()),
-         printText13 = new Text("Job Number:\t\t\t" + jobTitle.getText()),
-         printText14 = new Text("Job Name:\t\t\t" + jobName.getText()),
-         printText15 = new Text("Cust Job Number:\t\t" + custJobNum.getText()),
-         printText16 = new Text("Job Start Date:\t\t\t" + startDate.getText()),
-         printText17 = new Text("Special Instructions:\t\t\t\t" + sInstr.getText()),
-         printText18 = new Text("Instructions (disposal):\t\t\t" + dInstr.getText()),
-         printText19 = new Text("Instructions (traffic control):\t\t" + tInstr.getText()),
-         printText20 = new Text("Instructions (water source):\t\t" + wInstr.getText());
  
-         printText1.setStyle("-fx-font-size: 16;");
-                    
-         gridpane.setLayoutY(10);
-
-         //gridlines for edit customer info
-         gridpane.setGridLinesVisible(false);
-
-         gridpane.add(printText1, 1, 1);
-         gridpane.add(printText2, 1, 2);
-         gridpane.add(printText3, 1, 3);
-         gridpane.add(printText4, 1, 4);
-
-         gridpane2.setLayoutY(90);
-
-         //gridlines for edit customer info
-         gridpane2.setGridLinesVisible(false);
-
-         gridpane2.add(printText5, 1, 5);
-         gridpane2.add(printText6, 1, 6);
-         gridpane2.add(printText7, 1, 7);
-         gridpane2.add(printText8, 1, 8);
-         gridpane2.add(printText9, 1, 9);
-         gridpane2.add(printText10, 1, 10);
-         gridpane2.add(printText11, 1, 11);
-         gridpane2.add(printText12, 1, 12);
-         gridpane2.add(printText13, 1, 13);
-         gridpane2.add(printText14, 1, 14);
-         gridpane2.add(printText15, 1, 15);
-         gridpane2.add(printText16, 1, 16);
-
-         gridpane3.setLayoutY(300);
-
-         //gridlines for edit customer info
-         gridpane3.setGridLinesVisible(false);
-
-         gridpane3.add(printText17, 1, 17);
-         gridpane3.add(printText18, 1, 18);
-         gridpane3.add(printText19, 1, 19);
-         gridpane3.add(printText20, 1, 20);
-
-         //root.getChildren().add(gridpane);
-         //root.getChildren().add(gridpane2);
-         //root.getChildren().add(gridpane3);
-
-         root.getChildren().add(r);
-         root.getChildren().add(r2);
-         root.getChildren().add(r3);
-                
-         Scene scene2 = new Scene(root);
-
-         stageJob = new Stage();
-         //  stageJob.setX(Screen.getScreens().get(1).getVisualBounds().getMinX());
-         // stageJob.setY(Screen.getScreens().get(1).getVisualBounds().getMinY());
-         //stageJob.setResizable(false);    
-         //stageJob.setFullScreen(true);
-         //set the dimesions to the screen size:
-         //stageJob.setWidth(Screen.getScreens().get(1).getVisualBounds().getWidth());
-         // stageJob.setHeight(Screen.getScreens().get(1).getVisualBounds().getHeight());
-
-         //stageJob.initStyle(StageStyle.UNDECORATED);
-         
-        
-         stageJob.setResizable(false); 
-         stageJob.setScene(scene2);
-         stageJob.setHeight(700);
-         stageJob.setWidth(1224);
-         stageJob.show();
-
-         //Print the root node
-         Printer printer = Printer.getDefaultPrinter();
-         PageLayout pageLayout = printer.createPageLayout(Paper.NA_LETTER, PageOrientation.LANDSCAPE, Printer.MarginType.DEFAULT);
-
-         double scaleX = pageLayout.getPrintableWidth() / 1524;
-         double scaleY = pageLayout.getPrintableHeight() / 662;
-
-         root.getTransforms().add(new Scale(scaleX, scaleY));
-         /*
-         PrinterJob job = PrinterJob.createPrinterJob();
-
-         if (job != null) {
-
-         boolean success = job.printPage(root);
-
-         if (success) {
-
-         job.endJob();
-         stageJob.close();
-         }
-
-         }*/
     }
 
 }
